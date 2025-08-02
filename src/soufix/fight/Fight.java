@@ -6095,6 +6095,7 @@ public void Anti_bug () {
                     itsOk=true;
                     break;
                   case -1:// All items without condition.
+                    if(objectTemplate.getType() == Constant.ITEM_TYPE_QUETES && player.getItemTemplate(drop.getObjectId()) != null) break;
                     itsOk=true;
                     break;
 
@@ -6310,12 +6311,9 @@ public void Anti_bug () {
               Player playerTarget=target.getPersonnage();
               
               if(playerTarget != null) {
-              if(objectTemplate.getType() == 23) {
-              SocketManager.GAME_SEND_Im_PACKET_TO_ALL("116;"+"<b>Server</b>"+"~ON dirait que la chance sourit é ["+playerTarget.getName()+"] Il vient de drop ["+objectTemplate.getName()+"]");
-              }
-              if(objectTemplate.getId() == 12324 || objectTemplate.getId() == 101620) {
+                if(objectTemplate.getType() == 23) {
                   SocketManager.GAME_SEND_Im_PACKET_TO_ALL("116;"+"<b>Server</b>"+"~ON dirait que la chance sourit é ["+playerTarget.getName()+"] Il vient de drop ["+objectTemplate.getName()+"]");
-              }
+                }
               }
               if(objectTemplate.getType()!=24) //not a quest item
               {
@@ -6413,6 +6411,11 @@ public void Anti_bug () {
                       object.setQuantity(object.getQuantity()+entry.getValue(),null);
                       SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(playerTarget,object);
                     }
+                  }
+
+                  // Si il drop un item de quête, on lui envoie ses stats pour mettre à jour.
+                  if(newObj.getTemplate().getType() == Constant.ITEM_TYPE_QUETES){
+                    SocketManager.GAME_SEND_STATS_PACKET(playerTarget);
                   }
                 }
               }

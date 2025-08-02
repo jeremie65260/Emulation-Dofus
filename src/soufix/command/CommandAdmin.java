@@ -36,6 +36,7 @@ import soufix.quest.Quest;
 import soufix.quest.QuestPlayer;
 import soufix.quest.QuestStep;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -2454,7 +2455,9 @@ public class CommandAdmin extends AdminUser
       this.sendMessage(str);
       SocketManager.GAME_SEND_Ow_PACKET(this.getPlayer());
       Database.getStatics().getPlayerData().logs_gm(this.getPlayer().getName(),t.getName() , this.getAccount().getCurrentIp() , this.getAccount().getName(),this.getPlayer().getCurMap().getId());
-      
+      if(obj.getTemplate().getType() == Constant.ITEM_TYPE_QUETES){
+        SocketManager.GAME_SEND_STATS_PACKET(this.getPlayer());
+      }
       return;
     }
     else if(command.equalsIgnoreCase("SPELLPOINT"))
@@ -3687,6 +3690,9 @@ public class CommandAdmin extends AdminUser
           if(this.getPlayer().addObjet(addObj,true))//Si le joueur n'avait pas d'item similaire
             World.addGameObject(addObj,true);
         }
+      }
+      if(type == Constant.ITEM_TYPE_QUETES){
+        SocketManager.GAME_SEND_STATS_PACKET(this.getPlayer());
       }
       this.sendMessage("Vous avez tous les objets de type "+type+" dans votre inventaire.");
       return;
