@@ -38,7 +38,7 @@ public class MobGrade
 
   public MobGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp, int n)
   {
-    this.size=100+n*pSize;
+    this.size=template.getBaseSize()+n*pSize;
     this.template=template;
     this.grade=grade;
     this.level=level;
@@ -132,7 +132,7 @@ public class MobGrade
 
   private MobGrade(Monster template, int grade, int level, int pdv, int pdvMax, int pa, int pm, Map<Integer, Integer> stats, ArrayList<Integer> statsInfos, Map<Integer, SortStats> spells, int xp, int n)
   {
-    this.size=100+n*pSize;
+    this.size=template.getBaseSize()+n*pSize;
     this.template=template;
     this.grade=grade;
     this.level=level;
@@ -154,9 +154,8 @@ public class MobGrade
   }
   public MobGrade getCopy()
   {
-    Map<Integer, Integer> newStats=new HashMap<Integer, Integer>();
-    newStats.putAll(this.stats);
-    int n=(this.size-100)/pSize;
+    Map<Integer, Integer> newStats=new HashMap<>(this.stats);
+    int n=(this.size-this.getTemplate().getBaseSize())/pSize;
     return new MobGrade(this.template,this.grade,this.level,this.pdv,this.pdvMax,this.pa,this.pm,newStats,this.statsInfos,this.spells,this.baseXp,n);
   }
 

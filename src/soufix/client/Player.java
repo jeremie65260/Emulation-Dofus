@@ -2773,8 +2773,9 @@ public void setTotal_reculte() {
           if(objectSet!=null)
             stats=Stats.cumulStat(stats,objectSet.getBonusStatByItemNumb(this.getNumbEquipedItemOfPanoplie(id)),this);
         }
+      } else if(gameObject.getTemplate().getType() == Constant.ITEM_TYPE_QUETES) {
+        stats = Stats.cumulStat(stats, gameObject.getStats(), this);
       }
-
     }
 
     if(this._mount!=null&&this._onMount)

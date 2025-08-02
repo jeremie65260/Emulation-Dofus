@@ -22,8 +22,9 @@ public class Monster
   private int aggroDistance=0;
   private String name;
   private String nombre;
+  private int baseSize;
 
-  public Monster(int id, int gfxId, int align, String colors, String thisGrades, String thisSpells, String thisStats, String thisStatsInfos, String thisPdvs, String thisPoints, String thisInit, int minKamas, int maxKamas, String thisXp, int ia, boolean capturable, int aggroDistance , String name)
+  public Monster(int id, int gfxId, int align, String colors, String thisGrades, String thisSpells, String thisStats, String thisStatsInfos, String thisPdvs, String thisPoints, String thisInit, int minKamas, int maxKamas, String thisXp, int ia, boolean capturable, int aggroDistance , String name, int baseSize)
   {
     this.id=id;
     this.gfxId=gfxId;
@@ -35,6 +36,7 @@ public class Monster
     this.ia=ia;
     this.isCapturable=capturable;
     this.aggroDistance=aggroDistance;
+    this.baseSize = baseSize;
     int G=1;
 
     for(int n=0;n<12;n++)
@@ -107,7 +109,7 @@ public class Monster
     }
   }
 
-  public void setInfos(int gfxId, int align, String colors, String thisGrades, String thisSpells, String thisStats, String thisStatsInfos, String thisPdvs, String thisPoints, String thisInit, int minKamas, int maxKamas, String thisXp, int ia, boolean capturable, int aggroDistance)
+  public void setInfos(int gfxId, int align, String colors, String thisGrades, String thisSpells, String thisStats, String thisStatsInfos, String thisPdvs, String thisPoints, String thisInit, int minKamas, int maxKamas, String thisXp, int ia, boolean capturable, int aggroDistance, int baseSize)
   {
     this.gfxId=gfxId;
     this.align=align;
@@ -117,6 +119,7 @@ public class Monster
     this.ia=ia;
     this.isCapturable=capturable;
     this.aggroDistance=aggroDistance;
+    this.baseSize = baseSize;
     int G=1;
     grades.clear();
     for(int n=0;n<12;n++)
@@ -322,4 +325,7 @@ public class Monster
 			return nombre;
 		}
 
+  public int getBaseSize() {
+    return baseSize;
+  }
 }

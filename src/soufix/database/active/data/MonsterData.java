@@ -54,7 +54,8 @@ public class MonsterData extends AbstractDAO<Monster>
         String xp=RS.getString("exps");
         int aggroDistance=RS.getInt("aggroDistance");
         boolean capturable=RS.getInt("capturable")==1;
-        Monster monster=new Monster(id,gfxID,align,colors,grades,spells,stats,statsInfos,pdvs,pts,inits,mK,MK,xp,IAType,capturable,aggroDistance,name);
+        int baseSize = RS.getInt("base_size");
+        Monster monster=new Monster(id,gfxID,align,colors,grades,spells,stats,statsInfos,pdvs,pts,inits,mK,MK,xp,IAType,capturable,aggroDistance,name,baseSize);
         Main.world.addMobTemplate(id,monster);
       }
     }
@@ -95,13 +96,14 @@ public class MonsterData extends AbstractDAO<Monster>
         String xp=RS.getString("exps");
         int aggroDistance=RS.getInt("aggroDistance");
         boolean capturable=(RS.getInt("capturable")==1);
+        int baseSize = RS.getInt("base_size");
         if(Main.world.getMonstre(id)==null)
         {
-          Main.world.addMobTemplate(id,new Monster(id,gfxID,align,colors,grades,spells,stats,statsInfos,pdvs,pts,inits,mK,MK,xp,IAType,capturable,aggroDistance,name));
+          Main.world.addMobTemplate(id,new Monster(id,gfxID,align,colors,grades,spells,stats,statsInfos,pdvs,pts,inits,mK,MK,xp,IAType,capturable,aggroDistance,name,baseSize));
         }
         else
         {
-          Main.world.getMonstre(id).setInfos(gfxID,align,colors,grades,spells,stats,statsInfos,pdvs,pts,inits,mK,MK,xp,IAType,capturable,aggroDistance);
+          Main.world.getMonstre(id).setInfos(gfxID,align,colors,grades,spells,stats,statsInfos,pdvs,pts,inits,mK,MK,xp,IAType,capturable,aggroDistance,baseSize);
         }
       }
     }

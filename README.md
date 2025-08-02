@@ -4,7 +4,8 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 ## Version 0.1.0:
     - Nouveauté:
-        - Les items de quêtes possèdant des stats influent les statistiques du joueur.
+        - Player: Les items de quêtes possèdant des stats influent les statistiques du joueur.
+        - Sql/Monster: La taille de base est définissable en base de donnée (base_size).
 
 ## Version 0.0.1:
     - Nouveauté:
