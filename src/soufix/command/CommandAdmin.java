@@ -2456,7 +2456,7 @@ public class CommandAdmin extends AdminUser
       SocketManager.GAME_SEND_Ow_PACKET(this.getPlayer());
       Database.getStatics().getPlayerData().logs_gm(this.getPlayer().getName(),t.getName() , this.getAccount().getCurrentIp() , this.getAccount().getName(),this.getPlayer().getCurMap().getId());
       if(obj.getTemplate().getType() == Constant.ITEM_TYPE_QUETES){
-        SocketManager.GAME_SEND_STATS_PACKET(this.getPlayer());
+        SocketManager.GAME_SEND_STATS_PACKET(target);
       }
       return;
     }

@@ -2,6 +2,11 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
 
+## Version 0.2.1:
+    - Fix:
+        - CommandAdmin:
+            - item | !getitem: Envoie les stats au target.
+
 ## Version 0.2.0:
     - Fix:
         - Fight: Les items de quêtes (action -1 drop) ne peuvent se drop une seconde fois.
