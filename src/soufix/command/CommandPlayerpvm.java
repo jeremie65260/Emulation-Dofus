@@ -69,7 +69,7 @@ public class CommandPlayerpvm {
 			return false;
 		}
 		if(perso.getGameClient() == null)
-		return true;	
+			return true;
 		if(msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
@@ -521,6 +521,10 @@ public class CommandPlayerpvm {
 					SocketManager.GAME_SEND_MESSAGE(perso,"Mode aura On", "008000");
 					SocketManager.GAME_SEND_ALTER_GM_PACKET(perso.getCurMap(),perso);
 				}
+				return true;
+			}
+			if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("vie")) {
+				perso.fullPDV();
 				return true;
 			}
 			if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("vip")) {

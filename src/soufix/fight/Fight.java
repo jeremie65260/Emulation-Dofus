@@ -1572,7 +1572,7 @@ try {
                             player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
                           }
                         }
-                        player.setPdv(1);
+                        player.fullPDV();
                       }
                     }
 
@@ -1716,7 +1716,7 @@ try {
                       else if(!player.getCurMap().hasEndFightAction(0))
                         player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
                     }
-                    player.setPdv(1);
+                    player.fullPDV();
                   }
                 }
 
@@ -4971,12 +4971,6 @@ public void Anti_bug () {
 
     if(this.getType()!=Constant.FIGHT_TYPE_CHALLENGE && this.getType()!=Constant.FIGHT_TYPE_KOLI)
     {
-      if(fighter.getPdv()<=0)
-        player.setPdv(1);
-      else
-        player.setPdv(fighter.getPdv());
-
-      if(fighter.getLevelUp())
         player.fullPDV();
     }
 
@@ -5191,7 +5185,7 @@ public void Anti_bug () {
           {
  
               player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
-              player.setPdv(1);
+              player.fullPDV();
             
           }
         }
@@ -6095,7 +6089,6 @@ public void Anti_bug () {
                     itsOk=true;
                     break;
                   case -1:// All items without condition.
-                    if(objectTemplate.getType() == Constant.ITEM_TYPE_QUETES && player.getItemTemplate(drop.getObjectId()) != null) break;
                     itsOk=true;
                     break;
 
@@ -6206,6 +6199,43 @@ public void Anti_bug () {
                     itsOk=true;
                     break;
                 }
+
+                // On assume qu'on est déjà en PVM et non pas dans autre chose.
+                // Si un item de quête possèdant des stats a déjà été drop, on ne le redrop pas.
+                // De plus, si c'est un coffre et que son maître a déjà ou bien a déjà drop l'item, on ne le drop pas.
+                // By Sarazar928Ghost Kevin#6537
+                if(objectTemplate.getType() == Constant.ITEM_TYPE_QUETES && !objectTemplate.getStrTemplate().isEmpty()){
+                  final Player currentPlayer = player == null ? i.getInvocator().getPersonnage() : player;
+
+                  // Si le joueur possède déjà l'item, on annule.
+                  if(currentPlayer.getItemTemplate(objectTemplate.getId()) != null){
+                    itsOk = false;
+                  }
+                  // Sinon si le joueur/coffre a déjà drop l'item, on annule.
+                  else if(objectsWon.get(objectTemplate.getId()) != null) {
+                    itsOk = false;
+                  }
+
+                  // Si le joueur n'avait pas l'item ou bien qu'il ne l'a pas drop.
+                  // Et qu'actuellement, on est sur un coffre animé.
+                  if(itsOk && player == null){
+                    // On récupère le drop de l'invocateur.
+                    final StringBuilder sbPlayer = gains.get(i.getInvocator().getId());
+                    // Si le drop existe, on vérifie, sinon on laisse droper.
+                    if(sbPlayer != null && !sbPlayer.isEmpty()){
+                      final String[] dropSplit = sbPlayer.toString().split(";");
+                      final String dropPlayer = dropSplit[dropSplit.length - 2];
+                      for(String dp : dropPlayer.split(",")){
+                        if(dp.isEmpty()) continue;
+                        final int templateId = Integer.parseInt(dp.split("~")[0]);
+                        if(templateId != objectTemplate.getId()) continue;
+                        itsOk = false;
+                        break;
+                      }
+                    }
+                  }
+                }
+
                 if(itsOk)
                 {
                   objectsWon.put(objectTemplate.getId(),(objectsWon.get(objectTemplate.getId())==null ? quantity : (objectsWon.get(objectTemplate.getId()))+quantity));

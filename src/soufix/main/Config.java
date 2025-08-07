@@ -172,6 +172,9 @@ public int parchoMax = 101;
     		Config.getInstance().rateJob = Config.configFile.getInt("game.rate_job");
     		Config.getInstance().rateKamas = Config.configFile.getInt("game.rate_kamas");
     		Config.getInstance().rateXp = Config.configFile.getInt("game.rate_xp");
+
+    		Config.getInstance().startMap = Config.configFile.getInt("game.start_map");
+    		Config.getInstance().startCell = Config.configFile.getInt("game.start_cell");
         }
         catch (Exception e) {
             System.out.println(" <> Config illisible ou champs manquants: " + e.getMessage());

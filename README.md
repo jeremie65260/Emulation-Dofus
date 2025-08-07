@@ -2,6 +2,17 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
 
+## Version 0.3.0:
+    - Fix:
+        - Fight:
+            - Drop d'items de quête, pas plus de un par joueur. Si le joueur possède déjà l'item, même son coffre ne peut le droper.
+            - Si on gagne ou perd un combat, le joueur récupère toute sa vie.
+    - Nouveauté:
+        - Commande Joueur:
+            - Commande .vie
+        - Config:
+            - Ajout de start_map et start_cell en config.
+            
 ## Version 0.2.1:
     - Fix:
         - CommandAdmin:
