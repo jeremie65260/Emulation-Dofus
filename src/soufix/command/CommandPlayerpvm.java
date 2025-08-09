@@ -1142,7 +1142,7 @@ public class CommandPlayerpvm {
 	                return true;
 	            }
 				 perso.getGameClient().timeLasttpcommande =(System.currentTimeMillis()+1000);
-				perso.teleport((short) 6954, 283);
+				perso.teleport((short) 10295, 237);
 				return true;
 			}
 			
@@ -1244,7 +1244,7 @@ public class CommandPlayerpvm {
 				if(Config.singleton.serverId == 1) {
 				SocketManager.GAME_SEND_MESSAGE(perso,
 						"Les commandes disponibles sont  :\n<b>.infos</b> - Permet d'obtenir des informations sur le serveur."
-						+ "\n<b>.start</b> - Permet de se téléporter au zaap."
+						+ "\n<b>.start</b> - Permet de se téléporter à la zone de Départ"
 						+ "\n<b>.marchand</b> - Permets de se téléporter é la map marchande."
 						+ "\n<b>.staff</b> - Permet de voir les membres du staff connect\u00e9s."
 						+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
@@ -1272,7 +1272,7 @@ public class CommandPlayerpvm {
 				{
 					SocketManager.GAME_SEND_MESSAGE(perso,
 							"Les commandes disponibles sont  :\n<b>.infos</b> - Permet d'obtenir des informations sur le serveur."
-							//+ "\n<b>.start</b> - Permet de se téléporter au zaap."
+							+ "\n<b>.start</b> - Permet de se téléporter à la zone de Départ."
 							+ "\n<b>.marchand</b> - Permets de se téléporter é la map marchande."
 							+ "\n<b>.staff</b> - Permet de voir les membres du staff connect\u00e9s."
 							+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."

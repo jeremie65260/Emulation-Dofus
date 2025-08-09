@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Rpg-rampage:jar">
+    <output-path>$PROJECT_DIR$/../../Casper/pack partage casper Upgrade/pack capser/emu/emu/game</output-path>
+    <root id="archive" name="Rpg-rampage.jar">
+      <element id="module-output" name="Rpg-rampage" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/jep.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/jansi-1.18.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/config-1.4.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/HikariCP-5.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/lombok-1.18.12.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/commons-cli-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/slf4j-api-1.7.30.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/joda-time-2.10.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/commons-lang3-3.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/logback-core-1.2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/commons-logging-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/javassist-3.27.0-GA.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/logback-classic-1.2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/Libs/mysql-connector-java-8.0.27.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

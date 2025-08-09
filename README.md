@@ -12,6 +12,8 @@ Emulateur Game de Rpg-rampage, basé sur casper.
             - Commande .vie
         - Config:
             - Ajout de start_map et start_cell en config.
+    - Commande Player :
+        - Correction de la position de la commande .start à Incarnam en 10295,237
             
 ## Version 0.2.1:
     - Fix:
