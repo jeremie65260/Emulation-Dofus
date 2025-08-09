@@ -1142,7 +1142,7 @@ public class CommandPlayerpvm {
 	                return true;
 	            }
 				 perso.getGameClient().timeLasttpcommande =(System.currentTimeMillis()+1000);
-				perso.teleport((short) 10295, 237);
+				perso.teleport((short) Config.getInstance().startMap, Config.getInstance().startCell);
 				return true;
 			}
 			

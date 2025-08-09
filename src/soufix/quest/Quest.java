@@ -1151,29 +1151,20 @@ public class Quest
     { //Xp a donner
       player.addXp(xp*((int)Config.getInstance().rateXp));
       SocketManager.GAME_SEND_Im_PACKET(player,"08;"+(xp*((int)Config.getInstance().rateXp)));
-      SocketManager.GAME_SEND_STATS_PACKET(player);
     }
 
-    if(questObjectif.getObjects().size()>0)
+    if(!questObjectif.getObjects().isEmpty())
     { //Item a donner
-      boolean isQuestItem = false;
       for(Entry<Integer, Integer> entry : questObjectif.getObjects().entrySet())
       {
         ObjectTemplate template=Main.world.getObjTemplate(entry.getKey());
         int quantity=entry.getValue();
         GameObject object=template.createNewItem(quantity,false);
-        if(object.getTemplate().getType() == Constant.ITEM_TYPE_QUETES){
-          isQuestItem = true;
-        }
         if(player.addObjet(object,true))
         {
           World.addGameObject(object,true);
         }
         SocketManager.GAME_SEND_Im_PACKET(player,"021;"+quantity+"~"+template.getId());
-      }
-
-      if(isQuestItem){
-        SocketManager.GAME_SEND_STATS_PACKET(player);
       }
 
     }
@@ -1186,7 +1177,6 @@ public class Quest
       player.setKamas(player.getKamas()+(long)kamas);
       Main.world.kamas_total += kamas;
       SocketManager.GAME_SEND_Im_PACKET(player,"045;"+kamas);
-      SocketManager.GAME_SEND_STATS_PACKET(player);
     }
 
     if(getNextObjectif(questObjectif)!=questObjectif.getId())
@@ -1196,5 +1186,7 @@ public class Quest
         action.apply(player,null,0,0);
       }
     }
+
+    SocketManager.GAME_SEND_STATS_PACKET(player);
   }
 }

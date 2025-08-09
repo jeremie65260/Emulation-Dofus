@@ -6216,23 +6216,37 @@ public void Anti_bug () {
                     itsOk = false;
                   }
 
-                  // Si le joueur n'avait pas l'item ou bien qu'il ne l'a pas drop.
-                  // Et qu'actuellement, on est sur un coffre animé.
-                  if(itsOk && player == null){
-                    // On récupère le drop de l'invocateur.
-                    final StringBuilder sbPlayer = gains.get(i.getInvocator().getId());
-                    // Si le drop existe, on vérifie, sinon on laisse droper.
-                    if(sbPlayer != null && !sbPlayer.isEmpty()){
-                      final String[] dropSplit = sbPlayer.toString().split(";");
-                      final String dropPlayer = dropSplit[dropSplit.length - 2];
-                      for(String dp : dropPlayer.split(",")){
-                        if(dp.isEmpty()) continue;
-                        final int templateId = Integer.parseInt(dp.split("~")[0]);
-                        if(templateId != objectTemplate.getId()) continue;
-                        itsOk = false;
-                        break;
+                  // Si le joueur ou bien le coffre n'avait pas l'item ou bien qu'il ne l'a pas drop.
+                  if(itsOk){
+                    int playerID;
+                    Integer chestID = null;
+                    if(player == null){
+                      // Ici c'est le joueur.
+                      playerID = i.getInvocator().getId();
+                    } else {
+                      playerID = player.getId();
+                      // Si on est le joueur, on vérifie s'il possède un coffre. Car si son coffre a drop, on veut le savoir.
+                      for(Fighter winner : winners){
+                        if(winner.getMob() == null) continue;
+                        if(winner.getInvocator().getId() == player.getId()){
+                          // Ici c'est le coffre animé.
+                          chestID = winner.getId();
+                        }
                       }
                     }
+
+                    // On récupère le drop de l'invocateur.
+                    StringBuilder sbPlayer= gains.get(playerID);
+                    // Si le joueur possède déjà l'objet, on annule.
+                    itsOk = verifyIfContainsTheDrop(sbPlayer, objectTemplate);
+
+                    if(itsOk && chestID != null){
+                      // On récupère le drop du coffre animé.
+                      StringBuilder sbChest = gains.get(chestID);
+                      // Si le coffre possède déjà l'objet, on annule.
+                      itsOk = verifyIfContainsTheDrop(sbChest, objectTemplate);
+                    }
+
                   }
                 }
 
@@ -7503,5 +7517,28 @@ public void Anti_bug () {
           sameIpPlayers.add(player);
     }
     return sameIpPlayers;
+  }
+
+  /**
+   * Retourne {@code false} si le gain fourni contient l'objet template dans son drop.
+   *
+   * @param gain Le {@link StringBuilder} de la variable "gains".
+   * @param objectTemplate L'{@link ObjectTemplate} a drop.
+   * @author Sarazar928Ghost Kevin#6537
+   * @return {@code false} si le gain contient le drop de l'objet template fourni.
+   */
+  public boolean verifyIfContainsTheDrop(StringBuilder gain, ObjectTemplate objectTemplate){
+    if(gain != null && !gain.isEmpty()){
+      final String[] gainSplit = gain.toString().split(";");
+      final String gainDrop = gainSplit[gainSplit.length - 2];
+      for(String dp : gainDrop.split(",")){
+        if(dp.isEmpty()) continue;
+        final int templateId = Integer.parseInt(dp.split("~")[0]);
+        if(templateId != objectTemplate.getId()) continue;
+        return false;
+      }
+    }
+
+    return true;
   }
 }

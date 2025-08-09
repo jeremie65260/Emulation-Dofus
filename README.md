@@ -2,6 +2,16 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
 
+## Version 0.4.0:
+    - Fix:
+        - Fight:
+            - Drop item quête avec stats. On vérifie le coffre mais aussi le joueur si il ne possède pas déjà l'item.
+    - Refactoring:
+        - Quest:
+            - Envoie une seule fois le packet de stats une fois la récompense reçu.
+    - Commande Player :
+        - Correction de la position de la commande .start, utilise dorénavant celle de la Config.
+
 ## Version 0.3.0:
     - Fix:
         - Fight:
