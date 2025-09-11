@@ -1,7 +1,10 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
-
+## Version 0.5.0:
+    - Fix: 
+        - FullMorph en donjon : 
+            - On ne perd plus la fullMorph après la perte ou l'abandon d'un combat.
 ## Version 0.4.0:
     - Fix:
         - Fight:
