@@ -1743,9 +1743,9 @@ try {
       }
       if(target==null)
       {
-        if(caster.getPersonnage().getMorphMode())
-          if(caster.getPersonnage().donjon)
-            caster.getPersonnage().unsetFullMorph();
+//        if(caster.getPersonnage().getMorphMode())
+//          if(caster.getPersonnage().donjon)
+//            caster.getPersonnage().unsetFullMorph();
 
         if(this.getTeam0().containsKey(caster.getId()))
         {
