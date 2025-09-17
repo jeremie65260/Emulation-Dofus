@@ -4002,6 +4002,8 @@ public class Constant
       case 8983:
       case 8984:
       case 9716:
+      case 20000:
+      case 20003:
         return true;
     }
     return false;

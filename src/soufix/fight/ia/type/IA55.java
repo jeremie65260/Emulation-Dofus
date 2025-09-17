@@ -100,11 +100,25 @@ public class IA55 extends AbstractNeedSpell
           action=true;
         }
       }
-      if(this.fighter.getCurPm(this.fight)>0&&!action)
+//      if(this.fighter.getCurPm(this.fight)>0&&!action)
+//      {
+//        int value=Function.getInstance().moveFarIfPossible(this.fight,this.fighter);
+//        if(value!=0)
+//          time=value;
+//      }
+
+      if(this.fighter.getCurPm(this.fight)>0&&L==null&&C==null)
       {
-        int value=Function.getInstance().moveFarIfPossible(this.fight,this.fighter);
+        int value=Function.getInstance().moveautourIfPossible(this.fight,this.fighter,ennemy);
         if(value!=0)
+        {
           time=value;
+          action=true;
+          L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1);// pomax +1;
+          C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2);//2 = po min 1 + 1;
+          if(maxPo==1)
+            L=null;
+        }
       }
 
       if(this.fighter.getCurPa(this.fight)==0&&this.fighter.getCurPm(this.fight)==0)
