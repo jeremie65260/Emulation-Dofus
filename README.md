@@ -1,6 +1,10 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.7.1:
+    - Corredtion IA 202:
+        - Inclusion de la fallback au cas ou il n'y a pas de sort Cac
+        - correction du passe tour CAC.
 ## Version 0.7.0:
     - Création d'IA 202:
         - Basée sur la 37 avec le buff de soi même + comportement fuyard 
