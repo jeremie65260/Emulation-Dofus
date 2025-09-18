@@ -2,9 +2,6 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
 ## Version 0.7.0:
-      - Ajout du type 8 (Buff+Heal). Les sorts hybrides sont désormais traités à la fois comme BUFF et HEAL, 
-        ce qui permet à l’IA de les lancer soit en tant que buff, soit en tant que soin déclenché par seuil de PV, sans logique spécifique supplémentaire. (voir OneNote)
-## Version 0.7.0:
     - Création d'IA 202:
         - Basée sur la 37 avec le buff de soi même + comportement fuyard 
         + modification du palier de soin sur soi à 80%.

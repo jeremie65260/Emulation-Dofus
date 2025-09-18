@@ -80,7 +80,7 @@ public abstract class AbstractNeedSpell extends AbstractIA
           }
           break;
         case "BUFF":
-          if(spell.getSpell().getType()==1||spell.getSpell().getType() == 8)
+          if(spell.getSpell().getType()==1)
             spells.add(spell);
           break;
         case "INVOCATION":
@@ -92,7 +92,7 @@ public abstract class AbstractNeedSpell extends AbstractIA
             spells.add(spell);
           break;
         case "HEAL":
-          if(spell.getSpell().getType()==5||spell.getSpell().getType()==8)
+          if(spell.getSpell().getType()==5)
           {
             spells.add(spell);
           }
