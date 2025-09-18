@@ -1,6 +1,13 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.7.0:
+    - Création d'IA 202:
+        - Basée sur la 37 avec le buff de soi même + comportement fuyard 
+        + modification du palier de soin sur soi à 80%.
+## Version 0.6.0:
+    - Amélioration : 
+        - IA 55 : Retrait de la fonction moveFarIfpossible() contre moveAutourIfPossible().
 ## Version 0.5.0:
     - Fix: 
         - FullMorph en donjon : 

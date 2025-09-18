@@ -289,7 +289,9 @@ public class IAHandler
         case 200: //Perceptor AI
             ia=new IA200(fight,fighter,(byte)8);
             break;
-          
+        case 202: //Soin 50 % self + IA 37
+          ia=new IA202(fight,fighter,(byte)8);
+          break;
       }
     }
 
