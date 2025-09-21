@@ -485,11 +485,15 @@ public class Formulas
             && caster.getMob().getTemplate() != null
             && caster.getMob().getTemplate().getId() == 5073
             && target != null
-            && target.getPersonnage() != null
+            && (target.getPersonnage() != null
+            || (target.isInvocation()
+            && target.getInvocator() != null
+            && target.getInvocator().getPersonnage() != null))
             && statID >= Constant.ELEMENT_NEUTRE
             && statID <= Constant.ELEMENT_AIR) {
       caster.remember7095Element(statID);
     }
+
     // Fin brumaire
 
     if(!isHeal)

@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.8.1:
+    - Prise en compte des faiblesses si c'est une invocation dans formulas.java
 ## Version 0.8.0:
     - Ajout de la logique pour le mob Brumaire, modifications dans Fighter.java , Fight.java , Formulas.java
 ## Version 0.7.2:
