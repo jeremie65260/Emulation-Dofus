@@ -1909,6 +1909,15 @@ public void Anti_bug () {
       setCurPlayer(0);
 
     Fighter current=this.getFighterByOrdreJeu();
+    // Début brumaire
+    if (current != null
+            && current.isMob()
+            && current.getMob() != null
+            && current.getMob().getTemplate() != null
+            && current.getMob().getTemplate().getId() == 5073) {
+      current.reset7095ElementTracking();
+    }
+//Fin brumaire
     if(current == null)
     	endTurn(false,this.getFighterByOrdreJeu());
     current.start_turn = System.currentTimeMillis();
@@ -2218,6 +2227,14 @@ public void Anti_bug () {
         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this,7,950,current.getId()+"",current.getId()+","+Constant.ETAT_PORTE+",0");
 
       SocketManager.GAME_SEND_GAMETURNSTOP_PACKET_TO_FIGHT(this,7,current.getId());
+      // Brumaire
+      if (current.isMob()
+              && current.getMob() != null
+              && current.getMob().getTemplate() != null
+              && current.getMob().getTemplate().getId() == 5073) {
+        current.apply7095PenaltyBuff(7095, 250);
+      }
+    // Fin brumaire
       current.setCanPlay(false);
       setCurAction("");
       if(current.getPersonnage() != null) {

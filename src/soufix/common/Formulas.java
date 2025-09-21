@@ -477,6 +477,21 @@ public class Formulas
     float a=1; //Calcul
     float num=0;
     float statC=0,domC=0,perdomC=0,resfT=0,respT=0,mulT=1;
+    // Début brumaire
+    if (spellid == 7095
+            && caster != null
+            && caster.isMob()
+            && caster.getMob() != null
+            && caster.getMob().getTemplate() != null
+            && caster.getMob().getTemplate().getId() == 5073
+            && target != null
+            && target.getPersonnage() != null
+            && statID >= Constant.ELEMENT_NEUTRE
+            && statID <= Constant.ELEMENT_AIR) {
+      caster.remember7095Element(statID);
+    }
+    // Fin brumaire
+
     if(!isHeal)
     {
       domC=caster.getTotalStats().getEffect(Constant.STATS_ADD_DOMA);

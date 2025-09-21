@@ -70,8 +70,50 @@ public class Fighter implements Comparable<Fighter>
   public long start_turn = 0L;
   public int invocado = 0;
   private StringBuilder _stringBuilderGTM = new StringBuilder();
+  // Code Brumaire
+  // Sort 7095 du monstre 5073
+  private int last7095Element = Constant.ELEMENT_NULL;
+  private static final Map<Integer, Integer> ELEMENT_TO_7095_WEAKNESS = new HashMap<>();
+  static {
+    ELEMENT_TO_7095_WEAKNESS.put(Constant.ELEMENT_NEUTRE, Constant.STATS_REM_RP_NEU);
+    ELEMENT_TO_7095_WEAKNESS.put(Constant.ELEMENT_TERRE, Constant.STATS_REM_RP_TER);
+    ELEMENT_TO_7095_WEAKNESS.put(Constant.ELEMENT_FEU, Constant.STATS_REM_RP_FEU);
+    ELEMENT_TO_7095_WEAKNESS.put(Constant.ELEMENT_EAU, Constant.STATS_REM_RP_EAU);
+    ELEMENT_TO_7095_WEAKNESS.put(Constant.ELEMENT_AIR, Constant.STATS_REM_RP_AIR);
+  }
 
-public Fighter(Fight f, MobGrade mob)
+// Helpers Brumaire
+public void remember7095Element(int element) {
+  if (element >= Constant.ELEMENT_NEUTRE && element <= Constant.ELEMENT_AIR) {
+    last7095Element = element;
+  }
+}
+
+  public void reset7095ElementTracking() {
+    last7095Element = Constant.ELEMENT_NULL;
+  }
+
+  public void apply7095PenaltyBuff(int spellId, int penalty) {
+    if (last7095Element == Constant.ELEMENT_NULL
+            || !isMob()
+            || mob == null
+            || mob.getTemplate() == null
+            || mob.getTemplate().getId() != 5073) {
+      reset7095ElementTracking();
+      return;
+    }
+    Integer effectId = ELEMENT_TO_7095_WEAKNESS.get(last7095Element);
+    reset7095ElementTracking();
+    if (effectId == null) {
+      return;
+    }
+    String args = penalty + ";" + penalty + ";0;1;100;0d0+0";
+    addBuff(effectId, penalty, 1, 1, true, spellId, args, this, true);
+
+  }
+  // Fin helpers brumaire
+
+  public Fighter(Fight f, MobGrade mob)
   {
     this.fight=f;
     this.type=2;
