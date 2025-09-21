@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.8.0:
+    - Ajout de la logique pour le mob Brumaire, modifications dans Fighter.java , Fight.java , Formulas.java
 ## Version 0.7.2:
     - Création d'IA 203:
         - Basée sur la 72 avec deux sorts de Cac utilisable ( le reste est copié/collé)
