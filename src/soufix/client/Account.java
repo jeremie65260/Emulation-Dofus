@@ -264,10 +264,10 @@ public boolean isBank_load() {
   {
     lastConnectionDate=i;
   }
-
+// Modif PB en local
   public int getPoints()
   {
-    points=Database.getStatics().getAccountData().loadPoints(this.id_web);
+    points=Database.getStatics().getAccountData().loadPoints(this.getId());
     return points;
   }
   public int getvip()
@@ -292,7 +292,8 @@ public boolean isBank_load() {
   public void setPoints(int i)
   {
     points=i;
-    Database.getStatics().getAccountData().updatePoints(this.getId_web(),points);
+    // Modif PB local
+    Database.getStatics().getAccountData().updatePoints(this.getId(), points);
   }
 
   public void mute(int time, String pseudo)
@@ -805,9 +806,9 @@ public boolean isBank_load() {
   public void setSubscriber(long subscriber) {
 	this.subscriber = subscriber;
 }
-
+// modif PB local
 	public int getOgrinas() {
-		points = Database.getStatics().getAccountData().loadPoints(id_web);
+		points = Database.getStatics().getAccountData().loadPoints(this.getId());
 		return points;
 	}
 
