@@ -435,14 +435,20 @@ public class ObjectTemplate
     {
       item=new GameObject(id,getId(),qua,Constant.ITEM_POS_NO_EQUIPED,new Stats(false,null),new ArrayList<SpellEffect>(),new HashMap<Integer, Integer>(),Dopeul.generateStatsTrousseau(),0);
     }
+    // Modifié pour avoir des stats à la génération d'un familier
     else if(getType()==Constant.ITEM_TYPE_FAMILIER)
     {
-      item=new GameObject(id,getId(),1,Constant.ITEM_POS_NO_EQUIPED,(useMax ? generateNewStatsFromTemplate(Main.world.getPets(this.getId()).getJet(),false) : new Stats(false,null)),new ArrayList<>(),new HashMap<>(),Main.world.getPets(getId()).generateNewtxtStatsForPets(),0);
+      Stats petStats = generateNewStatsFromTemplate(Main.world.getPets(this.getId()).getJet(), useMax);
+      item = new GameObject(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, petStats,
+              new ArrayList<>(), new HashMap<>(),
+              Main.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
       //Ajouter du Pets_data SQL et World
-      long time=System.currentTimeMillis();
-      Main.world.addPetsEntry(new PetEntry(id,getId(),time,0,10,0,false));
-      Database.getDynamics().getPetData().add(id,time,getId());
+      long time = System.currentTimeMillis();
+      Main.world.addPetsEntry(new PetEntry(id, getId(), time, 0, 10, 0, false));
+      Database.getDynamics().getPetData().add(id, time, getId());
     }
+
+
     else if(getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
     {
       item=new GameObject(id,getId(),qua,Constant.ITEM_POS_NO_EQUIPED,generateNewStatsFromTemplate(getStrTemplate(),useMax),getEffectTemplate(getStrTemplate()),new HashMap<>(),new HashMap<>(),0);
@@ -526,16 +532,21 @@ public class ObjectTemplate
     {
       item=new GameObject(id,getId(),qua,Constant.ITEM_POS_NO_EQUIPED,new Stats(false,null),new ArrayList<>(),new HashMap<>(),Dopeul.generateStatsTrousseau(),0);
     }
-    //v2.8 - changed pet id assignment
+    //v2.8 - changed pet id assignment (modifié par moi)
     else if(getType()==Constant.ITEM_TYPE_FAMILIER)
     {
-      id=Database.getDynamics().getObjectData().getNextId();
-      item=new GameObject(id,getId(),1,Constant.ITEM_POS_NO_EQUIPED,(useMax ? generateNewStatsFromTemplate(Main.world.getPets(this.getId()).getJet(),false) : new Stats(false,null)),new ArrayList<>(),new HashMap<>(),Main.world.getPets(getId()).generateNewtxtStatsForPets(),0);
+      id = Database.getDynamics().getObjectData().getNextId();
+      Stats petStats = generateNewStatsFromTemplate(Main.world.getPets(this.getId()).getJet(), useMax);
+      item = new GameObject(id, getId(), 1, Constant.ITEM_POS_NO_EQUIPED, petStats,
+              new ArrayList<>(), new HashMap<>(),
+              Main.world.getPets(getId()).generateNewtxtStatsForPets(), 0);
       //Ajouter du Pets_data SQL et World
-      long time=System.currentTimeMillis();
-      Main.world.addPetsEntry(new PetEntry(id,getId(),time,0,10,0,false));
-      Database.getDynamics().getPetData().add(id,time,getId());
+      long time = System.currentTimeMillis();
+      Main.world.addPetsEntry(new PetEntry(id, getId(), time, 0, 10, 0, false));
+      Database.getDynamics().getPetData().add(id, time, getId());
     }
+
+
     else if(getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
     {
       item=new GameObject(id,getId(),qua,Constant.ITEM_POS_NO_EQUIPED,generateNewStatsFromTemplate(getStrTemplate(),useMax),getEffectTemplate(getStrTemplate()),new HashMap<>(),new HashMap<>(),0);

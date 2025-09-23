@@ -201,12 +201,12 @@ public class CommandPlayerpvm {
 		if(items.getPosition() != Constant.ITEM_POS_BOTTES)
 		if(stats.getEffect(128) > 0)
 		{
-			SocketManager.GAME_SEND_MESSAGE(perso,"Ton item te donne déjé 1 PM.","222222");
+			SocketManager.GAME_SEND_MESSAGE(perso,"Ton item te donne déja 1 PM.","222222");
 			return true;
 		}			
 		if(stats.getEffect(111) > 0)
 		{
-			SocketManager.GAME_SEND_MESSAGE(perso,"Ton item te donne déjé 1 PA.", "222222");
+			SocketManager.GAME_SEND_MESSAGE(perso,"Ton item te donne déja 1 PA.", "222222");
 			return true;
 		}
 		
@@ -1130,7 +1130,7 @@ public class CommandPlayerpvm {
 			}
 			
 			if(Config.singleton.serverId == 1)
-			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("start") || msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("astrub")) {
+			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("start")) {
 				if (perso.isInPrison()) {
 					return true;
 				}
@@ -1145,6 +1145,24 @@ public class CommandPlayerpvm {
 				perso.teleport((short) Config.getInstance().startMap, Config.getInstance().startCell);
 				return true;
 			}
+			// Téléportation vers astrub
+		if(Config.singleton.serverId == 1)
+			if (msg.length() > 5 && msg.substring(1, 7).equalsIgnoreCase("astrub")) {
+				if (perso.isInPrison()) {
+					return true;
+				}
+				if (perso.getFight() != null) {
+					return true;
+				}
+				if (System.currentTimeMillis() <  perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "+(System.currentTimeMillis() -  perso.getGameClient().timeLasttpcommande) / 1000+" seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande =(System.currentTimeMillis()+1000);
+				perso.teleport((short) 7411, 325);;
+				return true;
+			}
+		// Fin de téléportation vers astrub
 			
 			if(Config.singleton.serverId == 1)
 			if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("pvp")) {
@@ -1244,7 +1262,8 @@ public class CommandPlayerpvm {
 				if(Config.singleton.serverId == 1) {
 				SocketManager.GAME_SEND_MESSAGE(perso,
 						"Les commandes disponibles sont  :\n<b>.infos</b> - Permet d'obtenir des informations sur le serveur."
-						+ "\n<b>.start</b> - Permet de se téléporter à la zone de Départ"
+								+ "\n<b>.start</b> - Permet de se téléporter à la zone de Départ"
+						+ "\n<b>.astrub</b> - Permet de se téléporter à la zone de Départ"
 						+ "\n<b>.marchand</b> - Permets de se téléporter é la map marchande."
 						+ "\n<b>.staff</b> - Permet de voir les membres du staff connect\u00e9s."
 						+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
@@ -1252,7 +1271,7 @@ public class CommandPlayerpvm {
 						+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
 						+ "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
 						+ "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
-						+ "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
+						+ "\n<b>.banque</b> - Ouvrir la banque"
 						+ "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
 						+ "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
 						+ "\n<b>.tp</b> - Permet de téléporter tes personnages sur ta map actuelle."
