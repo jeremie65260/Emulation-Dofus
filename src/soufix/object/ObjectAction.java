@@ -13,6 +13,7 @@ import soufix.area.map.entity.Animation;
 import soufix.area.map.entity.House;
 import soufix.area.map.entity.MountPark;
 import soufix.client.Player;
+import soufix.common.Formulas;
 import soufix.common.ConditionParser;
 import soufix.common.SocketManager;
 import soufix.database.Database;
@@ -822,7 +823,7 @@ public class ObjectAction
 					if(i.getValue().getLevel() == 6)parcho_sort +=15;
 				}
 				parcho_sort+= player0.get_spellPts();
-  			player0.setsorts(null);
+            player0.setsorts(null);
   			player0.setsorts(Constant.getStartSorts(classe));
 					for (int a = 1; a <= player0.getLevel(); a++) {
 						Constant.onLevelUpSpells(player0, a);
@@ -833,7 +834,7 @@ public class ObjectAction
 						 parcho_sort = (parcho_sort-(player0.getLevel() - 1));	
 					}
 					player0.set_spellPts((player0.getLevel() - 1)+parcho_sort);
-				  Database.getStatics().getPlayerData().updateInfos(player0);
+            Database.getStatics().getPlayerData().updateInfos(player0);
 				  player0.getStats().addOneStat(125, -player0.getStats().getEffect(125));
 				  player0.getStats().addOneStat(124, -player0.getStats().getEffect(124));
 				  player0.getStats().addOneStat(118, -player0.getStats().getEffect(118));

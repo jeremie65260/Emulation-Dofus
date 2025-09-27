@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.8.2:
+    - Fix de la génération du jet aleatoire familier objectTemplate.java
 ## Version 0.8.1:
     - Prise en compte des faiblesses si c'est une invocation dans formulas.java
 ## Version 0.8.0:
