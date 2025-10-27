@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.8.3:
+    - Correction du sort Laisse spirituelle : le monstre réssucite sur une case valide.
 ## Version 0.8.2:
     - Fix de la génération du jet aleatoire familier objectTemplate.java
 ## Version 0.8.1:
