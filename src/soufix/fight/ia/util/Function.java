@@ -16,7 +16,6 @@ import soufix.main.Config;
 import soufix.main.Constant;
 import soufix.main.Logging;
 import soufix.main.Main;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

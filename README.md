@@ -2,7 +2,8 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
 ## Version 0.8.3:
-    - Correction du sort Laisse spirituelle : le monstre réssucite sur une case valide.
+    - Correction du sort Laisse spirituelle : le monstre réssucite sur une case valide. (spellEffect.java effect 780)
+    - Création d'une IA 204 ( calquée sur IA 203)  afin que le monstre wabbit squelette puisse vérifier si quelqu'un est mort dans son équipe avant de lancer laisse spirituelle.
 ## Version 0.8.2:
     - Fix de la génération du jet aleatoire familier objectTemplate.java
 ## Version 0.8.1:

@@ -295,6 +295,9 @@ public class IAHandler
         case 203: //IA Cac 1 PO et 2 PO , soin, désinvocation + invocation
           ia=new IA203(fight,fighter,(byte)8);
           break;
+        case 204: //IA203 avec contrôle de résurrection
+          ia=new IA204(fight,fighter,(byte)8);
+          break;
       }
     }
 
