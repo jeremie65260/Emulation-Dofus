@@ -6578,13 +6578,46 @@ public class SpellEffect
     fight.addFighterInTeam(target,target.getTeam());
     target.setIsDead(false);
     target.getFightBuff().clear();
-    target.setInvocator(caster);
-    if(target.isInvocation()&&target.getPersonnage()==null)
-      fight.getOrderPlaying().add((fight.getOrderPlaying().indexOf(target.getInvocator())+1),target);
+    // Début de la modif : Ressuciter sur cellule libre
+    if(caster!=null)
+      target.setTeam(caster.getTeam());
+    fight.addFighterInTeam(target,target.getTeam());
+    target.setIsDead(false);
+    target.setLeft(false);
+    target.getFightBuff().clear();
+    GameCase targetCell=this.cell;
+    if(targetCell==null||!targetCell.getFighters().isEmpty()||!targetCell.isWalkable(false))
+    {
+      GameCase fallback=null;
+      if(this.cell!=null)
+      {
+        int cellId=PathFinding.getAvailableCellArround(fight,this.cell.getId(),null);
+        if(cellId>0)
+          fallback=fight.getMap().getCase(cellId);
+      }
+      if(fallback==null&&caster!=null&&caster.getCell()!=null)
+      {
+        int cellId=PathFinding.getAvailableCellArround(fight,caster.getCell().getId(),null);
+        if(cellId>0)
+          fallback=fight.getMap().getCase(cellId);
+      }
+      if(fallback==null)
+        return;
+      targetCell=fallback;
+    }
 
-    target.setCell(cell);
-    target.getCell().addFighter(target);
+    target.setCell(targetCell);
+    targetCell.addFighter(target);
 
+    if(fight.getOrderPlaying()!=null&&!fight.getOrderPlaying().contains(target))
+    {
+      Fighter reference=target.getInvocator();
+      if(reference!=null&&fight.getOrderPlaying().contains(reference))
+        fight.getOrderPlaying().add((fight.getOrderPlaying().indexOf(reference)+1),target);
+      else
+        fight.getOrderPlaying().add(target);
+    }
+// Fin de la modification
     target.fullPdv();
     int percent=(100-value)*target.getPdvMax()/100;
     target.removePdv(target,percent);
@@ -6595,7 +6628,6 @@ public class SpellEffect
     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,999,target.getId()+"",gtl);
     if(!target.isInvocation())
       SocketManager.GAME_SEND_STATS_PACKET(target.getPersonnage());
-
     fight.removeDead(target);
     verifyTraps(fight,target);
   }
