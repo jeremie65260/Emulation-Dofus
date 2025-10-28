@@ -292,7 +292,7 @@ public class IAHandler
         case 202: //Soin 50 % self + IA 37 + fuite
           ia=new IA202(fight,fighter,(byte)8);
           break;
-        case 203: //IA Cac 1 PO et 2 PO , soin, désinvocation + invocation
+        case 203: //IA Cac 1 PO et 2 PO , soin <50%, désinvocation + invocation
           ia=new IA203(fight,fighter,(byte)8);
           break;
         case 204: //IA203 avec contrôle de résurrection

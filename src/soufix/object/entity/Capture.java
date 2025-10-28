@@ -2,7 +2,7 @@ package soufix.object.entity;
 
 import soufix.object.GameObject;
 import soufix.utility.Pair;
-
+import java.util.Map;
 import java.util.ArrayList;
 
 public class Capture extends GameObject
@@ -90,7 +90,31 @@ public class Capture extends GameObject
     }
     return toReturn.toString();
   }
+// Debut case 12 pour ramener ame à pnj
+public int countMonster(int monsterId)
+{
+  if(monsterId<=0||monsters==null||monsters.isEmpty())
+    return 0;
 
+  int total=0;
+  for(Pair<Integer, Integer> monster : monsters)
+    if(monster.getLeft()==monsterId)
+      total++;
+
+  if(total==0)
+  {
+    Map<Integer, Integer> soulStats=getSoulStat();
+    if(soulStats!=null)
+    {
+      Integer souls=soulStats.get(monsterId);
+      if(souls!=null&&souls>0)
+        total+=souls;
+    }
+  }
+
+  return total;
+}
+// fin case 12
   public static boolean isInArenaMap(int id)
   {
     return ",10131,10132,10133,10134,10135,10136,10137,10138,".contains(String.valueOf(","+id+","));
