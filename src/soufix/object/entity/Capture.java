@@ -93,17 +93,23 @@ public class Capture extends GameObject
 // Debut case 12 pour ramener ame à pnj
 public int countMonster(int monsterId)
 {
-  if(monsterId<=0||monsters==null||monsters.isEmpty())
+  if(monsterId<=0)
     return 0;
 
   int total=0;
-  for(Pair<Integer, Integer> monster : monsters)
-    if(monster.getLeft()==monsterId)
-      total++;
+
+  if(this.monsters!=null&&!this.monsters.isEmpty())
+  {
+    for(Pair<Integer, Integer> storedMonster : this.monsters)
+    {
+      if(storedMonster.getLeft()==monsterId)
+        total++;
+    }
+  }
 
   if(total==0)
   {
-    Map<Integer, Integer> soulStats=getSoulStat();
+    Map<Integer, Integer> soulStats=this.getSoulStat();
     if(soulStats!=null)
     {
       Integer souls=soulStats.get(monsterId);
@@ -114,6 +120,33 @@ public int countMonster(int monsterId)
 
   return total;
 }
+
+  public int consumeMonster(int monsterId, int amount)
+  {
+    if(monsterId<=0||amount<=0||this.monsters==null||this.monsters.isEmpty())
+      return 0;
+
+    int removed=0;
+    for(int index=0;index<this.monsters.size()&&removed<amount;index++)
+    {
+      Pair<Integer, Integer> storedMonster=this.monsters.get(index);
+      if(storedMonster.getLeft()!=monsterId)
+        continue;
+      this.monsters.remove(index);
+      index--;
+      removed++;
+    }
+
+    if(removed>0)
+      this.setModification();
+
+    return removed;
+  }
+
+  public boolean hasMonsters()
+  {
+    return this.monsters!=null&&!this.monsters.isEmpty();
+  }
 // fin case 12
   public static boolean isInArenaMap(int id)
   {

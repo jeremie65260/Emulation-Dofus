@@ -13,11 +13,16 @@ import soufix.object.GameObject;
 import soufix.object.ObjectTemplate;
 import soufix.other.Action;
 import soufix.utility.Pair;
-
+import soufix.object.entity.Capture;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class Quest
 {
@@ -45,6 +50,10 @@ public class Quest
   private ArrayList<Action> actions=new ArrayList<>();
   private boolean delete;
   private Pair<Integer, Integer> condition=null;
+  private static final String CAPTURE_CLASS_NAME="soufix.object.entity.Capture";
+  private static Class<?> captureClassCache;
+  private static Field captureMonstersField;
+  private static boolean captureFieldLookupDone;
 
   public Quest(int id, String steps, String objectifs, int npc, String action, String args, boolean delete, String condition)
   {
@@ -58,15 +67,13 @@ public class Quest
 
         if(split.length>0)
         {
-          for(String qEtape : split)
+          for(String stepId : split)
           {
-            // debut case 12
-            QuestStep questStep=QuestStep.getQuestStepById(Integer.parseInt(qEtape));
+            QuestStep questStep=QuestStep.getQuestStepById(Integer.parseInt(stepId));
             if(questStep==null)
               continue;
             questStep.setQuestData(this);
             questSteps.add(questStep);
-            //fin case 12
           }
         }
       }
@@ -83,10 +90,11 @@ public class Quest
 
         if(split.length>0)
         {
-          for(String qObjectif : split)
+          for(String objectifId : split)
           {
-            //case 12
-            QuestObjectif questObjectif=QuestObjectif.getQuestObjectifById(Integer.parseInt(qObjectif));
+            if(objectifId==null||objectifId.isEmpty())
+              continue;
+            QuestObjectif questObjectif=QuestObjectif.getQuestObjectifById(Integer.parseInt(objectifId));
             if(questObjectif!=null)
               questObjectifList.add(questObjectif);
             //fin case 12
@@ -195,17 +203,17 @@ public class Quest
     StringBuilder str_prev=new StringBuilder();
     boolean loc4=true;
     // Il y a une exeption dans le code ici pour la seconde étape de papotage
-    for(QuestStep qEtape : questSteps)
+    for(QuestStep step : questSteps)
     {
-      if(qEtape.getObjectif()!=loc1)
+      if(step.getObjectif()!=loc1)
         continue;
-      if(!haveRespectCondition(questPlayer,qEtape))
+      if(!haveRespectCondition(questPlayer,step))
         continue;
       if(!loc4)
         str_prev.append(";");
-      str_prev.append(qEtape.getId());
+      str_prev.append(step.getId());
       str_prev.append(",");
-      str_prev.append(questPlayer.isQuestStepIsValidate(qEtape) ? 1 : 0);
+      str_prev.append(questPlayer.isQuestStepIsValidate(step) ? 1 : 0);
       loc4=false;
     }
     str.append(str_prev);
@@ -391,15 +399,18 @@ public class Quest
           }
           break;
         case 12://Remettre une âme de monstre
-          if(player.getExchangeAction()!=null&&player.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&player.getCurMap().getNpc((Integer)player.getExchangeAction().getValue()).getTemplate().getId()==questStep.getNpc().getId())
+          NpcTemplate stepNpc=questStep.getNpc();
+          if(stepNpc==null)
+            break;
+          if(player.getExchangeAction()!=null&&player.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&player.getCurMap().getNpc((Integer)player.getExchangeAction().getValue()).getTemplate().getId()==stepNpc.getId())
           {
             int monsterId=questStep.getMonsterId();
             int requiredSouls=questStep.getQua()>0 ? questStep.getQua() : 1;
 
             if(monsterId>0&&requiredSouls>0)
             {
-              int deliveredSouls=0;
-              ArrayList<GameObject> stonesToRemove=new ArrayList<>();
+              int soulsNeeded=requiredSouls;
+              LinkedHashMap<GameObject, Integer> consumptionPlan=new LinkedHashMap<>();
               Map<Integer, GameObject> inventory=player.getItems();
 
               if(inventory!=null&&!inventory.isEmpty())
@@ -413,28 +424,67 @@ public class Quest
                   if(object.getTemplate()==null||object.getTemplate().getType()!=Constant.ITEM_TYPE_PIERRE_AME_PLEINE)
                     continue;
 
-                  Map<Integer, Integer> soulStats=object.getSoulStat();
-                  if(soulStats==null||soulStats.isEmpty())
+                  int soulsInStone=countSoulsForMonster(object,monsterId);
+                  if(soulsInStone<=0)
                     continue;
 
-                  Integer soulCount=soulStats.get(monsterId);
-                  if(soulCount==null||soulCount<=0)
-                    continue;
+                  int soulsToConsume=Math.min(soulsNeeded,soulsInStone);
+                  consumptionPlan.put(object,soulsToConsume);
+                  soulsNeeded-=soulsToConsume;
 
-                  deliveredSouls+=soulCount;
-                  stonesToRemove.add(object);
-
-                  if(deliveredSouls>=requiredSouls)
+                  if(soulsNeeded<=0)
                     break;
                 }
               }
-              //fin case 12
 
-              if(deliveredSouls>=requiredSouls&&!stonesToRemove.isEmpty())
+              if(soulsNeeded<=0&&!consumptionPlan.isEmpty())
               {
-                for(GameObject soulStone : stonesToRemove)
-                  player.removeItem(soulStone.getGuid(),soulStone.getQuantity(),true,true);
-                refresh=true;
+                boolean consumedAny=false;
+                for(Map.Entry<GameObject, Integer> entry : consumptionPlan.entrySet())
+                {
+                  GameObject soulStone=entry.getKey();
+                  int consumeCount=entry.getValue();
+
+                  int removedFromCapture=consumeSoulsFromCapture(player,soulStone,monsterId,consumeCount);
+                  if(removedFromCapture>0)
+                    consumedAny=true;
+                  if(removedFromCapture>=consumeCount)
+                    continue;
+
+                  int remainingToConsume=Math.max(0,consumeCount-removedFromCapture);
+                  if(remainingToConsume<=0)
+                    continue;
+
+                  Map<Integer, Integer> soulStats=soulStone.getSoulStat();
+                  if(soulStats==null||soulStats.isEmpty())
+                    continue;
+
+                  int current=soulStats.getOrDefault(monsterId,0);
+                  int remaining=Math.max(0,current-remainingToConsume);
+
+                  if(remaining<=0)
+                  {
+                    soulStats.remove(monsterId);
+                  }
+                  else
+                  {
+                    soulStats.put(monsterId,remaining);
+                  }
+
+                  if(soulStats.isEmpty())
+                  {
+                    player.removeItem(soulStone.getGuid(),soulStone.getQuantity(),true,true);
+                  }
+                  else
+                  {
+                    soulStone.setModification();
+                    SocketManager.GAME_SEND_UPDATE_ITEM(player,soulStone);
+                    Database.getDynamics().getObjectData().update(soulStone);
+                  }
+                  consumedAny=true;
+                }
+                if(consumedAny)
+                  refresh=true;
               }
             }
           }
@@ -523,15 +573,130 @@ public class Quest
     if(object==null||monsterId<=0)
       return 0;
 
+    int total=0;
+
     Map<Integer, Integer> soulStats=object.getSoulStat();
     if(soulStats!=null&&!soulStats.isEmpty())
     {
-      Integer souls=soulStats.get(monsterId);
-      if(souls!=null&&souls>0)
-        return souls;
+      total+=Math.max(0,soulStats.getOrDefault(monsterId,0));
     }
 
-    return 0;
+    if(isCapture(object))
+    {
+      ArrayList<Pair<Integer, Integer>> monsters=getCaptureMonsters(object);
+      if(monsters!=null&&!monsters.isEmpty())
+      {
+        for(Pair<Integer, Integer> storedMonster : monsters)
+        {
+          if(storedMonster!=null&&Objects.equals(storedMonster.getLeft(),monsterId))
+            total++;
+        }
+      }
+    }
+
+    return total;
+  }
+
+  private int consumeSoulsFromCapture(Player player, GameObject soulStone, int monsterId, int consumeCount)
+  {
+    if(player==null||soulStone==null||monsterId<=0||consumeCount<=0)
+      return 0;
+
+    if(!isCapture(soulStone))
+      return 0;
+
+    ArrayList<Pair<Integer, Integer>> monsters=getCaptureMonsters(soulStone);
+    if(monsters==null||monsters.isEmpty())
+      return 0;
+
+    int removed=0;
+    for(Iterator<Pair<Integer, Integer>> iterator=monsters.iterator(); iterator.hasNext()&&removed<consumeCount;)
+    {
+      Pair<Integer, Integer> storedMonster=iterator.next();
+      if(storedMonster!=null&&Objects.equals(storedMonster.getLeft(),monsterId))
+      {
+        iterator.remove();
+        removed++;
+      }
+    }
+
+    if(removed>0)
+    {
+      soulStone.setModification();
+      if(monsters.isEmpty())
+      {
+        player.removeItem(soulStone.getGuid(),soulStone.getQuantity(),true,true);
+      }
+      else
+      {
+        SocketManager.GAME_SEND_UPDATE_ITEM(player,soulStone);
+        Database.getDynamics().getObjectData().update(soulStone);
+      }
+    }
+
+    return removed;
+  }
+
+  private boolean isCapture(GameObject object)
+  {
+    Class<?> captureClass=getCaptureClass();
+    return captureClass!=null&&captureClass.isInstance(object);
+  }
+
+  @SuppressWarnings("unchecked")
+  private ArrayList<Pair<Integer, Integer>> getCaptureMonsters(GameObject object)
+  {
+    Field monstersField=getCaptureMonstersField();
+    if(monstersField==null)
+      return null;
+    try
+    {
+      return (ArrayList<Pair<Integer, Integer>>)monstersField.get(object);
+    }
+    catch(IllegalAccessException e)
+    {
+      Main.world.logger.error("Impossible d'accéder aux monstres stockés dans la pierre d'âme",e);
+      return null;
+    }
+  }
+
+  private static Class<?> getCaptureClass()
+  {
+    if(captureClassCache!=null)
+      return captureClassCache;
+    try
+    {
+      captureClassCache=Class.forName(CAPTURE_CLASS_NAME);
+    }
+    catch(ClassNotFoundException e)
+    {
+      captureClassCache=null;
+    }
+    return captureClassCache;
+  }
+
+  private static Field getCaptureMonstersField()
+  {
+    if(captureFieldLookupDone)
+      return captureMonstersField;
+    captureFieldLookupDone=true;
+
+    Class<?> captureClass=getCaptureClass();
+    if(captureClass==null)
+      return null;
+
+    try
+    {
+      captureMonstersField=captureClass.getDeclaredField("monsters");
+      captureMonstersField.setAccessible(true);
+    }
+    catch(NoSuchFieldException e)
+    {
+      Main.world.logger.error("Le champ 'monsters' est introuvable sur la classe Capture",e);
+      captureMonstersField=null;
+    }
+
+    return captureMonstersField;
   }
   // Fin case 12
 }
