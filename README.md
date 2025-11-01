@@ -1,7 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
-## Version 0.9.0:
+## Version 0.9.1:
+    - Création de l'Etat Invulnerable 301 pour le Wa : si son equipe meurt , il devient vulnérable
     - Création d'une IA 205 qui Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
 ## Version 0.9.0:
     - Implémentation du système "ramener une capture d'ames à un pnj (type 12) dans capture.java
