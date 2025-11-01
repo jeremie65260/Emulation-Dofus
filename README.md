@@ -2,6 +2,8 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
 ## Version 0.9.0:
+    - Création d'une IA 205 qui Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
+## Version 0.9.0:
     - Implémentation du système "ramener une capture d'ames à un pnj (type 12) dans capture.java
     - Codage de la logique pour ramner la pierre dans quest.java -> fonctionnel
 ## Version 0.8.3:

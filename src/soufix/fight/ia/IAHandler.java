@@ -298,6 +298,9 @@ public class IAHandler
         case 204: //IA203 avec contrôle de résurrection
           ia=new IA204(fight,fighter,(byte)8);
           break;
+        case 205: // Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
+          ia=new IA205(fight,fighter,(byte)8);
+          break;
       }
     }
 
