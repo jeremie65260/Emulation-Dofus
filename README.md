@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.9.2:
+    - Création de l'IA 206 ( mix de l'IA 39 pour attirer , taper, invoquer, fuite) + injection de la méthode attackBondIfPossible() de l'IA 36
 ## Version 0.9.1:
     - Création de l'Etat Invulnerable 301 pour le Wa : si son equipe meurt , il devient vulnérable
     - Création d'une IA 205 qui Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite

@@ -1030,20 +1030,7 @@ public class Function
         SS2=S.getValue();
       }
     }
-    if(cell>=15&&cell<=463&&SS2!=null)
-    {
-      int attack=fight.tryCastSpell(fighter,SS2,cell);
-      if(attack!=0)
-        return SS2.getSpell().getDuration();
-    }
-    else
-    {
-      if(target==null||SS2==null)
-        return 0;
-      int attack=fight.tryCastSpell(fighter,SS2,cell);
-      if(attack!=0)
-        return SS2.getSpell().getDuration();
-    }
+
     return 0;
   }
 
