@@ -5334,6 +5334,8 @@ public void Anti_bug () {
           team=true;
       }
 
+      final double mobCountBonus=Formulas.getMobCountBonus(mobCount);
+
       /* Capture d'ï¿½mes **/
       boolean mobCapturable=true;
       for(Fighter fighter : loosers)
