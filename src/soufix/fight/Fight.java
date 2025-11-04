@@ -5309,10 +5309,14 @@ public void Anti_bug () {
       boolean team=false;
 
       long totalXP=0;
+      int mobCount=0;
       for(Fighter F : loosers)
       {
         if(F.getMob()!=null)
+        {
           totalXP+=F.getMob().getBaseXp();
+          mobCount++;
+        }
         if(F.getPersonnage()!=null)
           team=true;
       }
@@ -5985,7 +5989,7 @@ public void Anti_bug () {
           /** Xp,kamas **/
           if(player!=null)
           {
-            xpPlayer=Formulas.getXp(i,winners,totalXP,nbbonus,this.getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0,challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,Main.world.getConquestBonus(player));
+            xpPlayer=Formulas.getXp(i,winners,totalXP,nbbonus,this.getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0,challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,Main.world.getConquestBonus(player),mobCount);
             if(this.type == Constant.FIGHT_TYPE_PVM)
             {
             if(player.getAccount().getSubscribeRemaining() != 0L)xpPlayer = (long) (xpPlayer+(xpPlayer*0.25));
@@ -7053,7 +7057,7 @@ public void Anti_bug () {
       {
         Collector collector=Collector.getCollectorByMapId(getMap().getId());
 
-        long winxp=Formulas.getXp(collector,winners,totalXP,nbbonus,(getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0),challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,0)/15;
+        long winxp=Formulas.getXp(collector,winners,totalXP,nbbonus,(getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0),challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,0,mobCount)/15;
         long winkamas=(int)Math.floor(Formulas.getKamasWinPerco(kamas.getLeft(),kamas.getRight()));
 
         collector.setXp(collector.getXp()+winxp);
