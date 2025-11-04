@@ -1599,8 +1599,23 @@ public class Formulas
     return (8+Formulas.getRandomJet("1d8+0")*lvlPusher/50)*pushedCells+pushDam-negPushDam-pushRes+negPushRes;
   }
 
+  public static double getMobCountBonus(int mobCount)
+  {
+    if(mobCount<=3)
+      return 1.0;
+
+    final double increment=0.2;
+    final double maxBonus=1.0;
+    double extra=increment*(mobCount-3);
+
+    if(extra>maxBonus)
+      extra=maxBonus;
+
+    return 1+extra;
+  }
+
   //v2.0 - Redid xp formula
-  public static long getXp(Object object, ArrayList<Fighter> winners, long groupXp, byte nbonus, int star, int challenge, int lvlMax, int lvlMin, int lvlLoosers, int lvlWinners, double conquestBonus)
+  public static long getXp(Object object, ArrayList<Fighter> winners, long groupXp, byte nbonus, int star, int challenge, int lvlMax, int lvlMin, int lvlLoosers, int lvlWinners, double conquestBonus, int mobCount)
   {
     if(lvlMin<=0)
       return 0;
@@ -1685,10 +1700,11 @@ public class Formulas
           nvGrpMonster=1;
         
         float taux_xp = Config.getInstance().rateXp;
-        
-      
-         
-        long xpResult=(long)(((1+((sagesse+challenge+star+conquestBonus)/100))*(bonus+rapport)*(nvGrpMonster)*(groupXp/sizeGroupe))*taux_xp);
+        double mobCountBonus=getMobCountBonus(mobCount);
+
+
+
+        long xpResult=(long)(((1+((sagesse+challenge+star+conquestBonus)/100))*(bonus+rapport)*(nvGrpMonster)*mobCountBonus*(groupXp/sizeGroupe))*taux_xp);
         if(challenge >= 100)
         {
        xpResult = xpResult + (xpResult * 1);	
@@ -1784,7 +1800,7 @@ public class Formulas
       else if(nvGrpMonster>1)
         nvGrpMonster=1;
 
-      long xpResult=(long)(((1+((sagesse+star+challenge+conquestBonus)/100))*(bonus+rapport)*(nvGrpMonster)*(groupXp/sizeGroupe))*Config.getInstance().rateXp);
+      long xpResult=(long)(((1+((sagesse+star+challenge+conquestBonus)/100))*(bonus+rapport)*(nvGrpMonster)*getMobCountBonus(mobCount)*(groupXp/sizeGroupe))*Config.getInstance().rateXp);
       if(xpResult<0)
         xpResult=0;
       return xpResult;
