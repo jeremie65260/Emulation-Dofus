@@ -992,15 +992,13 @@ public class Function
 
   public int attackBondIfPossible(Fight fight, Fighter fighter, Fighter target)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
   {
-    if(fight==null||fighter==null)
-      return 0;
+    if(fight==null||fighter==null||target==null)
+      return -1;
     if(fighter.haveState(7))
          return 0;
     int cell=0;
     SortStats SS2=null;
 
-    if(target==null)
-      return 0;
     for(Map.Entry<Integer, SortStats> S : fighter.getMob().getSpells().entrySet())
     {
       int cellID=PathFinding.getCaseBetweenEnemy(target.getCell().getId(),fight.getMap(),fight);
