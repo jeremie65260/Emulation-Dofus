@@ -995,7 +995,7 @@ public class Function
     if(fight==null||fighter==null)
       return 0;
     if(fighter.haveState(7))
-      	 return 0;
+         return 0;
     int cell=0;
     SortStats SS2=null;
 
@@ -1017,33 +1017,56 @@ public class Function
           effet4=true;
         }
       }
-      if(effet4==false)
+      if(!effet4)
         continue;
-      if(effet6==false)
-      {
-        cell=cellID;
-        SS2=S.getValue();
-      }
+
+      int desiredCell;
+      if(effet6)
+        desiredCell=target.getCell().getId();
       else
+        desiredCell=cellID;
+
+      if(desiredCell<0)
+        continue;
+
+      GameCase launchCell=fight.getMap().getCase(desiredCell);
+      if(launchCell==null)
+        continue;
+
+      if(!fight.canCastSpell1(fighter,S.getValue(),launchCell,-1))
+        continue;
+
+      if(effet6)
       {
-        cell=target.getCell().getId();
+        cell=desiredCell;
+        SS2=S.getValue();
+        break;
+      }
+
+      if(SS2==null)
+      {
+        cell=desiredCell;
         SS2=S.getValue();
       }
     }
-    if(cell>=15&&cell<=463&&SS2!=null)
+    if(SS2==null)
+      return 0;
+
+    int attack;
+    if(cell>=15&&cell<=463)
     {
-      int attack=fight.tryCastSpell(fighter,SS2,cell);
-      if(attack!=0)
-        return SS2.getSpell().getDuration();
+      attack=fight.tryCastSpell(fighter,SS2,cell);
     }
     else
     {
-      if(target==null||SS2==null)
+      if(target==null)
         return 0;
-      int attack=fight.tryCastSpell(fighter,SS2,cell);
-      if(attack!=0)
-        return SS2.getSpell().getDuration();
+      attack=fight.tryCastSpell(fighter,SS2,target.getCell().getId());
     }
+
+    if(attack==0)
+      return SS2.getSpell().getDuration();
+
     return 0;
   }
 
@@ -2661,7 +2684,7 @@ public class Function
     SortStats SS=null;
     Fighter target=null;
     if(fighter.haveState(7))
-     	 return 0;
+        return -1;
     for(Map.Entry<Integer, Fighter> t : ennemyList.entrySet())
     {
       SS=getBestSpellForTargetDopeul(fight,fighter,t.getValue(),fighter.getCell().getId(),Spell);
