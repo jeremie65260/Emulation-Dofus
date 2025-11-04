@@ -10,12 +10,25 @@ import soufix.fight.spells.Spell.SortStats;
 import soufix.fight.spells.SpellEffect;
 import soufix.utility.Pair;
 
+/**
+ * Variante de {@link IA203} qui ne permet au monstre de lancer ses sorts de
+ * résurrection (effet 780) que lorsque l'un de ses alliés est déjà tombé au
+ * combat. Tant qu'aucun allié n'est mort, l'IA retire temporairement ces sorts
+ * de toutes ses listes (buffs, sorts à priorité haute, corps à corps et
+ * invocations) avant de déléguer la décision à la logique parente.
+ */
 public class IA204 extends IA203
 {
+    /** Identifiant d'effet utilisé par "Laisse spirituelle" pour relever un allié. */
     private static final int RESURRECTION_EFFECT_ID=780;
+
+    /** Copie des sorts de buff d'origine, conservée pour pouvoir les restaurer. */
     private final List<SortStats> baseBuffs;
+    /** Copie des sorts à priorité élevée. */
     private final List<SortStats> baseHighests;
+    /** Copie des sorts de corps à corps. */
     private final List<SortStats> baseCacs;
+    /** Copie des sorts d'invocation. */
     private final List<SortStats> baseInvocations;
 
     public IA204(Fight fight, Fighter fighter, byte count)
@@ -30,12 +43,14 @@ public class IA204 extends IA203
     @Override
     public void apply()
     {
+        // Sauvegarde de l'état courant pour restauration en fin de tour d'IA.
         List<SortStats> originalBuffs=this.buffs;
         List<SortStats> originalHighests=this.highests;
         List<SortStats> originalCacs=this.cacs;
         List<SortStats> originalInvocations=this.invocations;
         try
         {
+            // Détermine si un allié mort est disponible pour justifier l'usage du sort.
             boolean resurrectAllowed=hasDeadAlly();
             this.buffs=selectListForCurrentState(baseBuffs,resurrectAllowed);
             this.highests=selectListForCurrentState(baseHighests,resurrectAllowed);
@@ -52,6 +67,13 @@ public class IA204 extends IA203
         }
     }
 
+    /**
+     * Retourne la liste de sorts à utiliser pour ce tour.
+     * <p>
+     * Lorsque la résurrection n'est pas autorisée, les sorts contenant
+     * l'effet 780 sont supprimés de la liste, ce qui évite de les proposer à
+     * la logique parente.
+     */
     private List<SortStats> selectListForCurrentState(List<SortStats> baseList, boolean resurrectAllowed)
     {
         if(baseList==null)
@@ -70,6 +92,10 @@ public class IA204 extends IA203
         return filtered.isEmpty()?Collections.emptyList():filtered;
     }
 
+    /**
+     * Crée une copie superficielle de la liste de sorts d'origine afin de pouvoir
+     * la restaurer plus tard.
+     */
     private List<SortStats> copyList(List<SortStats> source)
     {
         if(source==null||source.isEmpty())
@@ -77,6 +103,10 @@ public class IA204 extends IA203
         return new ArrayList<>(source);
     }
 
+    /**
+     * Vérifie s'il existe un allié mort n'ayant pas quitté le combat, condition
+     * nécessaire pour autoriser la résurrection.
+     */
     private boolean hasDeadAlly()
     {
         if(this.fight==null||this.fighter==null)
@@ -91,6 +121,11 @@ public class IA204 extends IA203
         return false;
     }
 
+    /**
+     * Indique si le sort passé en paramètre déclenche l'effet de résurrection.
+     * Les effets de coup critique sont également inspectés pour éviter une
+     * résurrection involontaire via un CC.
+     */
     private boolean containsResurrectionEffect(SortStats spell)
     {
         if(spell.getEffects()!=null)
