@@ -993,36 +993,35 @@ public class Function
   public int attackBondIfPossible(Fight fight, Fighter fighter, Fighter target)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
   {
     if(fight==null||fighter==null||target==null)
-      return -1;
+      return 0;
     if(fighter.haveState(7))
-         return 0;
-    int cell=0;
-    SortStats SS2=null;
+      return 0;
 
-    for(Map.Entry<Integer, SortStats> S : fighter.getMob().getSpells().entrySet())
+    int cell=-1;
+    SortStats selectedSpell=null;
+
+    for(Map.Entry<Integer, SortStats> entry : fighter.getMob().getSpells().entrySet())
     {
+      SortStats spell=entry.getValue();
       int cellID=PathFinding.getCaseBetweenEnemy(target.getCell().getId(),fight.getMap(),fight);
       boolean effet4=false;
       boolean effet6=false;
 
-      for(SpellEffect f : S.getValue().getEffects())
+      for(SpellEffect effect : spell.getEffects())
       {
-        if(f.getEffectID()==4)
+        if(effect.getEffectID()==4)
           effet4=true;
-        if(f.getEffectID()==6)
+        if(effect.getEffectID()==6)
         {
           effet6=true;
           effet4=true;
         }
       }
+
       if(!effet4)
         continue;
 
-      int desiredCell;
-      if(effet6)
-        desiredCell=target.getCell().getId();
-      else
-        desiredCell=cellID;
+      int desiredCell=effet6?target.getCell().getId():cellID;
 
       if(desiredCell<0)
         continue;
@@ -1031,24 +1030,25 @@ public class Function
       if(launchCell==null)
         continue;
 
-      if(!fight.canCastSpell1(fighter,S.getValue(),launchCell,-1))
+      if(!fight.canCastSpell1(fighter,spell,launchCell,-1))
         continue;
 
-      if(effet6)
-      {
-        cell=desiredCell;
-        SS2=S.getValue();
-        break;
-      }
+      selectedSpell=spell;
+      cell=desiredCell;
 
-      if(SS2==null)
-      {
-        cell=desiredCell;
-        SS2=S.getValue();
-      }
+      if(effet6)
+        break;
     }
 
-    return 0;
+    if(selectedSpell==null||cell<0)
+      return 0;
+
+    int castResult=fight.tryCastSpell(fighter,selectedSpell,cell);
+    if(castResult!=0)
+      return 0;
+
+    int duration=selectedSpell.getSpell().getDuration();
+    return duration>0?duration:100;
   }
 
   public int attackIfPossibleDisciplepair(Fight fight, Fighter fighter, Fighter target)
