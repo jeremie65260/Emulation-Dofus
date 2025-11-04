@@ -2,7 +2,6 @@ package soufix.quest;
 
 import soufix.entity.npc.NpcTemplate;
 import soufix.main.Main;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,16 +65,29 @@ public class QuestStep
     {
       e.printStackTrace();
     }
-
+// debut case 12
     try
     {
-      if(monsters.contains(",")&&!monsters.equals("0"))
+      if(monsters!=null&&!monsters.equals("0")&&!monsters.isEmpty())
       {
-        String[] loc0=monsters.split(",");
-        this.setMonsterId(Integer.parseInt(loc0[0]));
-        this.setQua(Short.parseShort(loc0[1])); // Des quétes avec le truc vide ! ><
+        String[] groups=monsters.split(";");
+        for(String group : groups)
+        {
+          if(group.isEmpty())
+            continue;
+          String[] loc0=group.split(",");
+          if(loc0.length==0)
+            continue;
+          this.setMonsterId(Integer.parseInt(loc0[0]));
+          if(loc0.length>1&&loc0[1]!=null&&!loc0[1].isEmpty())
+            this.setQua(Short.parseShort(loc0[1])); // Des quétes avec le truc vide ! ><
+          else if(this.getQua()<=0)
+            this.setQua((short)1);
+          break;
+        }
       }
     }
+    // fin case 12
     catch(Exception e)
     {
       e.printStackTrace();

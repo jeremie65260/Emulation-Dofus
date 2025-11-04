@@ -1,740 +1,3 @@
-/*package scruffemu.quest;
-
-import scruffemu.client.Player;
-import scruffemu.common.SocketManager;
-import scruffemu.database.Database;
-import scruffemu.entity.npc.NpcTemplate;
-import scruffemu.game.World;
-import scruffemu.utility.Pair;
-import scruffemu.game.action.ExchangeAction;
-import scruffemu.main.Config;
-import scruffemu.main.Constant;
-import scruffemu.object.GameObject;
-import scruffemu.object.ObjectTemplate;
-import scruffemu.other.Action;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-public class Quest
-{
-  public static Map<Integer, Quest> questDataList=new HashMap<Integer, Quest>();
-
-  private int id;
-  private ArrayList<Quest_Etape> questEtapeList=new ArrayList<Quest_Etape>();
-  private ArrayList<Quest_Objectif> questObjectifList=new ArrayList<Quest_Objectif>();
-  private NpcTemplate npc=null;
-  private ArrayList<Action> actions=new ArrayList<Action>();
-  private boolean delete;
-  private Pair<Integer, Integer> condition=null;
-
-  public Quest(int aId, String questEtape, String aObjectif, int aNpc, String action, String args, boolean delete, String condition)
-  {
-    this.id=aId;
-    this.delete=delete;
-    try
-    {
-      if(!questEtape.equalsIgnoreCase(""))
-      {
-        String[] split=questEtape.split(";");
-
-        if(split!=null&&split.length>0)
-        {
-          for(String qEtape : split)
-          {
-            Quest_Etape q_Etape=Quest_Etape.getQuestEtapeById(Integer.parseInt(qEtape));
-            q_Etape.setQuestData(this);
-            questEtapeList.add(q_Etape);
-          }
-        }
-      }
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
-    try
-    {
-      if(!aObjectif.equalsIgnoreCase(""))
-      {
-        String[] split=aObjectif.split(";");
-
-        if(split!=null&&split.length>0)
-        {
-          for(String qObjectif : split)
-          {
-            questObjectifList.add(Quest_Objectif.getQuestObjectifById(Integer.parseInt(qObjectif)));
-          }
-        }
-      }
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-    }
-    if(!condition.equalsIgnoreCase(""))
-    {
-      try
-      {
-        String[] split=condition.split(":");
-        if(split!=null&&split.length>0)
-        {
-          this.condition=new Pair<Integer, Integer>(Integer.parseInt(split[0]),Integer.parseInt(split[1]));
-        }
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-      }
-    }
-    this.npc=Main.world.getNPCTemplate(aNpc);
-    try
-    {
-      if(!action.equalsIgnoreCase("")&&!args.equalsIgnoreCase(""))
-      {
-        String[] arguments=args.split(";");
-        int nbr=0;
-        for(String loc0 : action.split(","))
-        {
-          int actionId=Integer.parseInt(loc0);
-          String arg=arguments[nbr];
-          actions.add(new Action(actionId,arg,-1+"",null));
-          nbr++;
-        }
-      }
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-      Main.world.logger.error("Erreur avec l action et les args de la quete "+this.id+".");
-    }
-  }
-
-  public static Map<Integer, Quest> getQuestDataList()
-  {
-    return questDataList;
-  }
-
-  public static Quest getQuestById(int id)
-  {
-    return questDataList.get(id);
-  }
-
-  public static void setQuestInList(Quest quest)
-  {
-    questDataList.put(quest.getId(),quest);
-  }
-
-  public boolean isDelete()
-  {
-    return this.delete;
-  }
-
-  public int getId()
-  {
-    return id;
-  }
-
-  public ArrayList<Quest_Objectif> getObjectifList()
-  {
-    return questObjectifList;
-  }
-
-  public NpcTemplate getNpc_Tmpl()
-  {
-    return npc;
-  }
-
-  public ArrayList<Quest_Etape> getQuestEtapeList()
-  {
-    return questEtapeList;
-  }
-
-  public boolean haveRespectCondition(QuestPlayer qPerso, Quest_Etape qEtape)
-  {
-    switch(qEtape.getCondition())
-    {
-      case "1": //Valider les etapes d'avant
-        boolean loc2=true;
-        for(Quest_Etape aEtape : questEtapeList)
-        {
-          if(aEtape==null)
-            continue;
-          if(aEtape.getId()==qEtape.getId())
-            continue;
-          if(!qPerso.isQuestEtapeIsValidate(aEtape))
-            loc2=false;
-        }
-        return loc2;
-
-      case "0":
-        return true;
-    }
-    return false;
-  }
-
-  public String getGmQuestDataPacket(Player perso)
-  {
-    QuestPlayer qPerso=perso.getQuestPersoByQuest(this);
-    int loc1=getObjectifCurrent(qPerso);
-    int loc2=getObjectifPrevious(qPerso);
-    int loc3=getNextObjectif(Quest_Objectif.getQuestObjectifById(getObjectifCurrent(qPerso)));
-    StringBuilder str=new StringBuilder();
-    str.append(id).append("|");
-    str.append(loc1>0 ? loc1 : "");
-    str.append("|");
-
-    StringBuilder str_prev=new StringBuilder();
-    boolean loc4=true;
-    for(Quest_Etape qEtape : questEtapeList)
-    {
-      if(qEtape.getObjectif()!=loc1)
-        continue;
-      if(!haveRespectCondition(qPerso,qEtape))
-        continue;
-      if(!loc4)
-        str_prev.append(";");
-      str_prev.append(qEtape.getId());
-      str_prev.append(",");
-      str_prev.append(qPerso.isQuestEtapeIsValidate(qEtape) ? 1 : 0);
-      loc4=false;
-    }
-    str.append(str_prev);
-    str.append("|");
-    str.append(loc2>0 ? loc2 : "").append("|");
-    str.append(loc3>0 ? loc3 : "");
-    if(npc!=null)
-    {
-      str.append("|");
-      str.append(npc.getInitQuestionId(perso.getCurMap().getId())).append("|");
-    }
-    return str.toString();
-  }
-
-  public Quest_Etape getQuestEtapeCurrent(QuestPlayer qPerso)
-  {
-    for(Quest_Etape qEtape : getQuestEtapeList())
-    {
-      if(!qPerso.isQuestEtapeIsValidate(qEtape))
-        return qEtape;
-    }
-    return null;
-  }
-
-  public int getObjectifCurrent(QuestPlayer qPerso)
-  {
-    for(Quest_Etape qEtape : questEtapeList)
-    {
-      if(qPerso.isQuestEtapeIsValidate(qEtape))
-        continue;
-      return qEtape.getObjectif();
-    }
-    return 0;
-  }
-
-  public int getObjectifPrevious(QuestPlayer qPerso)
-  {
-    if(questObjectifList.size()==1)
-      return 0;
-    else
-    {
-      int previousqObjectif=0;
-      for(Quest_Objectif qObjectif : questObjectifList)
-      {
-        if(qObjectif.getId()==getObjectifCurrent(qPerso))
-          return previousqObjectif;
-        else
-          previousqObjectif=qObjectif.getId();
-      }
-    }
-    return 0;
-  }
-
-  public int getNextObjectif(Quest_Objectif qO)
-  {
-    if(qO==null)
-      return 0;
-    for(Quest_Objectif qObjectif : questObjectifList)
-    {
-      if(qObjectif.getId()==qO.getId())
-      {
-        int index=questObjectifList.indexOf(qObjectif);
-        if(questObjectifList.size()<=index+1)
-          return 0;
-        return questObjectifList.get(index+1).getId();
-      }
-    }
-    return 0;
-  }
-
-  //v2.4 - Map Quest fix
-  public void applyQuest(Player perso)
-  {
-    if(this.condition!=null)
-    {
-      switch(this.condition.getLeft())
-      {
-        case 1: // Niveau
-          if(perso.getLevel()<this.condition.getRight())
-          {
-            SocketManager.GAME_SEND_MESSAGE(perso,"Your level is too low to start this quest.");
-            return;
-          }
-          break;
-      }
-    }
-    QuestPlayer qPerso=new QuestPlayer(Database.getStatics().getQuestPlayerData().getNextId(),id,false,perso.getId(),"");
-    perso.addQuestPerso(qPerso);
-    SocketManager.GAME_SEND_Im_PACKET(perso,"054;"+id);
-    Database.getStatics().getQuestPlayerData().add(qPerso);
-
-    SocketManager.GAME_SEND_MAP_NPCS_GMS_PACKETS(perso.getGameClient(),perso.getCurMap());
-    SocketManager.GAME_SEND_GA2_PACKET(perso.getGameClient(),perso.getId()); //2.0 - Update map when accepting quest
-    SocketManager.GAME_SEND_MAPDATA(perso.getGameClient(),perso.getCurMap().getId(),perso.getCurMap().getDate(),perso.getCurMap().getKey());
-
-    if(!actions.isEmpty())
-      for(Action aAction : actions)
-        aAction.apply(perso,perso,-1,-1);
-    Database.getStatics().getPlayerData().update(perso);
-  }
-
-  public void updateQuestData(Player perso, boolean validation, int type)
-  {
-    QuestPlayer qPerso=perso.getQuestPersoByQuest(this);
-    for(Quest_Etape qEtape : questEtapeList)
-    {
-      if(qEtape.getValidationType()!=type)
-        continue;
-
-      boolean refresh=false;
-      if(qPerso.isQuestEtapeIsValidate(qEtape)) //On a déjé validé la questEtape on passe
-        continue;
-
-      if(qEtape.getObjectif()!=getObjectifCurrent(qPerso))
-        continue;
-
-      if(!haveRespectCondition(qPerso,qEtape))
-        continue;
-
-      if(validation)
-        refresh=true;
-      switch(qEtape.getType())
-      {
-
-        case 3://Donner item
-          if(perso.getExchangeAction()!=null&&perso.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&perso.getCurMap().getNpc((Integer)perso.getExchangeAction().getValue()).getTemplate().getId()==qEtape.getNpc().getId())
-          {
-            for(Entry<Integer, Integer> entry : qEtape.getItemNecessaryList().entrySet())
-            {
-              if(perso.hasItemTemplate(entry.getKey(),entry.getValue()))
-              { //Il a l'item et la quantité
-                perso.removeByTemplateID(entry.getKey(),entry.getValue()); //On supprime donc
-                refresh=true;
-              }
-            }
-          }
-          break;
-
-        case 0:
-        case 1://Aller voir %
-        case 9://Retourner voir %
-          if(qEtape.getCondition().equalsIgnoreCase("1"))
-          { //Valider les questEtape avant
-            if(perso.getExchangeAction()!=null&&perso.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&perso.getCurMap().getNpc((Integer)perso.getExchangeAction().getValue()).getTemplate().getId()==qEtape.getNpc().getId())
-            {
-              if(haveRespectCondition(qPerso,qEtape))
-              {
-                refresh=true;
-              }
-            }
-          } else
-          {
-            if(perso.getExchangeAction()!=null&&perso.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&perso.getCurMap().getNpc((Integer)perso.getExchangeAction().getValue()).getTemplate().getId()==qEtape.getNpc().getId())
-              refresh=true;
-          }
-          break;
-
-        case 6: // monstres
-          for(Entry<Integer, Short> entry : qPerso.getMonsterKill().entrySet())
-            if(entry.getKey()==qEtape.getMonsterId()&&entry.getValue()>=qEtape.getQua())
-              refresh=true;
-          break;
-
-        case 10://Ramener prisonnier
-          if(perso.getExchangeAction()!=null&&perso.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&perso.getCurMap().getNpc((Integer)perso.getExchangeAction().getValue()).getTemplate().getId()==qEtape.getNpc().getId())
-          {
-            GameObject follower=perso.getObjetByPos(Constant.ITEM_POS_PNJ_SUIVEUR);
-            if(follower!=null)
-            {
-              Map<Integer, Integer> itemNecessaryList=qEtape.getItemNecessaryList();
-              for(Entry<Integer, Integer> entry2 : itemNecessaryList.entrySet())
-              {
-                if(entry2.getKey()==follower.getTemplate().getId())
-                {
-                  refresh=true;
-                  perso.setMascotte(0);
-                }
-              }
-            }
-          }
-          break;
-      }
-
-      if(refresh)
-      {
-        Quest_Objectif ansObjectif=Quest_Objectif.getQuestObjectifById(getObjectifCurrent(qPerso));
-        qPerso.setQuestEtapeValidate(qEtape);
-        SocketManager.GAME_SEND_Im_PACKET(perso,"055;"+id);
-        if(haveFinish(qPerso,ansObjectif))
-        {
-          SocketManager.GAME_SEND_Im_PACKET(perso,"056;"+id);
-          applyButinOfQuest(perso,qPerso,ansObjectif);
-          qPerso.setFinish(true);
-        } else
-        {
-          if(getNextObjectif(ansObjectif)!=0)
-          {
-            if(qPerso.overQuestEtape(ansObjectif))
-              applyButinOfQuest(perso,qPerso,ansObjectif);
-          }
-        }
-        Database.getStatics().getPlayerData().update(perso);
-      }
-    }
-  }
-
-  public boolean haveFinish(QuestPlayer qPerso, Quest_Objectif qO)
-  {
-    return qPerso.overQuestEtape(qO)&&getNextObjectif(qO)==0;
-  }
-
-  public void applyButinOfQuest(Player perso, QuestPlayer qPerso, Quest_Objectif ansObjectif)
-  {
-    long aXp=0;
-
-    if((aXp=ansObjectif.getXp())>0)
-    { //Xp a donner
-      perso.addXp(aXp*((int)Config.getInstance().rateXp));
-      SocketManager.GAME_SEND_Im_PACKET(perso,"08;"+(aXp*((int)Config.getInstance().rateXp)));
-      SocketManager.GAME_SEND_STATS_PACKET(perso);
-    }
-
-    if(ansObjectif.getItem().size()>0)
-    { //Item a donner
-      for(Entry<Integer, Integer> entry : ansObjectif.getItem().entrySet())
-      {
-        ObjectTemplate objT=Main.world.getObjTemplate(entry.getKey());
-        int qua=entry.getValue();
-        GameObject obj=objT.createNewItem(qua,false);
-        if(perso.addObjet(obj,true))
-          World.addGameObject(obj,true);
-        SocketManager.GAME_SEND_Im_PACKET(perso,"021;"+qua+"~"+objT.getId());
-      }
-    }
-
-    int aKamas=0;
-    if((aKamas=ansObjectif.getKamas())>0)
-    { //Kams a donner
-      perso.setKamas(perso.getKamas()+(long)aKamas);
-      SocketManager.GAME_SEND_Im_PACKET(perso,"045;"+aKamas);
-      SocketManager.GAME_SEND_STATS_PACKET(perso);
-    }
-
-    if(getNextObjectif(ansObjectif)!=ansObjectif.getId())
-    { //On passe au nouveau objectif on applique les actions
-      for(Action a : ansObjectif.getAction())
-      {
-        a.apply(perso,null,0,0);
-      }
-    }
-
-  }
-
-  public int getQuestEtapeByObjectif(Quest_Objectif qObjectif)
-  {
-    int nbr=0;
-    for(Quest_Etape qEtape : getQuestEtapeList())
-    {
-      if(qEtape.getObjectif()==qObjectif.getId())
-        nbr++;
-    }
-    return nbr;
-  }
-
-  public ArrayList<Action> getActions()
-  {
-    return actions;
-  }
-
-  public void setActions(ArrayList<Action> actions)
-  {
-    this.actions=actions;
-  }
-
-  public static class QuestPlayer
-  {
-    private int id;
-    private Quest quest=null;
-    private boolean finish;
-    private Player player;
-    private Map<Integer, Quest_Etape> questEtapeListValidate=new HashMap<Integer, Quest_Etape>();
-    private Map<Integer, Short> monsterKill=new HashMap<Integer, Short>();
-
-    public QuestPlayer(int aId, int qId, boolean aFinish, int pId, String qEtapeV)
-    {
-      this.id=aId;
-      this.quest=Quest.getQuestById(qId);
-      this.finish=aFinish;
-      this.player=Main.world.getPlayer(pId);
-      try
-      {
-        String[] split=qEtapeV.split(";");
-        if(split!=null&&split.length>0)
-        {
-          for(String loc1 : split)
-          {
-            if(loc1.equalsIgnoreCase(""))
-              continue;
-            Quest_Etape qEtape=Quest_Etape.getQuestEtapeById(Integer.parseInt(loc1));
-            questEtapeListValidate.put(qEtape.getId(),qEtape);
-          }
-        }
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-      }
-    }
-
-    public int getId()
-    {
-      return id;
-    }
-
-    public Quest getQuest()
-    {
-      return quest;
-    }
-
-    public boolean isFinish()
-    {
-      return finish;
-    }
-
-    public void setFinish(boolean finish)
-    {
-      this.finish=finish;
-      if(this.getQuest()!=null&&this.getQuest().isDelete())
-      {
-        if(this.player!=null&&this.player.getQuestPerso()!=null&&this.player.getQuestPerso().containsKey(this.getId()))
-        {
-          this.player.delQuestPerso(this.getId());
-          this.deleteQuestPerso();
-        }
-      } else if(this.getQuest()==null)
-      {
-        if(this.player.getQuestPerso().containsKey(this.getId()))
-        {
-          this.player.delQuestPerso(this.getId());
-          this.deleteQuestPerso();
-        }
-      }
-    }
-
-    public Player getPlayer()
-    {
-      return player;
-    }
-
-    public boolean isQuestEtapeIsValidate(Quest_Etape qEtape)
-    {
-      return questEtapeListValidate.containsKey(qEtape.getId());
-    }
-
-    public void setQuestEtapeValidate(Quest_Etape qEtape)
-    {
-      if(!questEtapeListValidate.containsKey(qEtape.getId()))
-        questEtapeListValidate.put(qEtape.getId(),qEtape);
-    }
-
-    public String getQuestEtapeString()
-    {
-      StringBuilder str=new StringBuilder();
-      int nb=0;
-      for(Quest_Etape qEtape : questEtapeListValidate.values())
-      {
-        nb++;
-        str.append(qEtape.getId());
-        if(nb<questEtapeListValidate.size())
-          str.append(";");
-      }
-      return str.toString();
-    }
-
-    public Map<Integer, Short> getMonsterKill()
-    {
-      return monsterKill;
-    }
-
-    public boolean overQuestEtape(Quest_Objectif qObjectif)
-    {
-      int nbrQuest=0;
-      for(Quest_Etape qEtape : questEtapeListValidate.values())
-      {
-        if(qEtape.getObjectif()==qObjectif.getId())
-          nbrQuest++;
-      }
-      return qObjectif.getSizeUnique()==nbrQuest;
-    }
-
-    public boolean deleteQuestPerso()
-    {
-      return Database.getStatics().getQuestPlayerData().delete(this.id);
-    }
-  }
-
-  public static class Quest_Objectif
-  {
-
-    public static Map<Integer, Quest_Objectif> questObjectifList=new HashMap<Integer, Quest_Objectif>();
-
-    private int id;
-
-    private int xp;
-    private int kamas;
-    private Map<Integer, Integer> items=new HashMap<Integer, Integer>();
-    private ArrayList<Action> actionList=new ArrayList<Action>();
-    private ArrayList<Quest_Etape> questEtape=new ArrayList<Quest_Etape>();
-
-    public Quest_Objectif(int aId, int aXp, int aKamas, String aItems, String aAction)
-    {
-      this.id=aId;
-      this.xp=aXp;
-      this.kamas=aKamas;
-      try
-      {
-        if(!aItems.equalsIgnoreCase(""))
-        {
-          String[] split=aItems.split(";");
-          if(split!=null&&split.length>0)
-          {
-            for(String loc1 : split)
-            {
-              if(loc1.equalsIgnoreCase(""))
-                continue;
-              if(loc1.contains(","))
-              {
-                String[] loc2=loc1.split(",");
-                this.items.put(Integer.parseInt(loc2[0]),Integer.parseInt(loc2[1]));
-              } else
-              {
-                this.items.put(Integer.parseInt(loc1),1);
-              }
-            }
-          }
-        }
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-      }
-
-      try
-      {
-        if(aAction!=null&&!aAction.equalsIgnoreCase(""))
-        {
-          String[] split=aAction.split(";");
-          if(split!=null&split.length>0)
-          {
-            for(String loc1 : split)
-            {
-              String[] loc2=loc1.split("\\|");
-              int actionId=Integer.parseInt(loc2[0]);
-              String args=loc2[1];
-              Action action=new Action(actionId,args,"-1",null);
-              actionList.add(action);
-            }
-          }
-        }
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-      }
-    }
-
-    public static Quest_Objectif getQuestObjectifById(int id)
-    {
-      return questObjectifList.get(id);
-    }
-
-    public static Map<Integer, Quest_Objectif> getQuestObjectifList()
-    {
-      return questObjectifList;
-    }
-
-    public static void setQuest_Objectif(Quest_Objectif qObjectif)
-    {
-      if(!questObjectifList.containsKey(qObjectif.getId())&&!questObjectifList.containsValue(qObjectif))
-        questObjectifList.put(qObjectif.getId(),qObjectif);
-    }
-
-    public int getId()
-    {
-      return id;
-    }
-
-    public int getXp()
-    {
-      return xp;
-    }
-
-    public int getKamas()
-    {
-      return kamas;
-    }
-
-    public Map<Integer, Integer> getItem()
-    {
-      return items;
-    }
-
-    public ArrayList<Action> getAction()
-    {
-      return actionList;
-    }
-
-    public int getSizeUnique()
-    {
-      int cpt=0;
-      ArrayList<Integer> id=new ArrayList<Integer>();
-      for(Quest_Etape qe : questEtape)
-      {
-        if(!id.contains(qe.getId()))
-        {
-          id.add(qe.getId());
-          cpt++;
-        }
-      }
-      return cpt;
-    }
-
-    public ArrayList<Quest_Etape> getQuestEtapeList()
-    {
-      return questEtape;
-    }
-
-    public void setEtape(Quest_Etape qEtape)
-    {
-      if(!questEtape.contains(qEtape))
-        questEtape.add(qEtape);
-    }
-  }
-
-}*/
-
 package soufix.quest;
 
 import soufix.client.Player;
@@ -750,11 +13,16 @@ import soufix.object.GameObject;
 import soufix.object.ObjectTemplate;
 import soufix.other.Action;
 import soufix.utility.Pair;
-
+import soufix.object.entity.Capture;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class Quest
 {
@@ -782,6 +50,10 @@ public class Quest
   private ArrayList<Action> actions=new ArrayList<>();
   private boolean delete;
   private Pair<Integer, Integer> condition=null;
+  private static final String CAPTURE_CLASS_NAME="soufix.object.entity.Capture";
+  private static Class<?> captureClassCache;
+  private static Field captureMonstersField;
+  private static boolean captureFieldLookupDone;
 
   public Quest(int id, String steps, String objectifs, int npc, String action, String args, boolean delete, String condition)
   {
@@ -795,11 +67,13 @@ public class Quest
 
         if(split.length>0)
         {
-          for(String qEtape : split)
+          for(String stepId : split)
           {
-            QuestStep q_Etape=QuestStep.getQuestStepById(Integer.parseInt(qEtape));
-            q_Etape.setQuestData(this);
-            questSteps.add(q_Etape);
+            QuestStep questStep=QuestStep.getQuestStepById(Integer.parseInt(stepId));
+            if(questStep==null)
+              continue;
+            questStep.setQuestData(this);
+            questSteps.add(questStep);
           }
         }
       }
@@ -816,9 +90,14 @@ public class Quest
 
         if(split.length>0)
         {
-          for(String qObjectif : split)
+          for(String objectifId : split)
           {
-            questObjectifList.add(QuestObjectif.getQuestObjectifById(Integer.parseInt(qObjectif)));
+            if(objectifId==null||objectifId.isEmpty())
+              continue;
+            QuestObjectif questObjectif=QuestObjectif.getQuestObjectifById(Integer.parseInt(objectifId));
+            if(questObjectif!=null)
+              questObjectifList.add(questObjectif);
+            //fin case 12
           }
         }
       }
@@ -909,6 +188,10 @@ public class Quest
   public String getGmQuestDataPacket(Player player)
   {
     QuestPlayer questPlayer=player.getQuestPersoByQuest(this);
+    // Case 12
+    if(questPlayer==null)
+      return "";
+    // Case 12
     int loc1=getObjectifCurrent(questPlayer);
     int loc2=getObjectifPrevious(questPlayer);
     int loc3=getNextObjectif(QuestObjectif.getQuestObjectifById(getObjectifCurrent(questPlayer)));
@@ -920,17 +203,17 @@ public class Quest
     StringBuilder str_prev=new StringBuilder();
     boolean loc4=true;
     // Il y a une exeption dans le code ici pour la seconde étape de papotage
-    for(QuestStep qEtape : questSteps)
+    for(QuestStep step : questSteps)
     {
-      if(qEtape.getObjectif()!=loc1)
+      if(step.getObjectif()!=loc1)
         continue;
-      if(!haveRespectCondition(questPlayer,qEtape))
+      if(!haveRespectCondition(questPlayer,step))
         continue;
       if(!loc4)
         str_prev.append(";");
-      str_prev.append(qEtape.getId());
+      str_prev.append(step.getId());
       str_prev.append(",");
-      str_prev.append(questPlayer.isQuestStepIsValidate(qEtape) ? 1 : 0);
+      str_prev.append(questPlayer.isQuestStepIsValidate(step) ? 1 : 0);
       loc4=false;
     }
     str.append(str_prev);
@@ -1040,6 +323,10 @@ public class Quest
   public void updateQuestData(Player player, boolean validation, int type)
   {
     QuestPlayer questPlayer=player.getQuestPersoByQuest(this);
+    // début type 12
+    if(questPlayer==null)
+      return;
+    // fin type 12
     for(QuestStep questStep : this.questSteps)
     {
       if(questStep.getValidationType()!=type||questPlayer.isQuestStepIsValidate(questStep)) //On a déjé validé la questEtape on passe
@@ -1107,6 +394,97 @@ public class Quest
                   refresh=true;
                   player.setMascotte(0);
                 }
+              }
+            }
+          }
+          break;
+        case 12://Remettre une âme de monstre
+          NpcTemplate stepNpc=questStep.getNpc();
+          if(stepNpc==null)
+            break;
+          if(player.getExchangeAction()!=null&&player.getExchangeAction().getType()==ExchangeAction.TALKING_WITH&&player.getCurMap().getNpc((Integer)player.getExchangeAction().getValue()).getTemplate().getId()==stepNpc.getId())
+          {
+            int monsterId=questStep.getMonsterId();
+            int requiredSouls=questStep.getQua()>0 ? questStep.getQua() : 1;
+
+            if(monsterId>0&&requiredSouls>0)
+            {
+              int soulsNeeded=requiredSouls;
+              LinkedHashMap<GameObject, Integer> consumptionPlan=new LinkedHashMap<>();
+              Map<Integer, GameObject> inventory=player.getItems();
+
+              if(inventory!=null&&!inventory.isEmpty())
+              {
+                for(GameObject object : new ArrayList<>(inventory.values()))
+                {
+                  if(object==null)
+                    continue;
+                  if(object.getPosition()!=Constant.ITEM_POS_NO_EQUIPED)
+                    continue;
+                  if(object.getTemplate()==null||object.getTemplate().getType()!=Constant.ITEM_TYPE_PIERRE_AME_PLEINE)
+                    continue;
+
+                  int soulsInStone=countSoulsForMonster(object,monsterId);
+                  if(soulsInStone<=0)
+                    continue;
+
+                  int soulsToConsume=Math.min(soulsNeeded,soulsInStone);
+                  consumptionPlan.put(object,soulsToConsume);
+                  soulsNeeded-=soulsToConsume;
+
+                  if(soulsNeeded<=0)
+                    break;
+                }
+              }
+
+              if(soulsNeeded<=0&&!consumptionPlan.isEmpty())
+              {
+                boolean consumedAny=false;
+                for(Map.Entry<GameObject, Integer> entry : consumptionPlan.entrySet())
+                {
+                  GameObject soulStone=entry.getKey();
+                  int consumeCount=entry.getValue();
+
+                  int removedFromCapture=consumeSoulsFromCapture(player,soulStone,monsterId,consumeCount);
+                  if(removedFromCapture>0)
+                    consumedAny=true;
+                  if(removedFromCapture>=consumeCount)
+                    continue;
+
+                  int remainingToConsume=Math.max(0,consumeCount-removedFromCapture);
+                  if(remainingToConsume<=0)
+                    continue;
+
+                  Map<Integer, Integer> soulStats=soulStone.getSoulStat();
+                  if(soulStats==null||soulStats.isEmpty())
+                    continue;
+
+                  int current=soulStats.getOrDefault(monsterId,0);
+                  int remaining=Math.max(0,current-remainingToConsume);
+
+                  if(remaining<=0)
+                  {
+                    soulStats.remove(monsterId);
+                  }
+                  else
+                  {
+                    soulStats.put(monsterId,remaining);
+                  }
+
+                  if(soulStats.isEmpty())
+                  {
+                    player.removeItem(soulStone.getGuid(),soulStone.getQuantity(),true,true);
+                  }
+                  else
+                  {
+                    soulStone.setModification();
+                    SocketManager.GAME_SEND_UPDATE_ITEM(player,soulStone);
+                    Database.getDynamics().getObjectData().update(soulStone);
+                  }
+                  consumedAny=true;
+                }
+                if(consumedAny)
+                  refresh=true;
               }
             }
           }
@@ -1189,4 +567,136 @@ public class Quest
 
     SocketManager.GAME_SEND_STATS_PACKET(player);
   }
+  // debut case 12
+  private int countSoulsForMonster(GameObject object, int monsterId)
+  {
+    if(object==null||monsterId<=0)
+      return 0;
+
+    int total=0;
+
+    Map<Integer, Integer> soulStats=object.getSoulStat();
+    if(soulStats!=null&&!soulStats.isEmpty())
+    {
+      total+=Math.max(0,soulStats.getOrDefault(monsterId,0));
+    }
+
+    if(isCapture(object))
+    {
+      ArrayList<Pair<Integer, Integer>> monsters=getCaptureMonsters(object);
+      if(monsters!=null&&!monsters.isEmpty())
+      {
+        for(Pair<Integer, Integer> storedMonster : monsters)
+        {
+          if(storedMonster!=null&&Objects.equals(storedMonster.getLeft(),monsterId))
+            total++;
+        }
+      }
+    }
+
+    return total;
+  }
+
+  private int consumeSoulsFromCapture(Player player, GameObject soulStone, int monsterId, int consumeCount)
+  {
+    if(player==null||soulStone==null||monsterId<=0||consumeCount<=0)
+      return 0;
+
+    if(!isCapture(soulStone))
+      return 0;
+
+    ArrayList<Pair<Integer, Integer>> monsters=getCaptureMonsters(soulStone);
+    if(monsters==null||monsters.isEmpty())
+      return 0;
+
+    int removed=0;
+    for(Iterator<Pair<Integer, Integer>> iterator=monsters.iterator(); iterator.hasNext()&&removed<consumeCount;)
+    {
+      Pair<Integer, Integer> storedMonster=iterator.next();
+      if(storedMonster!=null&&Objects.equals(storedMonster.getLeft(),monsterId))
+      {
+        iterator.remove();
+        removed++;
+      }
+    }
+
+    if(removed>0)
+    {
+      soulStone.setModification();
+      if(monsters.isEmpty())
+      {
+        player.removeItem(soulStone.getGuid(),soulStone.getQuantity(),true,true);
+      }
+      else
+      {
+        SocketManager.GAME_SEND_UPDATE_ITEM(player,soulStone);
+        Database.getDynamics().getObjectData().update(soulStone);
+      }
+    }
+
+    return removed;
+  }
+
+  private boolean isCapture(GameObject object)
+  {
+    Class<?> captureClass=getCaptureClass();
+    return captureClass!=null&&captureClass.isInstance(object);
+  }
+
+  @SuppressWarnings("unchecked")
+  private ArrayList<Pair<Integer, Integer>> getCaptureMonsters(GameObject object)
+  {
+    Field monstersField=getCaptureMonstersField();
+    if(monstersField==null)
+      return null;
+    try
+    {
+      return (ArrayList<Pair<Integer, Integer>>)monstersField.get(object);
+    }
+    catch(IllegalAccessException e)
+    {
+      Main.world.logger.error("Impossible d'accéder aux monstres stockés dans la pierre d'âme",e);
+      return null;
+    }
+  }
+
+  private static Class<?> getCaptureClass()
+  {
+    if(captureClassCache!=null)
+      return captureClassCache;
+    try
+    {
+      captureClassCache=Class.forName(CAPTURE_CLASS_NAME);
+    }
+    catch(ClassNotFoundException e)
+    {
+      captureClassCache=null;
+    }
+    return captureClassCache;
+  }
+
+  private static Field getCaptureMonstersField()
+  {
+    if(captureFieldLookupDone)
+      return captureMonstersField;
+    captureFieldLookupDone=true;
+
+    Class<?> captureClass=getCaptureClass();
+    if(captureClass==null)
+      return null;
+
+    try
+    {
+      captureMonstersField=captureClass.getDeclaredField("monsters");
+      captureMonstersField.setAccessible(true);
+    }
+    catch(NoSuchFieldException e)
+    {
+      Main.world.logger.error("Le champ 'monsters' est introuvable sur la classe Capture",e);
+      captureMonstersField=null;
+    }
+
+    return captureMonstersField;
+  }
+  // Fin case 12
 }
