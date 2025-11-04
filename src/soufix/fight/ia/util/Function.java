@@ -995,7 +995,7 @@ public class Function
     if(fight==null||fighter==null)
       return 0;
     if(fighter.haveState(7))
-      	 return 0;
+         return 0;
     int cell=0;
     SortStats SS2=null;
 
@@ -1017,16 +1017,35 @@ public class Function
           effet4=true;
         }
       }
-      if(effet4==false)
+      if(!effet4)
         continue;
-      if(effet6==false)
-      {
-        cell=cellID;
-        SS2=S.getValue();
-      }
+
+      int desiredCell;
+      if(effet6)
+        desiredCell=target.getCell().getId();
       else
+        desiredCell=cellID;
+
+      if(desiredCell<0)
+        continue;
+
+      GameCase launchCell=fight.getMap().getCase(desiredCell);
+      if(launchCell==null)
+        continue;
+
+      if(!fight.canCastSpell1(fighter,S.getValue(),launchCell,-1))
+        continue;
+
+      if(effet6)
       {
-        cell=target.getCell().getId();
+        cell=desiredCell;
+        SS2=S.getValue();
+        break;
+      }
+
+      if(SS2==null)
+      {
+        cell=desiredCell;
         SS2=S.getValue();
       }
     }
