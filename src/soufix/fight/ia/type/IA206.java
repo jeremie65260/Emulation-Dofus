@@ -16,216 +16,172 @@ import soufix.fight.spells.Spell;
 public class IA206 extends AbstractNeedSpell
 {
 
-  // Compteur des attaques à distance réalisées pendant le tour.
-  private byte attack=0;
+    // Compteur des attaques à distance réalisées pendant le tour.
+    private byte attack=0;
 
-  public IA206(Fight fight, Fighter fighter, byte count)
-  {
-    super(fight,fighter,count);
-  }
-
-  @Override
-  public void apply()
-  {
-    if(!this.stop&&this.fighter.canPlay()&&this.count>0)
+    public IA206(Fight fight, Fighter fighter, byte count)
     {
-      // Initialisation standard : temps d'attente par défaut, portée max détectée et cible prioritaire.
-      int time=100,maxPo=1;
-      boolean action=false;
-      Fighter ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
+        super(fight,fighter,count);
+    }
 
-      for(Spell.SortStats spellStats : this.highests)
-        if(spellStats.getMaxPO()>maxPo)
-          maxPo=spellStats.getMaxPO();
-
-      Fighter C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2); //2 = po min 1 + 1;
-      Fighter L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1); // pomax +1;
-      Fighter L2=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,2,5);
-      Fighter L3=Function.getInstance().getNearEnnemylignenbrcasemax(this.fight,this.fighter,0,maxPo);
-
-      if(maxPo==1)
-        L=null;
-      if(C!=null&&C.isHide())
-        C=null;
-      if(L!=null&&L.isHide())
-        L=null;
-
-      // Tentative prioritaire : lancer le sort de bond (effet 6) sur la cible la plus pertinente.
-      Fighter bondTarget=L3!=null&&!L3.isHide()?L3:ennemy;
-      if((bondTarget==null||bondTarget.isHide())&&C!=null&&!C.isHide())
-        bondTarget=C;
-      if((bondTarget==null||bondTarget.isHide())&&L!=null&&!L.isHide())
-        bondTarget=L;
-
-      boolean bondCast=false; // Permet d'éviter de retenter inutilement l'attirance après un succès.
-
-      if(this.fighter.getCurPa(this.fight)>0&&!action&&bondTarget!=null&&!bondTarget.isHide())
-      {
-        int value=Function.getInstance().attackBondIfPossible(this.fight,this.fighter,bondTarget);
-        if(value!=-1)
+    @Override
+    public void apply()
+    {
+        if(!this.stop&&this.fighter.canPlay()&&this.count>0)
         {
-          time=value;
-          action=true;
-          bondCast=true;
-          // Après un bond réussi, on réévalue les cibles pour le reste du tour.
-          ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
-          C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2);
-          L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1);
-          L2=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,2,5);
-          L3=Function.getInstance().getNearEnnemylignenbrcasemax(this.fight,this.fighter,0,maxPo);
-          if(maxPo==1)
-            L=null;
-          if(C!=null&&C.isHide())
-            C=null;
-          if(L!=null&&L.isHide())
-            L=null;
-        }
-      }
+            // Initialisation standard : temps d'attente par défaut, portée max détectée et cible prioritaire.
+            int time=100,maxPo=1;
+            boolean action=false;
+            Fighter ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
 
-      // Priorité aux sorts à distance en ligne si aucun ennemi n'est au corps-à-corps.
-      if(this.fighter.getCurPa(this.fight)>0&&L3!=null&&C==null&&!action)
-      {
-        int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.highests);
-        if(value!=-1)
-        {
-          this.attack++;
-          time=value;
-          action=true;
-        }
-      }
+            for(Spell.SortStats spellStats : this.highests)
+                if(spellStats.getMaxPO()>maxPo)
+                    maxPo=spellStats.getMaxPO();
 
-      // On se rapproche/replace pour conserver l'alignement si nécessaire.
-      if((this.fighter.getCurPm(this.fight)>0&&C==null)||this.attack==1&&this.fighter.getCurPm(this.fight)>0)
-      {
-        int value=0;
-        if(ennemy!=null)
-        {
-          value=Function.getInstance().moveenfaceIfPossible(this.fight,this.fighter,ennemy,maxPo+1);
-          if(value==0)
-            value=Function.getInstance().moveautourIfPossible(this.fight,this.fighter,ennemy);
-          if(value==0)
-            value=Function.getInstance().movecacIfPossible(this.fight,this.fighter,ennemy);
-        }
-        if(value!=0)
-        {
-          time=value;
-          action=true;
-          L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1);// pomax +1;
-          C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2);//2 = po min 1 + 1;
-          if(maxPo==1)
-            L=null;
-        }
-      }
+            Fighter C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2); //2 = po min 1 + 1;
+            Fighter L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1); // pomax +1;
+            Fighter L2=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,2,5);
+            Fighter L3=Function.getInstance().getNearEnnemylignenbrcasemax(this.fight,this.fighter,0,maxPo);
 
-      // Tente d'invoquer avant de passer aux buffs.
-      if(this.fighter.getCurPa(this.fight)>0&&!action)
-      {
-        if(Function.getInstance().invocIfPossible(this.fight,this.fighter,this.invocations))
-        {
-          time=600;
-          action=true;
-        }
-      }
-      // Phase de préparation : buffs personnels ou alliés si disponibles.
-      if(this.fighter.getCurPa(this.fight)>0&&!action)
-      {
-        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
-        {
-          time=1000;
-          action=true;
-        }
-      }
-
-      // Attaque à distance en l'absence de menace de mêlée.
-      if(this.fighter.getCurPa(this.fight)>0&&L!=null&&C==null&&!action)
-      {
-        int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.highests);
-        if(value!=-1)
-        {
-          this.attack++;
-          time=value;
-          action=true;
-        }
-      }
-      else if(this.fighter.getCurPa(this.fight)>0&&C!=null&&!action)
-      {
-        int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.cacs);
-        if(value!=-1)
-        {
-          time=value;
-          action=true;
-        }
-      }
-
-      // Dernière tentative d'attaque avant de reculer si l'ennemi reste collé.
-      if(this.fighter.getCurPa(this.fight)>0&&C!=null&&!action)
-      {
-        int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.highests);
-        if(value!=-1)
-        {
-          this.attack++;
-          time=value;
-          action=true;
-        }
-        else if(this.fighter.getCurPm(this.fight)>0)
-        {
-          value=Function.getInstance().moveenfaceIfPossible(this.fight,this.fighter,L2,maxPo+1);
-          if(value!=0)
-          {
-            time=value;
-            action=true;
-            L3=Function.getInstance().getNearEnnemylignenbrcasemax(this.fight,this.fighter,0,maxPo);
-          }
-        }
-      }
-
-      // Si aucune autre action n'a été réalisée et que l'attirance a échoué, on retente après un éventuel repositionnement.
-      if(this.fighter.getCurPa(this.fight)>0&&!action&&!bondCast)
-      {
-        Fighter retryTarget=L3!=null&&!L3.isHide()?L3:ennemy;
-        if((retryTarget==null||retryTarget.isHide())&&C!=null&&!C.isHide())
-          retryTarget=C;
-        if((retryTarget==null||retryTarget.isHide())&&L!=null&&!L.isHide())
-          retryTarget=L;
-
-        if(retryTarget!=null&&!retryTarget.isHide())
-        {
-          int value=Function.getInstance().attackBondIfPossible(this.fight,this.fighter,retryTarget);
-          if(value!=-1)
-          {
-            time=value;
-            action=true;
-            bondCast=true;
-            ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
-            C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2);
-            L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1);
-            L2=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,2,5);
-            L3=Function.getInstance().getNearEnnemylignenbrcasemax(this.fight,this.fighter,0,maxPo);
             if(maxPo==1)
-              L=null;
+                L=null;
             if(C!=null&&C.isHide())
-              C=null;
+                C=null;
             if(L!=null&&L.isHide())
-              L=null;
-          }
+                L=null;
+
+            // Tentative prioritaire : lancer le sort de bond (effet 6) sur la cible la plus pertinente.
+            Fighter bondTarget=ennemy;
+            if((bondTarget==null||bondTarget.isHide())&&L!=null)
+                bondTarget=L;
+            if((bondTarget==null||bondTarget.isHide())&&C!=null)
+                bondTarget=C;
+
+            if(this.fighter.getCurPa(this.fight)>0&&!action&&bondTarget!=null&&!bondTarget.isHide())
+            {
+                int value=Function.getInstance().attackBondIfPossible(this.fight,this.fighter,bondTarget);
+                if(value!=0)
+                {
+                    time=value;
+                    action=true;
+                    // Après un bond réussi, on réévalue les cibles pour le reste du tour.
+                    ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
+                    C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2);
+                    L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1);
+                    L2=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,2,5);
+                    L3=Function.getInstance().getNearEnnemylignenbrcasemax(this.fight,this.fighter,0,maxPo);
+                    if(maxPo==1)
+                        L=null;
+                    if(C!=null&&C.isHide())
+                        C=null;
+                    if(L!=null&&L.isHide())
+                        L=null;
+                }
+            }
+
+            // Priorité aux sorts à distance en ligne si aucun ennemi n'est au corps-à-corps.
+            if(this.fighter.getCurPa(this.fight)>0&&L3!=null&&C==null&&!action)
+            {
+                int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.highests);
+                if(value!=-1)
+                {
+                    this.attack++;
+                    time=value;
+                    action=true;
+                }
+            }
+
+            // On se rapproche/replace pour conserver l'alignement si nécessaire.
+            if(this.fighter.getCurPm(this.fight)>0&&C==null||this.attack==1&&this.fighter.getCurPm(this.fight)>0)
+            {
+                int value=Function.getInstance().moveenfaceIfPossible(this.fight,this.fighter,ennemy,maxPo+1);
+                if(value!=0)
+                {
+                    time=value;
+                    action=true;
+                    L=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,1,maxPo+1);// pomax +1;
+                    C=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,2);//2 = po min 1 + 1;
+                    if(maxPo==1)
+                        L=null;
+                }
+            }
+
+            // Tente d'invoquer avant de passer aux buffs.
+            if(this.fighter.getCurPa(this.fight)>0&&!action)
+            {
+                if(Function.getInstance().invocIfPossible(this.fight,this.fighter,this.invocations))
+                {
+                    time=600;
+                    action=true;
+                }
+            }
+            // Phase de préparation : buffs personnels ou alliés si disponibles.
+            if(this.fighter.getCurPa(this.fight)>0&&!action)
+            {
+                if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
+                {
+                    time=1000;
+                    action=true;
+                }
+            }
+
+            // Attaque à distance en l'absence de menace de mêlée.
+            if(this.fighter.getCurPa(this.fight)>0&&L!=null&&C==null&&!action)
+            {
+                int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.highests);
+                if(value!=-1)
+                {
+                    this.attack++;
+                    time=value;
+                    action=true;
+                }
+            }
+            else if(this.fighter.getCurPa(this.fight)>0&&C!=null&&!action)
+            {
+                int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.cacs);
+                if(value!=-1)
+                {
+                    time=value;
+                    action=true;
+                }
+            }
+
+            // Dernière tentative d'attaque avant de reculer si l'ennemi reste collé.
+            if(this.fighter.getCurPa(this.fight)>0&&C!=null&&!action)
+            {
+                int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,this.highests);
+                if(value!=-1)
+                {
+                    this.attack++;
+                    time=value;
+                    action=true;
+                }
+                else if(this.fighter.getCurPm(this.fight)>0)
+                {
+                    value=Function.getInstance().moveenfaceIfPossible(this.fight,this.fighter,L2,maxPo+1);
+                    if(value!=0)
+                    {
+                        time=value;
+                        action=true;
+                    }
+                }
+            }
+
+            // Si toutes les options offensives sont épuisées, on cherche à s'éloigner.
+            if(this.fighter.getCurPm(this.fight)>0&&!action&&C!=null)
+            {
+                int value=Function.getInstance().moveFarIfPossible(this.fight,this.fighter);
+                if(value!=0)
+                    time=value;
+            }
+
+            if(this.fighter.getCurPa(this.fight)==0&&this.fighter.getCurPm(this.fight)==0)
+                this.stop=true;
+            addNext(this::decrementCount,time);
         }
-      }
-
-      // Si toutes les options offensives sont épuisées, on cherche à s'éloigner.
-      if(this.fighter.getCurPm(this.fight)>0&&!action&&C!=null)
-      {
-        int value=Function.getInstance().moveFarIfPossible(this.fight,this.fighter);
-        if(value!=0)
-          time=value;
-      }
-
-      if(this.fighter.getCurPa(this.fight)==0&&this.fighter.getCurPm(this.fight)==0)
-        this.stop=true;
-      addNext(this::decrementCount,time);
+        else
+        {
+            this.stop=true;
+        }
     }
-    else
-    {
-      this.stop=true;
-    }
-  }
 }

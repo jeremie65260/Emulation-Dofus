@@ -994,9 +994,9 @@ public class Function
   {
     if(fight==null||fighter==null||target==null)
       return -1;
-    if(target.haveState(7))
-      return -1;
-    int cell=-1;
+    if(fighter.haveState(7))
+         return 0;
+    int cell=0;
     SortStats SS2=null;
 
     for(Map.Entry<Integer, SortStats> S : fighter.getMob().getSpells().entrySet())
@@ -1047,23 +1047,8 @@ public class Function
         SS2=S.getValue();
       }
     }
-    if(SS2==null)
-      return -1;
 
-    int attack;
-    if(cell>=15&&cell<=463)
-    {
-      attack=fight.tryCastSpell(fighter,SS2,cell);
-    }
-    else
-    {
-      attack=fight.tryCastSpell(fighter,SS2,target.getCell().getId());
-    }
-
-    if(attack==0)
-      return SS2.getSpell().getDuration();
-
-    return -1;
+    return 0;
   }
 
   public int attackIfPossibleDisciplepair(Fight fight, Fighter fighter, Fighter target)
