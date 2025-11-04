@@ -992,15 +992,13 @@ public class Function
 
   public int attackBondIfPossible(Fight fight, Fighter fighter, Fighter target)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
   {
-    if(fight==null||fighter==null)
-      return 0;
+    if(fight==null||fighter==null||target==null)
+      return -1;
     if(fighter.haveState(7))
-      	 return 0;
-    int cell=0;
+      return -1;
+    int cell=-1;
     SortStats SS2=null;
 
-    if(target==null)
-      return 0;
     for(Map.Entry<Integer, SortStats> S : fighter.getMob().getSpells().entrySet())
     {
       int cellID=PathFinding.getCaseBetweenEnemy(target.getCell().getId(),fight.getMap(),fight);
@@ -1017,34 +1015,55 @@ public class Function
           effet4=true;
         }
       }
-      if(effet4==false)
+      if(!effet4)
         continue;
-      if(effet6==false)
-      {
-        cell=cellID;
-        SS2=S.getValue();
-      }
+
+      int desiredCell;
+      if(effet6)
+        desiredCell=target.getCell().getId();
       else
+        desiredCell=cellID;
+
+      if(desiredCell<0)
+        continue;
+
+      GameCase launchCell=fight.getMap().getCase(desiredCell);
+      if(launchCell==null)
+        continue;
+
+      if(!fight.canCastSpell1(fighter,S.getValue(),launchCell,-1))
+        continue;
+
+      if(effet6)
       {
-        cell=target.getCell().getId();
+        cell=desiredCell;
+        SS2=S.getValue();
+        break;
+      }
+
+      if(SS2==null)
+      {
+        cell=desiredCell;
         SS2=S.getValue();
       }
     }
-    if(cell>=15&&cell<=463&&SS2!=null)
+    if(SS2==null)
+      return -1;
+
+    int attack;
+    if(cell>=15&&cell<=463)
     {
-      int attack=fight.tryCastSpell(fighter,SS2,cell);
-      if(attack!=0)
-        return SS2.getSpell().getDuration();
+      attack=fight.tryCastSpell(fighter,SS2,cell);
     }
     else
     {
-      if(target==null||SS2==null)
-        return 0;
-      int attack=fight.tryCastSpell(fighter,SS2,cell);
-      if(attack!=0)
-        return SS2.getSpell().getDuration();
+      attack=fight.tryCastSpell(fighter,SS2,target.getCell().getId());
     }
-    return 0;
+
+    if(attack==0)
+      return SS2.getSpell().getDuration();
+
+    return -1;
   }
 
   public int attackIfPossibleDisciplepair(Fight fight, Fighter fighter, Fighter target)
@@ -2661,7 +2680,7 @@ public class Function
     SortStats SS=null;
     Fighter target=null;
     if(fighter.haveState(7))
-     	 return 0;
+        return -1;
     for(Map.Entry<Integer, Fighter> t : ennemyList.entrySet())
     {
       SS=getBestSpellForTargetDopeul(fight,fighter,t.getValue(),fighter.getCell().getId(),Spell);
