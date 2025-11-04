@@ -2667,7 +2667,7 @@ public class Function
     SortStats SS=null;
     Fighter target=null;
     if(fighter.haveState(7))
-     	 return 0;
+        return -1;
     for(Map.Entry<Integer, Fighter> t : ennemyList.entrySet())
     {
       SS=getBestSpellForTargetDopeul(fight,fighter,t.getValue(),fighter.getCell().getId(),Spell);
