@@ -1146,6 +1146,7 @@ public class Fight
     setCurPlayer(-1);
     SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this,7);
     SocketManager.GAME_SEND_GTM_PACKET_TO_FIGHT(this,7);
+    announceMobCountBonusToParticipants();
 
     /** Challenges **/
     if(getType()==Constant.FIGHT_TYPE_PVM||getType()==Constant.FIGHT_TYPE_DOPEUL)
@@ -4155,6 +4156,37 @@ public void Anti_bug () {
       fighters.addAll(getTeam1().entrySet().stream().map(Entry::getValue).collect(Collectors.toList()));
       fighters.addAll(getTeam0().entrySet().stream().map(Entry::getValue).collect(Collectors.toList()));
     return fighters;
+  }
+
+  private void sendMobCountBonusMessage(Collection<Fighter> fighters, int mobCount, double mobCountBonus)
+  {
+    if(mobCount<=0)
+      return;
+
+    final int bonusPercent=(int)Math.round((mobCountBonus-1)*100);
+    final String monsterLabel=mobCount>1 ? " monstres." : " monstre.";
+
+    for(Fighter fighter : fighters)
+    {
+      if(fighter==null||fighter.hasLeft())
+        continue;
+
+      final Player player=fighter.getPersonnage();
+      if(player==null)
+        continue;
+
+      SocketManager.GAME_SEND_MESSAGE(player,"Votre bonus XP actuel est de "+bonusPercent+"% pour un combat de "+mobCount+monsterLabel);
+    }
+  }
+
+  private void announceMobCountBonusToParticipants()
+  {
+    final int mobCount=(int)getFighters(2).stream().filter(fighter -> fighter!=null&&fighter.isMob()).count();
+    if(mobCount<=0)
+      return;
+
+    final double mobCountBonus=Formulas.getMobCountBonus(mobCount);
+    sendMobCountBonusMessage(getFighters(3),mobCount,mobCountBonus);
   }
 
   public Fighter getFighterByPerso(Player player)
