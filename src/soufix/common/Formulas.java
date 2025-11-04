@@ -1604,20 +1604,14 @@ public class Formulas
     if(mobCount<=3)
       return 1.0;
 
-    switch(Math.min(mobCount,8))
-    {
-      case 4:
-        return 2.0;
-      case 5:
-        return 2.5;
-      case 6:
-        return 3.0;
-      case 7:
-        return 3.5;
-      case 8:
-      default:
-        return 4.0;
-    }
+    final double increment=0.2;
+    final double maxBonus=1.0;
+    double extra=increment*(mobCount-3);
+
+    if(extra>maxBonus)
+      extra=maxBonus;
+
+    return 1+extra;
   }
 
   //v2.0 - Redid xp formula

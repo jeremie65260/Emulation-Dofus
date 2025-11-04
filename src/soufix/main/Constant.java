@@ -77,6 +77,7 @@ public class Constant
   public static final int STATE_VITAL_PUNISHMENT=54;
   public static final int STATE_RETIRED=55;
   public static final int STATE_INVULNERABLE=56;
+  public static final int STATE_BENEDICTION_DU_WA=301;
   public static final int STATE_COUNTDOWN_2=57;
   public static final int STATE_COUNTDOWN_1=58;
   public static final int STATE_DEVOTED=60;

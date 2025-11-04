@@ -333,6 +333,8 @@ public void setTourplus() {
 
   public void removePdv(Fighter caster, int pdv)
   {
+    if(pdv>0&&(this.haveState(Constant.STATE_INVULNERABLE)||this.haveState(Constant.STATE_BENEDICTION_DU_WA)))
+      return;
     if(pdv>0)
       this.getFight().getAllChallenges().values().stream().filter(challenge -> challenge!=null).forEach(challenge -> challenge.onFighterAttacked(caster,this));
     this.pdv-=pdv;

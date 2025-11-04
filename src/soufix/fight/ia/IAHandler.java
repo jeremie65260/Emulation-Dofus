@@ -292,11 +292,17 @@ public class IAHandler
         case 202: //Soin 50 % self + IA 37 + fuite
           ia=new IA202(fight,fighter,(byte)8);
           break;
-        case 203: //IA Cac 1 PO et 2 PO , soin, désinvocation + invocation
+        case 203: //IA Cac 1 PO et 2 PO , soin <50%, désinvocation + invocation
           ia=new IA203(fight,fighter,(byte)8);
           break;
         case 204: //IA203 avec contrôle de résurrection
           ia=new IA204(fight,fighter,(byte)8);
+          break;
+        case 205: // Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
+          ia=new IA205(fight,fighter,(byte)8);
+          break;
+        case 206: // Variante IA39 avec gestion du bond effet 6
+          ia=new IA206(fight,fighter,(byte)8);
           break;
       }
     }
