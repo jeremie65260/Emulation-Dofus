@@ -105,7 +105,8 @@ public class Fight
   //v2.3 - Spectator join PvM
   public int startGuid=-1;
   public ArrayList<Pair<Fighter, ArrayList<SpellEffect>>> buffsToAdd=new ArrayList<>();
-	private boolean invocationAlreadySummoned = false;
+  private boolean invocationAlreadySummoned=false;
+  private int mobCountForBonus=0;
 
   public Fight(int type, int id, GameMap map, Player perso, Player init2)
   {
@@ -1146,6 +1147,8 @@ public class Fight
     setCurPlayer(-1);
     SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this,7);
     SocketManager.GAME_SEND_GTM_PACKET_TO_FIGHT(this,7);
+    updateMobCountReference();
+    announceMobCountBonusToParticipants();
 
     /** Challenges **/
     if(getType()==Constant.FIGHT_TYPE_PVM||getType()==Constant.FIGHT_TYPE_DOPEUL)
@@ -4144,6 +4147,66 @@ public void Anti_bug () {
     return fighters;
   }
 
+  private static int countEligibleMonsters(Collection<Fighter> fighters)
+  {
+    if(fighters==null)
+      return 0;
+
+    int count=0;
+    for(Fighter fighter : fighters)
+    {
+      if(fighter==null)
+        continue;
+
+      if(fighter.isMob()&&!fighter.isInvocation())
+        count++;
+    }
+    return count;
+  }
+
+  private void updateMobCountReference()
+  {
+    this.mobCountForBonus=countEligibleMonsters(getTeam1().values());
+  }
+
+  private int resolveMobCountReference()
+  {
+    if(mobCountForBonus>0)
+      return mobCountForBonus;
+    return countEligibleMonsters(getTeam1().values());
+  }
+
+  private void sendMobCountBonusMessage(Collection<Fighter> fighters, int mobCount, double mobCountBonus)
+  {
+    if(mobCount<=0)
+      return;
+
+    final int bonusPercent=(int)Math.round((mobCountBonus-1)*100);
+    final String monsterLabel=mobCount>1 ? " monstres" : " monstre";
+
+    for(Fighter fighter : fighters)
+    {
+      if(fighter==null||fighter.hasLeft())
+        continue;
+
+      final Player player=fighter.getPersonnage();
+      if(player==null)
+        continue;
+
+      SocketManager.GAME_SEND_MESSAGE(player,"Vous êtes entré en combat de "+mobCount+monsterLabel+". Votre bonus XP actuel est de "+bonusPercent+"%.");
+    }
+  }
+
+  private void announceMobCountBonusToParticipants()
+  {
+    final int mobCount=resolveMobCountReference();
+    if(mobCount<=0)
+      return;
+
+    final double mobCountBonus=Formulas.getMobCountBonus(mobCount);
+    sendMobCountBonusMessage(getFighters(3),mobCount,mobCountBonus);
+  }
+
   public Fighter getFighterByPerso(Player player)
   {
     Fighter fighter=null;
@@ -5308,14 +5371,23 @@ public void Anti_bug () {
     {
       boolean team=false;
 
-      long totalXP=0;
-      for(Fighter F : loosers)
-      {
-        if(F.getMob()!=null)
-          totalXP+=F.getMob().getBaseXp();
-        if(F.getPersonnage()!=null)
-          team=true;
-      }
+        long totalXP=0;
+        for(Fighter F : loosers)
+        {
+          if(F.getMob()!=null&&!F.isInvocation())
+          {
+            totalXP+=F.getMob().getBaseXp();
+          }
+          if(F.getPersonnage()!=null)
+            team=true;
+        }
+
+        int mobCount=resolveMobCountReference();
+        if(mobCount<=0)
+          mobCount=countEligibleMonsters(loosers);
+
+        final double mobCountBonus=Formulas.getMobCountBonus(mobCount);
+        sendMobCountBonusMessage(winners,mobCount,mobCountBonus);
 
       /* Capture d'ï¿½mes **/
       boolean mobCapturable=true;
@@ -5985,7 +6057,7 @@ public void Anti_bug () {
           /** Xp,kamas **/
           if(player!=null)
           {
-            xpPlayer=Formulas.getXp(i,winners,totalXP,nbbonus,this.getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0,challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,Main.world.getConquestBonus(player));
+            xpPlayer=Formulas.getXp(i,winners,totalXP,nbbonus,this.getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0,challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,Main.world.getConquestBonus(player),mobCount);
             if(this.type == Constant.FIGHT_TYPE_PVM)
             {
             if(player.getAccount().getSubscribeRemaining() != 0L)xpPlayer = (long) (xpPlayer+(xpPlayer*0.25));
@@ -7053,7 +7125,7 @@ public void Anti_bug () {
       {
         Collector collector=Collector.getCollectorByMapId(getMap().getId());
 
-        long winxp=Formulas.getXp(collector,winners,totalXP,nbbonus,(getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0),challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,0)/15;
+        long winxp=Formulas.getXp(collector,winners,totalXP,nbbonus,(getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0),challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,0,mobCount)/15;
         long winkamas=(int)Math.floor(Formulas.getKamasWinPerco(kamas.getLeft(),kamas.getRight()));
 
         collector.setXp(collector.getXp()+winxp);
