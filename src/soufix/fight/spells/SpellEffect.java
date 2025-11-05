@@ -92,6 +92,8 @@ public class SpellEffect
   //v2.8 - Reinforcementex
   public static int applyOnHitBuffs(int finalDommage, Fighter target, Fighter caster, Fight fight, int elementId , int idspell)
   {
+    if(finalDommage>0&&(target.haveState(Constant.STATE_INVULNERABLE)||target.haveState(Constant.STATE_BENEDICTION_DU_WA)))
+      return 0;
     for(int id : Constant.ON_HIT_BUFFS)
     {
       for(SpellEffect buff : target.getBuffsByEffectID(id))

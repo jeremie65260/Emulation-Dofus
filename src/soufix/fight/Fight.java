@@ -1147,7 +1147,6 @@ public class Fight
     setCurPlayer(-1);
     SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this,7);
     SocketManager.GAME_SEND_GTM_PACKET_TO_FIGHT(this,7);
-    updateMobCountReference();
     announceMobCountBonusToParticipants();
 
     /** Challenges **/
@@ -4091,6 +4090,7 @@ public void Anti_bug () {
         fighter.getFightBuff().clear();
         fighter.getFightBuff().addAll(newBuffs);
       }
+      removeWaBlessingIfAlone(target.getTeam());
       SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this,7);
       this.verifIfTeamAllDead();
     }
@@ -4107,6 +4107,18 @@ public void Anti_bug () {
     carry.setIsHolding(null);
     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this,7,51,carry.getId()+"",carry.getCell().getId()+"");
   }
+
+  // n'est plus invulnérable si tout le monde est mort dans son équipe
+  private void removeWaBlessingIfAlone(int teamId)
+  {
+    if(teamId!=0&&teamId!=1)
+      return;
+    Collection<Fighter> teamMembers=(teamId==0?getTeam0().values():getTeam1().values());
+    List<Fighter> aliveAllies=teamMembers.stream().filter(fighter -> fighter!=null&&!fighter.isDead()&&!fighter.hasLeft()&&fighter.getPdv()>0).collect(Collectors.toList());
+    if(aliveAllies.size()<=1)
+      aliveAllies.stream().filter(fighter -> fighter.haveState(Constant.STATE_BENEDICTION_DU_WA)).forEach(fighter -> fighter.setState(Constant.STATE_BENEDICTION_DU_WA,0,fighter.getId()));
+  }
+
 
   public ArrayList<Fighter> getFighters(int teams)
   {// Entre 0 et 7, binaire([spec][t2][t1]).
@@ -4147,42 +4159,13 @@ public void Anti_bug () {
     return fighters;
   }
 
-  private static int countEligibleMonsters(Collection<Fighter> fighters)
-  {
-    if(fighters==null)
-      return 0;
-
-    int count=0;
-    for(Fighter fighter : fighters)
-    {
-      if(fighter==null)
-        continue;
-
-      if(fighter.isMob()&&!fighter.isInvocation())
-        count++;
-    }
-    return count;
-  }
-
-  private void updateMobCountReference()
-  {
-    this.mobCountForBonus=countEligibleMonsters(getTeam1().values());
-  }
-
-  private int resolveMobCountReference()
-  {
-    if(mobCountForBonus>0)
-      return mobCountForBonus;
-    return countEligibleMonsters(getTeam1().values());
-  }
-
   private void sendMobCountBonusMessage(Collection<Fighter> fighters, int mobCount, double mobCountBonus)
   {
     if(mobCount<=0)
       return;
 
     final int bonusPercent=(int)Math.round((mobCountBonus-1)*100);
-    final String monsterLabel=mobCount>1 ? " monstres" : " monstre";
+    final String monsterLabel=mobCount>1 ? " monstres." : " monstre.";
 
     for(Fighter fighter : fighters)
     {
@@ -4193,13 +4176,13 @@ public void Anti_bug () {
       if(player==null)
         continue;
 
-      SocketManager.GAME_SEND_MESSAGE(player,"Vous êtes entré en combat de "+mobCount+monsterLabel+". Votre bonus XP actuel est de "+bonusPercent+"%.");
+      SocketManager.GAME_SEND_MESSAGE(player,"Votre bonus XP actuel est de "+bonusPercent+"% pour un combat de "+mobCount+monsterLabel);
     }
   }
 
   private void announceMobCountBonusToParticipants()
   {
-    final int mobCount=resolveMobCountReference();
+    final int mobCount=(int)getFighters(2).stream().filter(fighter -> fighter!=null&&fighter.isMob()).count();
     if(mobCount<=0)
       return;
 
@@ -5371,23 +5354,20 @@ public void Anti_bug () {
     {
       boolean team=false;
 
-        long totalXP=0;
-        for(Fighter F : loosers)
+      long totalXP=0;
+      int mobCount=0;
+      for(Fighter F : loosers)
+      {
+        if(F.getMob()!=null)
         {
-          if(F.getMob()!=null&&!F.isInvocation())
-          {
-            totalXP+=F.getMob().getBaseXp();
-          }
-          if(F.getPersonnage()!=null)
-            team=true;
+          totalXP+=F.getMob().getBaseXp();
+          mobCount++;
         }
+        if(F.getPersonnage()!=null)
+          team=true;
+      }
 
-        int mobCount=resolveMobCountReference();
-        if(mobCount<=0)
-          mobCount=countEligibleMonsters(loosers);
-
-        final double mobCountBonus=Formulas.getMobCountBonus(mobCount);
-        sendMobCountBonusMessage(winners,mobCount,mobCountBonus);
+      final double mobCountBonus=Formulas.getMobCountBonus(mobCount);
 
       /* Capture d'ï¿½mes **/
       boolean mobCapturable=true;

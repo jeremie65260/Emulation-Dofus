@@ -1,6 +1,15 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+## Version 0.9.2:
+    - Création de l'IA 206 ( mix de l'IA 39 pour attirer , taper, invoquer, fuite) + injection de la méthode attackBondIfPossible() de l'IA 36
+    - COrrection du Wa : il passait son tour si ne pouvait pas appliquer attackBondIfPossible()
+## Version 0.9.1:
+    - Création de l'Etat Invulnerable 301 pour le Wa : si son equipe meurt , il devient vulnérable
+    - Création d'une IA 205 qui Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
+## Version 0.9.0:
+    - Implémentation du système "ramener une capture d'ames à un pnj (type 12) dans capture.java
+    - Codage de la logique pour ramner la pierre dans quest.java -> fonctionnel
 ## Version 0.8.3:
     - Correction du sort Laisse spirituelle : le monstre réssucite sur une case valide. (spellEffect.java effect 780)
     - Création d'une IA 204 ( calquée sur IA 203)  afin que le monstre wabbit squelette puisse vérifier si quelqu'un est mort dans son équipe avant de lancer laisse spirituelle.
