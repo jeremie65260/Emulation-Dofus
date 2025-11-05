@@ -105,7 +105,8 @@ public class Fight
   //v2.3 - Spectator join PvM
   public int startGuid=-1;
   public ArrayList<Pair<Fighter, ArrayList<SpellEffect>>> buffsToAdd=new ArrayList<>();
-	private boolean invocationAlreadySummoned = false;
+  private boolean invocationAlreadySummoned=false;
+  private int mobCountForBonus=0;
 
   public Fight(int type, int id, GameMap map, Player perso, Player init2)
   {
