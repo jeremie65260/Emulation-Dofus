@@ -4166,6 +4166,7 @@ public void Anti_bug () {
 
     final int bonusPercent=(int)Math.round((mobCountBonus-1)*100);
     final String monsterLabel=mobCount>1 ? " monstres." : " monstre.";
+    final String bonusMultiplier=mobCountBonus%1==0 ? Integer.toString((int)mobCountBonus) : Double.toString(mobCountBonus);
 
     for(Fighter fighter : fighters)
     {
@@ -4176,7 +4177,7 @@ public void Anti_bug () {
       if(player==null)
         continue;
 
-      SocketManager.GAME_SEND_MESSAGE(player,"Votre bonus XP actuel est de "+bonusPercent+"% pour un combat de "+mobCount+monsterLabel);
+      SocketManager.GAME_SEND_MESSAGE(player,"Votre bonus XP actuel est de "+bonusPercent+"% (x"+bonusMultiplier+") pour un combat de "+mobCount+monsterLabel);
     }
   }
 
