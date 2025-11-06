@@ -5,6 +5,7 @@ import java.util.List;
 
 import soufix.fight.Fight;
 import soufix.fight.Fighter;
+import soufix.fight.spells.Spell;
 import soufix.fight.spells.Spell.SortStats;
 import soufix.fight.spells.SpellEffect;
 import soufix.utility.Pair;
@@ -135,15 +136,54 @@ public class IA204 extends IA203
                 if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
                     return true;
             }
-
-        if(spell.getCCeffects()!=null)
-            for(SpellEffect effect : spell.getCCeffects())
+            else if(effectId!=0)
             {
                 if(effect==null)
                     continue;
                 if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
                     return true;
             }
+        }
+
+        return hasResurrectionEffect;
+    }
+
+    private boolean isAllyRestrictedResurrection(SortStats spell, int effectIndex)
+    {
+        Integer targetFlags=getTargetFlags(spell,effectIndex);
+        if(targetFlags==null)
+            return false;
+
+        if((targetFlags&4)!=0)
+            return true;
+        if((targetFlags&32)!=0)
+            return true;
+        if((targetFlags&64)!=0)
+            return true;
+        if((targetFlags&128)!=0)
+            return true;
+
+        return false;
+    }
+
+    private Integer getTargetFlags(SortStats spell, int effectIndex)
+    {
+        if(spell==null)
+            return null;
+
+        Spell baseSpell=spell.getSpell();
+        if(baseSpell==null)
+            return null;
+
+        List<ArrayList<Integer>> targets=baseSpell.getEffectTargets();
+        if(targets==null||targets.isEmpty())
+            return null;
+
+        int level=Math.max(1,spell.getLevel());
+        int levelIndex=Math.min(level-1,targets.size()-1);
+        ArrayList<Integer> levelTargets=targets.get(levelIndex);
+        if(levelTargets==null||effectIndex<0||effectIndex>=levelTargets.size())
+            return null;
 
         return false;
     }
