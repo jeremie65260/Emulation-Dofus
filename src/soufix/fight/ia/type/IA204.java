@@ -135,6 +135,11 @@ public class IA204 extends IA203
         return hasValidDead;
     }
 
+    private boolean isValidResurrectionCandidate(Fighter fighter)
+    {
+        return fighter!=null&&fighter.getFight()==this.fight&&!fighter.hasLeft()&&fighter.isDead()&&!fighter.isInvocation()&&!fighter.isDouble();
+    }
+
     /**
      * Indique si le sort passé en paramètre déclenche l'effet de résurrection.
      * Les effets de coup critique sont également inspectés pour éviter une
