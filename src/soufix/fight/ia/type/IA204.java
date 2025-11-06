@@ -115,7 +115,15 @@ public class IA204 extends IA203
         for(Pair<Integer, Fighter> entry : this.fight.getDeadList())
         {
             Fighter dead=entry.getRight();
-            if(dead!=null&&dead.getTeam()==this.fighter.getTeam()&&!dead.hasLeft())
+            if(dead==null)
+                continue;
+            if(dead.getFight()!=this.fight)
+                continue;
+            if(dead.hasLeft()||!dead.isDead())
+                continue;
+            if(dead.isInvocation()||dead.isDouble())
+                continue;
+            if(dead.getTeam()==this.fighter.getTeam())
                 return true;
         }
         return false;
