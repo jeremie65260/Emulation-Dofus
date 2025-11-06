@@ -141,8 +141,6 @@ public class IA204 extends AbstractNeedSpell
             Fighter candidate=entry==null?null:entry.getRight();
             if(candidate==null)
                 continue;
-            if(!candidate.isDead())
-                continue;
             if(candidate.hasLeft())
                 continue;
             if(candidate.getTeam()!=this.fighter.getTeam())
