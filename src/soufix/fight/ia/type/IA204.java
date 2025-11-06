@@ -143,6 +143,8 @@ public class IA204 extends AbstractNeedSpell
                 continue;
             if(candidate.hasLeft())
                 continue;
+            if(!candidate.isDead())
+                continue;
             if(candidate.getTeam()!=this.fighter.getTeam())
                 continue;
             return candidate;
