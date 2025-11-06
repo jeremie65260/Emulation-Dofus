@@ -119,20 +119,17 @@ public class IA204 extends IA203
         boolean hasValidDead=false;
         for(int i=deadList.size()-1;i>=0;i--)
         {
-            Pair<Integer, Fighter> entry=deadList.get(i);
-            Fighter dead=entry==null?null:entry.getRight();
-            if(dead==null||dead.getFight()!=this.fight||dead.hasLeft()||!dead.isDead()||dead.isInvocation()||dead.isDouble())
-            {
-                // Nettoie la liste pour éviter que l'IA tente de cibler ces entités aux tours suivants.
-                deadList.remove(i);
+            Fighter dead=entry.getRight();
+            if(dead==null)
                 continue;
-            }
-
+            if(dead.getFight()!=this.fight)
+                continue;
+            if(dead.hasLeft()||!dead.isDead())
+                continue;
+            if(dead.isInvocation()||dead.isDouble())
+                continue;
             if(dead.getTeam()==this.fighter.getTeam())
-            {
-                hasValidDead=true;
-                break;
-            }
+                return true;
         }
 
         return hasValidDead;
