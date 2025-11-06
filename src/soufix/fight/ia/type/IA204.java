@@ -116,9 +116,11 @@ public class IA204 extends IA203
         if(deadList==null||deadList.isEmpty())
             return false;
 
-        boolean hasValidDead=false;
         for(int i=deadList.size()-1;i>=0;i--)
         {
+            Pair<Integer, Fighter> entry=deadList.get(i);
+            if(entry==null)
+                continue;
             Fighter dead=entry.getRight();
             if(dead==null)
                 continue;
@@ -132,7 +134,7 @@ public class IA204 extends IA203
                 return true;
         }
 
-        return hasValidDead;
+        return false;
     }
 
     /**
@@ -142,18 +144,13 @@ public class IA204 extends IA203
      */
     private boolean containsResurrectionEffect(SortStats spell)
     {
-        boolean hasResurrectionEffect=false;
-        boolean hasOtherEffect=false;
-
         if(spell.getEffects()!=null)
             for(SpellEffect effect : spell.getEffects())
             {
                 if(effect==null)
                     continue;
                 if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
-                    hasResurrectionEffect=true;
-                else if(effect.getEffectID()!=0)
-                    hasOtherEffect=true;
+                    return true;
             }
 
         if(spell.getCCeffects()!=null)
@@ -162,11 +159,9 @@ public class IA204 extends IA203
                 if(effect==null)
                     continue;
                 if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
-                    hasResurrectionEffect=true;
-                else if(effect.getEffectID()!=0)
-                    hasOtherEffect=true;
+                    return true;
             }
 
-        return hasResurrectionEffect&&!hasOtherEffect;
+        return false;
     }
 }
