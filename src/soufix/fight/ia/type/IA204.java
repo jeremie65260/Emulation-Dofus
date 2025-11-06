@@ -112,13 +112,40 @@ public class IA204 extends IA203
         if(this.fight==null||this.fighter==null)
             return false;
 
-        for(Pair<Integer, Fighter> entry : this.fight.getDeadList())
+        List<Pair<Integer, Fighter>> deadList=this.fight.getDeadList();
+        if(deadList!=null&&!deadList.isEmpty())
         {
-            Fighter dead=entry.getRight();
-            if(dead!=null&&dead.getTeam()==this.fighter.getTeam()&&!dead.hasLeft())
+            for(int i=deadList.size()-1;i>=0;i--)
+            {
+                Pair<Integer, Fighter> deadEntry=deadList.get(i);
+                Fighter dead=deadEntry==null?null:deadEntry.getRight();
+                if(!isValidResurrectionCandidate(dead))
+                {
+                    if(dead!=null)
+                        this.fight.removeDead(dead);
+                    else
+                        deadList.remove(i);
+                    continue;
+                }
+
+                if(dead.getTeam()==this.fighter.getTeam())
+                    return true;
+            }
+        }
+
+        // File d'attente nettoyée : on vérifie directement l'état des combattants de l'équipe.
+        for(Fighter ally : this.fight.getTeam(this.fighter.getTeam()).values())
+        {
+            if(isValidResurrectionCandidate(ally))
                 return true;
         }
+
         return false;
+    }
+
+    private boolean isValidResurrectionCandidate(Fighter fighter)
+    {
+        return fighter!=null&&fighter.getFight()==this.fight&&!fighter.hasLeft()&&fighter.isDead()&&!fighter.isInvocation()&&!fighter.isDouble();
     }
 
     /**
@@ -128,16 +155,31 @@ public class IA204 extends IA203
      */
     private boolean containsResurrectionEffect(SortStats spell)
     {
+        boolean hasResurrectionEffect=false;
+        boolean hasOtherEffect=false;
+
         if(spell.getEffects()!=null)
             for(SpellEffect effect : spell.getEffects())
-                if(effect!=null&&effect.getEffectID()==RESURRECTION_EFFECT_ID)
-                    return true;
+            {
+                if(effect==null)
+                    continue;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    hasResurrectionEffect=true;
+                else if(effect.getEffectID()!=0)
+                    hasOtherEffect=true;
+            }
 
         if(spell.getCCeffects()!=null)
             for(SpellEffect effect : spell.getCCeffects())
-                if(effect!=null&&effect.getEffectID()==RESURRECTION_EFFECT_ID)
-                    return true;
+            {
+                if(effect==null)
+                    continue;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    hasResurrectionEffect=true;
+                else if(effect.getEffectID()!=0)
+                    hasOtherEffect=true;
+            }
 
-        return false;
+        return hasResurrectionEffect&&!hasOtherEffect;
     }
 }
