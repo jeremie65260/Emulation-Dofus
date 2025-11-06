@@ -1,7 +1,6 @@
 package soufix.fight.ia.type;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import soufix.fight.Fight;
@@ -22,22 +21,9 @@ public class IA204 extends IA203
     /** Identifiant d'effet utilisé par "Laisse spirituelle" pour relever un allié. */
     private static final int RESURRECTION_EFFECT_ID=780;
 
-    /** Copie des sorts de buff d'origine, conservée pour pouvoir les restaurer. */
-    private final List<SortStats> baseBuffs;
-    /** Copie des sorts à priorité élevée. */
-    private final List<SortStats> baseHighests;
-    /** Copie des sorts de corps à corps. */
-    private final List<SortStats> baseCacs;
-    /** Copie des sorts d'invocation. */
-    private final List<SortStats> baseInvocations;
-
     public IA204(Fight fight, Fighter fighter, byte count)
     {
         super(fight,fighter,count);
-        this.baseBuffs=copyList(this.buffs);
-        this.baseHighests=copyList(this.highests);
-        this.baseCacs=copyList(this.cacs);
-        this.baseInvocations=copyList(this.invocations);
     }
 
     @Override
@@ -52,10 +38,13 @@ public class IA204 extends IA203
         {
             // Détermine si un allié mort est disponible pour justifier l'usage du sort.
             boolean resurrectAllowed=hasDeadAlly();
-            this.buffs=selectListForCurrentState(baseBuffs,resurrectAllowed);
-            this.highests=selectListForCurrentState(baseHighests,resurrectAllowed);
-            this.cacs=selectListForCurrentState(baseCacs,resurrectAllowed);
-            this.invocations=selectListForCurrentState(baseInvocations,resurrectAllowed);
+            if(!resurrectAllowed)
+            {
+                this.buffs=selectListForCurrentState(originalBuffs,false);
+                this.highests=selectListForCurrentState(originalHighests,false);
+                this.cacs=selectListForCurrentState(originalCacs,false);
+                this.invocations=selectListForCurrentState(originalInvocations,false);
+            }
             super.apply();
         }
         finally
@@ -71,36 +60,30 @@ public class IA204 extends IA203
      * Retourne la liste de sorts à utiliser pour ce tour.
      * <p>
      * Lorsque la résurrection n'est pas autorisée, les sorts contenant
-     * l'effet 780 sont supprimés de la liste, ce qui évite de les proposer à
-     * la logique parente.
+     * l'effet 780 sont supprimés d'une copie temporaire de la liste, ce qui
+     * évite de les proposer à la logique parente.
      */
-    private List<SortStats> selectListForCurrentState(List<SortStats> baseList, boolean resurrectAllowed)
+    private List<SortStats> selectListForCurrentState(List<SortStats> source, boolean resurrectAllowed)
     {
-        if(baseList==null)
+        if(source==null)
             return null;
         if(resurrectAllowed)
-            return baseList;
-
-        List<SortStats> filtered=new ArrayList<>();
-        for(SortStats spell : baseList)
-        {
-            if(spell==null)
-                continue;
-            if(!containsResurrectionEffect(spell))
-                filtered.add(spell);
-        }
-        return filtered.isEmpty()?Collections.emptyList():filtered;
-    }
-
-    /**
-     * Crée une copie superficielle de la liste de sorts d'origine afin de pouvoir
-     * la restaurer plus tard.
-     */
-    private List<SortStats> copyList(List<SortStats> source)
-    {
-        if(source==null||source.isEmpty())
             return source;
-        return new ArrayList<>(source);
+
+        List<SortStats> filtered=null;
+        for(SortStats spell : source)
+        {
+            if(spell==null||containsResurrectionEffect(spell))
+                continue;
+            if(filtered==null)
+                filtered=new ArrayList<>(source.size());
+            filtered.add(spell);
+        }
+
+        if(filtered==null)
+            return new ArrayList<>();
+
+        return filtered;
     }
 
     /**
@@ -116,9 +99,11 @@ public class IA204 extends IA203
         if(deadList==null||deadList.isEmpty())
             return false;
 
-        boolean hasValidDead=false;
         for(int i=deadList.size()-1;i>=0;i--)
         {
+            Pair<Integer, Fighter> entry=deadList.get(i);
+            if(entry==null)
+                continue;
             Fighter dead=entry.getRight();
             if(dead==null)
                 continue;
@@ -132,7 +117,7 @@ public class IA204 extends IA203
                 return true;
         }
 
-        return hasValidDead;
+        return false;
     }
 
     /**
@@ -143,17 +128,17 @@ public class IA204 extends IA203
     private boolean containsResurrectionEffect(SortStats spell)
     {
         boolean hasResurrectionEffect=false;
-        boolean hasOtherEffect=false;
 
         if(spell.getEffects()!=null)
             for(SpellEffect effect : spell.getEffects())
             {
                 if(effect==null)
                     continue;
-                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                int effectId=effect.getEffectID();
+                if(effectId==RESURRECTION_EFFECT_ID)
                     hasResurrectionEffect=true;
-                else if(effect.getEffectID()!=0)
-                    hasOtherEffect=true;
+                else if(effectId!=0)
+                    return false;
             }
 
         if(spell.getCCeffects()!=null)
@@ -161,12 +146,13 @@ public class IA204 extends IA203
             {
                 if(effect==null)
                     continue;
-                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                int effectId=effect.getEffectID();
+                if(effectId==RESURRECTION_EFFECT_ID)
                     hasResurrectionEffect=true;
-                else if(effect.getEffectID()!=0)
-                    hasOtherEffect=true;
+                else if(effectId!=0)
+                    return false;
             }
 
-        return hasResurrectionEffect&&!hasOtherEffect;
+        return hasResurrectionEffect;
     }
 }
