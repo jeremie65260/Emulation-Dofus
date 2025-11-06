@@ -473,6 +473,45 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
     return this.mobPossibles;
   }
 
+  public boolean canSpawnMonster(int templateId)
+  {
+    for(MobGrade mobGrade : this.mobPossibles)
+    {
+      if(mobGrade.getTemplate().getId()==templateId)
+        return true;
+    }
+    return this.mobExtras.containsKey(templateId);
+  }
+
+  public boolean isGroupDataAllowed(String groupData)
+  {
+    if(groupData==null||groupData.isEmpty())
+      return true;
+
+    for(String data : groupData.split(";"))
+    {
+      if(data.isEmpty())
+        continue;
+      String[] infos=data.split(",");
+      if(infos.length==0)
+        continue;
+      try
+      {
+        String templateData=infos[0].trim();
+        if(templateData.isEmpty())
+          continue;
+        int templateId=Integer.parseInt(templateData);
+        if(!canSpawnMonster(templateId))
+          return false;
+      }
+      catch(NumberFormatException e)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public void setMobPossibles(String monsters)
   {
     if(monsters==null||monsters.equals(""))

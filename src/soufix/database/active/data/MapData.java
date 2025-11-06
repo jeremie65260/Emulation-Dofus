@@ -293,7 +293,7 @@ public class MapData extends AbstractDAO<GameMap>
       while(RS.next())
       {
         final MobGroup group=new MobGroup(RS.getInt("id"),RS.getShort("map"),RS.getInt("cell"),RS.getString("group"),RS.getString("objects"),RS.getLong("stars"));
-        if(map!=null)
+        if(map!=null&&map.isGroupDataAllowed(RS.getString("group")))
           map.respawnGroup(group);
       }
       close(result);
