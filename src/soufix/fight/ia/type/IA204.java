@@ -41,8 +41,9 @@ public class IA204 extends AbstractNeedSpell
 
             Fighter targetDistance=getRangedTarget(maxPo);
             Fighter targetMelee=getMeleeTarget();
+            Fighter deadAlly=getLastDeadAlly();
 
-            if(!usedAction&&this.fighter.getCurPa(this.fight)>0&&tryResurrection())
+            if(!usedAction&&deadAlly!=null&&this.fighter.getCurPa(this.fight)>0&&tryResurrection(deadAlly))
             {
                 time=600;
                 usedAction=true;
@@ -152,11 +153,10 @@ public class IA204 extends AbstractNeedSpell
         return null;
     }
 
-    private boolean tryResurrection()
+    private boolean tryResurrection(Fighter dead)
     {
         if(this.resurrections.isEmpty())
             return false;
-        Fighter dead=getLastDeadAlly();
         if(dead==null)
             return false;
 
