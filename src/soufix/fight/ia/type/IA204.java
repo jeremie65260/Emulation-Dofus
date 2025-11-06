@@ -128,32 +128,20 @@ public class IA204 extends IA203
      */
     private boolean containsResurrectionEffect(SortStats spell)
     {
-        return containsResurrectionEffect(spell,spell.getEffects())
-                || containsResurrectionEffect(spell,spell.getCCeffects());
-    }
-
-    private boolean containsResurrectionEffect(SortStats spell, List<SpellEffect> effects)
-    {
-        if(effects==null||effects.isEmpty())
-            return false;
-
-        boolean hasResurrectionEffect=false;
-
-        for(int index=0;index<effects.size();index++)
-        {
-            SpellEffect effect=effects.get(index);
-            if(effect==null)
-                continue;
-
-            int effectId=effect.getEffectID();
-            if(effectId==RESURRECTION_EFFECT_ID)
+        if(spell.getEffects()!=null)
+            for(SpellEffect effect : spell.getEffects())
             {
-                if(isAllyRestrictedResurrection(spell,index))
-                    hasResurrectionEffect=true;
+                if(effect==null)
+                    continue;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    return true;
             }
             else if(effectId!=0)
             {
-                return false;
+                if(effect==null)
+                    continue;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    return true;
             }
         }
 
@@ -197,6 +185,6 @@ public class IA204 extends IA203
         if(levelTargets==null||effectIndex<0||effectIndex>=levelTargets.size())
             return null;
 
-        return levelTargets.get(effectIndex);
+        return false;
     }
 }
