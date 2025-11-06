@@ -295,7 +295,7 @@ public class IAHandler
         case 203: //IA Cac 1 PO et 2 PO , soin <50%, désinvocation + invocation
           ia=new IA203(fight,fighter,(byte)8);
           break;
-        case 204: //IA203 avec contrôle de résurrection
+        case 204: //IA distance + cac avec priorité résurrection
           ia=new IA204(fight,fighter,(byte)8);
           break;
         case 205: // Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
