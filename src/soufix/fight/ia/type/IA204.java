@@ -1,30 +1,24 @@
 package soufix.fight.ia.type;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collections;
 
-import soufix.area.map.GameCase;
-import soufix.common.PathFinding;
 import soufix.fight.Fight;
 import soufix.fight.Fighter;
 import soufix.fight.ia.AbstractNeedSpell;
 import soufix.fight.ia.util.Function;
 import soufix.fight.spells.Spell;
-import soufix.fight.spells.SpellEffect;
 import soufix.main.Config;
-import soufix.utility.Pair;
 
 public class IA204 extends AbstractNeedSpell
 {
-    private final List<Spell.SortStats> resurrections = new ArrayList<>();
+    private final Spell.SortStats spell420;
+    private int lastSpellTurn;
 
     public IA204(Fight fight, Fighter fighter, byte count)
     {
         super(fight,fighter,count);
-        initResurrectionSpells();
+        this.spell420=initSpell420();
+        this.lastSpellTurn=0;
     }
 
     @Override
@@ -41,12 +35,16 @@ public class IA204 extends AbstractNeedSpell
 
             Fighter targetDistance=getRangedTarget(maxPo);
             Fighter targetMelee=getMeleeTarget();
-            Fighter deadAlly=getLastDeadAlly();
 
-            if(!usedAction&&deadAlly!=null&&this.fighter.getCurPa(this.fight)>0&&tryResurrection(deadAlly))
+            if(!usedAction&&canCastSpell420())
             {
-                time=600;
-                usedAction=true;
+                int value=Function.getInstance().attackIfPossible(this.fight,this.fighter,Collections.singletonList(this.spell420));
+                if(value!=-1)
+                {
+                    time=Math.max(time,value);
+                    usedAction=true;
+                    this.lastSpellTurn=this.fighter.getTour();
+                }
             }
 
             if(this.fighter.getCurPm(this.fight)>0&&!usedAction&&targetDistance==null&&targetMelee==null)
@@ -104,111 +102,17 @@ public class IA204 extends AbstractNeedSpell
         }
     }
 
-    private void initResurrectionSpells()
+    private Spell.SortStats initSpell420()
     {
+        if(this.fighter==null||this.fighter.getMob()==null)
+            return null;
         try
         {
-            if(this.fighter==null||this.fighter.getMob()==null)
-                return;
-            Map<Integer, Spell.SortStats> spells=this.fighter.getMob().getSpells();
-            for(Spell.SortStats stats : spells.values())
-            {
-                if(stats==null)
-                    continue;
-                for(SpellEffect effect : stats.getEffects())
-                {
-                    if(effect!=null&&effect.getEffectID()==780)
-                    {
-                        this.resurrections.add(stats);
-                        break;
-                    }
-                }
-            }
+            return this.fighter.getMob().getSpells().get(420);
         }
         catch(Exception e)
         {
-            // ignore
-        }
-    }
-
-    private Fighter getLastDeadAlly()
-    {
-        if(this.fight==null)
             return null;
-        List<Pair<Integer, Fighter>> dead=this.fight.getDeadList();
-        for(int i=dead.size()-1;i>=0;i--)
-        {
-            Pair<Integer, Fighter> entry=dead.get(i);
-            Fighter candidate=entry==null?null:entry.getRight();
-            if(candidate==null)
-                continue;
-            if(candidate.hasLeft())
-                continue;
-            if(!candidate.isDead())
-                continue;
-            if(candidate.getTeam()!=this.fighter.getTeam())
-                continue;
-            return candidate;
-        }
-        return null;
-    }
-
-    private boolean tryResurrection(Fighter dead)
-    {
-        if(this.resurrections.isEmpty())
-            return false;
-        if(dead==null)
-            return false;
-
-        Set<Integer> cells=new LinkedHashSet<>();
-        addDeadCell(cells,dead);
-        addAroundCell(cells,dead.getCell());
-        addAroundCell(cells,this.fighter.getCell());
-        Fighter ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
-        if(ennemy!=null)
-            addAroundCell(cells,ennemy.getCell());
-
-        for(Spell.SortStats spell : this.resurrections)
-        {
-            if(spell==null)
-                continue;
-            for(Integer cellId : cells)
-            {
-                if(cellId==null||cellId<=0)
-                    continue;
-                if(this.fight.tryCastSpell(this.fighter,spell,cellId)==0)
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    private void addDeadCell(Set<Integer> cells, Fighter dead)
-    {
-        if(dead==null)
-            return;
-        GameCase cell=dead.getCell();
-        if(cell==null)
-            return;
-        if(!cell.getFighters().isEmpty())
-            return;
-        if(!cell.isWalkable(false))
-            return;
-        cells.add(cell.getId());
-    }
-
-    private void addAroundCell(Set<Integer> cells, GameCase base)
-    {
-        if(base==null)
-            return;
-        List<Integer> used=new ArrayList<>();
-        for(int i=0;i<4;i++)
-        {
-            int cellId=PathFinding.getAvailableCellArround(this.fight,base.getId(),used);
-            if(cellId<=0)
-                break;
-            used.add(cellId);
-            cells.add(cellId);
         }
     }
 
@@ -239,5 +143,20 @@ public class IA204 extends AbstractNeedSpell
         if(target!=null&&target.isHide())
             return null;
         return target;
+    }
+
+    private boolean canCastSpell420()
+    {
+        if(this.spell420==null)
+            return false;
+        if(this.fight==null)
+            return false;
+        if(this.fighter==null)
+            return false;
+        if(this.fighter.getCurPa(this.fight)<=0)
+            return false;
+        if(this.fighter.getTour()<3)
+            return false;
+        return this.lastSpellTurn!=this.fighter.getTour();
     }
 }
