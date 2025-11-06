@@ -41,8 +41,11 @@ public class IA204 extends AbstractNeedSpell
 
             Fighter targetDistance=getRangedTarget(maxPo);
             Fighter targetMelee=getMeleeTarget();
+            Fighter deadAlly=getLastDeadAlly();
+            if(deadAlly!=null&&!isDeadAllyStillAvailable(deadAlly))
+                deadAlly=null;
 
-            if(!usedAction&&this.fighter.getCurPa(this.fight)>0&&tryResurrection())
+            if(!usedAction&&deadAlly!=null&&this.fighter.getCurPa(this.fight)>0&&tryResurrection(deadAlly))
             {
                 time=600;
                 usedAction=true;
@@ -143,6 +146,8 @@ public class IA204 extends AbstractNeedSpell
                 continue;
             if(candidate.hasLeft())
                 continue;
+            if(!candidate.isDead())
+                continue;
             if(candidate.getTeam()!=this.fighter.getTeam())
                 continue;
             return candidate;
@@ -150,11 +155,31 @@ public class IA204 extends AbstractNeedSpell
         return null;
     }
 
-    private boolean tryResurrection()
+    private boolean isDeadAllyStillAvailable(Fighter dead)
+    {
+        if(dead==null||this.fight==null)
+            return false;
+        if(!dead.isDead())
+            return false;
+        if(dead.hasLeft())
+            return false;
+        if(dead.getTeam()!=this.fighter.getTeam())
+            return false;
+        for(Pair<Integer, Fighter> entry : this.fight.getDeadList())
+        {
+            if(entry==null)
+                continue;
+            Fighter candidate=entry.getRight();
+            if(candidate==dead)
+                return true;
+        }
+        return false;
+    }
+
+    private boolean tryResurrection(Fighter dead)
     {
         if(this.resurrections.isEmpty())
             return false;
-        Fighter dead=getLastDeadAlly();
         if(dead==null)
             return false;
 
