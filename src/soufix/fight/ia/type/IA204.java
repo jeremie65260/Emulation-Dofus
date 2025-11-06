@@ -113,34 +113,26 @@ public class IA204 extends IA203
             return false;
 
         List<Pair<Integer, Fighter>> deadList=this.fight.getDeadList();
-        if(deadList!=null&&!deadList.isEmpty())
-        {
-            for(int i=deadList.size()-1;i>=0;i--)
-            {
-                Pair<Integer, Fighter> deadEntry=deadList.get(i);
-                Fighter dead=deadEntry==null?null:deadEntry.getRight();
-                if(!isValidResurrectionCandidate(dead))
-                {
-                    if(dead!=null)
-                        this.fight.removeDead(dead);
-                    else
-                        deadList.remove(i);
-                    continue;
-                }
+        if(deadList==null||deadList.isEmpty())
+            return false;
 
-                if(dead.getTeam()==this.fighter.getTeam())
-                    return true;
-            }
-        }
-
-        // File d'attente nettoyée : on vérifie directement l'état des combattants de l'équipe.
-        for(Fighter ally : this.fight.getTeam(this.fighter.getTeam()).values())
+        boolean hasValidDead=false;
+        for(int i=deadList.size()-1;i>=0;i--)
         {
-            if(isValidResurrectionCandidate(ally))
+            Fighter dead=entry.getRight();
+            if(dead==null)
+                continue;
+            if(dead.getFight()!=this.fight)
+                continue;
+            if(dead.hasLeft()||!dead.isDead())
+                continue;
+            if(dead.isInvocation()||dead.isDouble())
+                continue;
+            if(dead.getTeam()==this.fighter.getTeam())
                 return true;
         }
 
-        return false;
+        return hasValidDead;
     }
 
     private boolean isValidResurrectionCandidate(Fighter fighter)
