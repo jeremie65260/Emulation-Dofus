@@ -44,7 +44,7 @@ public class HeroicMobsGroups extends AbstractDAO<Object>
       {
         final MobGroup group=new MobGroup(RS.getInt("id"),RS.getShort("map"),RS.getInt("cell"),RS.getString("group"),"",10000);
         final GameMap map=Main.world.getMap(RS.getShort("map"));
-        if(map!=null)
+        if(map!=null&&map.isGroupDataAllowed(RS.getString("group")))
           map.respawnGroup(group);
       }
     }
