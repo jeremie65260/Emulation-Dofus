@@ -127,18 +127,13 @@ public class IA204 extends IA203
      */
     private boolean containsResurrectionEffect(SortStats spell)
     {
-        boolean hasResurrectionEffect=false;
-
         if(spell.getEffects()!=null)
             for(SpellEffect effect : spell.getEffects())
             {
                 if(effect==null)
                     continue;
-                int effectId=effect.getEffectID();
-                if(effectId==RESURRECTION_EFFECT_ID)
-                    hasResurrectionEffect=true;
-                else if(effectId!=0)
-                    return false;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    return true;
             }
 
         if(spell.getCCeffects()!=null)
@@ -146,13 +141,10 @@ public class IA204 extends IA203
             {
                 if(effect==null)
                     continue;
-                int effectId=effect.getEffectID();
-                if(effectId==RESURRECTION_EFFECT_ID)
-                    hasResurrectionEffect=true;
-                else if(effectId!=0)
-                    return false;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    return true;
             }
 
-        return hasResurrectionEffect;
+        return false;
     }
 }
