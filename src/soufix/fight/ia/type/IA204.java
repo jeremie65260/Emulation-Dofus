@@ -112,13 +112,30 @@ public class IA204 extends IA203
         if(this.fight==null||this.fighter==null)
             return false;
 
-        for(Pair<Integer, Fighter> entry : this.fight.getDeadList())
+        List<Pair<Integer, Fighter>> deadList=this.fight.getDeadList();
+        if(deadList==null||deadList.isEmpty())
+            return false;
+
+        boolean hasValidDead=false;
+        for(int i=deadList.size()-1;i>=0;i--)
         {
-            Fighter dead=entry.getRight();
-            if(dead!=null&&dead.getTeam()==this.fighter.getTeam()&&!dead.hasLeft())
-                return true;
+            Pair<Integer, Fighter> entry=deadList.get(i);
+            Fighter dead=entry==null?null:entry.getRight();
+            if(dead==null||dead.getFight()!=this.fight||dead.hasLeft()||!dead.isDead()||dead.isInvocation()||dead.isDouble())
+            {
+                // Nettoie la liste pour éviter que l'IA tente de cibler ces entités aux tours suivants.
+                deadList.remove(i);
+                continue;
+            }
+
+            if(dead.getTeam()==this.fighter.getTeam())
+            {
+                hasValidDead=true;
+                break;
+            }
         }
-        return false;
+
+        return hasValidDead;
     }
 
     /**
@@ -128,16 +145,31 @@ public class IA204 extends IA203
      */
     private boolean containsResurrectionEffect(SortStats spell)
     {
+        boolean hasResurrectionEffect=false;
+        boolean hasOtherEffect=false;
+
         if(spell.getEffects()!=null)
             for(SpellEffect effect : spell.getEffects())
-                if(effect!=null&&effect.getEffectID()==RESURRECTION_EFFECT_ID)
-                    return true;
+            {
+                if(effect==null)
+                    continue;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    hasResurrectionEffect=true;
+                else if(effect.getEffectID()!=0)
+                    hasOtherEffect=true;
+            }
 
         if(spell.getCCeffects()!=null)
             for(SpellEffect effect : spell.getCCeffects())
-                if(effect!=null&&effect.getEffectID()==RESURRECTION_EFFECT_ID)
-                    return true;
+            {
+                if(effect==null)
+                    continue;
+                if(effect.getEffectID()==RESURRECTION_EFFECT_ID)
+                    hasResurrectionEffect=true;
+                else if(effect.getEffectID()!=0)
+                    hasOtherEffect=true;
+            }
 
-        return false;
+        return hasResurrectionEffect&&!hasOtherEffect;
     }
 }
