@@ -327,6 +327,7 @@ public class MobGrade
     {
       if(caster.getPersonnage()!=null)
       {
+        // Prendre les stats de l'invocateur
         if(caster.getPersonnage().getClasse()==Constant.CLASS_OSAMODAS)
         {
           final double transferRatio=0.8d;
