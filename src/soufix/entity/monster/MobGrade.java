@@ -327,6 +327,47 @@ public class MobGrade
     {
       if(caster.getPersonnage()!=null)
       {
+        if(caster.getPersonnage().getClasse()==Constant.CLASS_OSAMODAS)
+        {
+          final double vitalityRatio=0.25d;
+          final double characteristicRatio=0.5d;
+          final double damageRatio=0.5d;
+          Stats invocatorStats=caster.getPersonnage().getTotalStats();
+
+          int vitalityBonus=(int)Math.floor(invocatorStats.getEffect(Constant.STATS_ADD_VITA)*vitalityRatio);
+          if(vitalityBonus>0)
+          {
+            pdv=pdvMax+vitalityBonus;
+            pdvMax=pdv;
+          }
+
+          int[] characteristicStats={ Constant.STATS_ADD_SAGE, Constant.STATS_ADD_FORC, Constant.STATS_ADD_INTE,
+              Constant.STATS_ADD_CHAN, Constant.STATS_ADD_AGIL };
+          for(int statId : characteristicStats)
+          {
+            int addition=(int)Math.floor(invocatorStats.getEffect(statId)*characteristicRatio);
+            if(addition<=0)
+              continue;
+            Integer baseValue=this.stats.get(statId);
+            if(baseValue==null)
+              baseValue=0;
+            this.stats.put(statId,baseValue+addition);
+          }
+
+          int[] damageStats={ Constant.STATS_ADD_DOMA, Constant.STATS_ADD_PERDOM, Constant.STATS_ADD_PDOM };
+          for(int statId : damageStats)
+          {
+            int addition=(int)Math.floor(invocatorStats.getEffect(statId)*damageRatio);
+            if(addition<=0)
+              continue;
+            Integer baseValue=this.stats.get(statId);
+            if(baseValue==null)
+              baseValue=0;
+            this.stats.put(statId,baseValue+addition);
+          }
+          return;
+        }
+
         double casterVit=caster.getPersonnage().getMaxPdv();
         double modifier=((casterVit*pdvMax*0.15)/225);
         if(modifier>800)
