@@ -35,6 +35,7 @@ public class MobGrade
   private Map<Integer, Integer> stats=new HashMap<Integer, Integer>();
   private Map<Integer, SortStats> spells=new HashMap<Integer, SortStats>();
   private ArrayList<Integer> statsInfos=new ArrayList<Integer>();
+  private boolean osamodasScalingApplied;
 
   public MobGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp, int n)
   {
@@ -327,6 +328,47 @@ public class MobGrade
     {
       if(caster.getPersonnage()!=null)
       {
+        if(caster.getPersonnage().getClasse()==Constant.CLASS_OSAMODAS)
+        {
+          if(this.osamodasScalingApplied)
+            return;
+          this.osamodasScalingApplied=true;
+
+          final double vitalityRatio=0.25d;
+          final double characteristicRatio=0.5d;
+          final double damageRatio=0.5d;
+          Stats invocatorStats=caster.getPersonnage().getTotalStats();
+
+          int scaledVitality=(int)Math.floor(invocatorStats.getEffect(Constant.STATS_ADD_VITA)*vitalityRatio);
+          if(scaledVitality>this.pdvMax)
+          {
+            this.pdvMax=scaledVitality;
+            this.pdv=this.pdvMax;
+          }
+
+          int[] characteristicStats={ Constant.STATS_ADD_SAGE, Constant.STATS_ADD_FORC, Constant.STATS_ADD_INTE,
+              Constant.STATS_ADD_CHAN, Constant.STATS_ADD_AGIL };
+          for(int statId : characteristicStats)
+          {
+            int scaledValue=(int)Math.floor(invocatorStats.getEffect(statId)*characteristicRatio);
+            Integer baseValue=this.stats.get(statId);
+            int base=baseValue==null ? 0 : baseValue;
+            if(scaledValue>base)
+              this.stats.put(statId,scaledValue);
+          }
+
+          int[] damageStats={ Constant.STATS_ADD_DOMA, Constant.STATS_ADD_PERDOM, Constant.STATS_ADD_PDOM };
+          for(int statId : damageStats)
+          {
+            int scaledValue=(int)Math.floor(invocatorStats.getEffect(statId)*damageRatio);
+            Integer baseValue=this.stats.get(statId);
+            int base=baseValue==null ? 0 : baseValue;
+            if(scaledValue>base)
+              this.stats.put(statId,scaledValue);
+          }
+          return;
+        }
+
         double casterVit=caster.getPersonnage().getMaxPdv();
         double modifier=((casterVit*pdvMax*0.15)/225);
         if(modifier>800)
