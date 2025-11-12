@@ -35,6 +35,7 @@ public class MobGrade
   private Map<Integer, Integer> stats=new HashMap<Integer, Integer>();
   private Map<Integer, SortStats> spells=new HashMap<Integer, SortStats>();
   private ArrayList<Integer> statsInfos=new ArrayList<Integer>();
+  private boolean osamodasScalingApplied;
 
   public MobGrade(Monster template, int grade, int level, int pa, int pm, String resists, String stats, String statsInfos, String allSpells, int pdvMax, int aInit, int xp, int n)
   {
