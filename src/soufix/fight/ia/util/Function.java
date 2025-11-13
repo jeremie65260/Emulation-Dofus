@@ -2816,6 +2816,7 @@ public class Function
     int bestCell=-1;
     int bestTargetDistance=Integer.MAX_VALUE;
     int bestCasterDistance=Integer.MAX_VALUE;
+    boolean foundAdjacent=false;
 
     Set<Integer> usedTrapCells=getUsedTrapCells(fight,caster);
 
@@ -2830,6 +2831,8 @@ public class Function
       // Évite de sélectionner la cellule déjà occupée par la cible
       if(target.getCell()!=null&&candidate.getId()==target.getCell().getId())
         continue;
+      if(usedTrapCells.contains(candidate.getId()))
+        continue;
       boolean trapAlreadyPresent=false;
       for(Trap trap : fight.getAllTraps())
         if(trap!=null&&trap.getCell().getId()==candidate.getId())
@@ -2842,35 +2845,50 @@ public class Function
       if(!fight.canCastSpell1(caster,spell,candidate,-1))
         continue;
 
-      boolean enemyNearby=false;
-      for(Fighter potentialTarget : fight.getFighters(3))
+      int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
+      if(distanceToTarget<0)
+        continue;
+
+      boolean adjacentToTarget=(distanceToTarget==1);
+
+      boolean enemyNearby=adjacentToTarget;
+      if(!enemyNearby)
       {
-        if(potentialTarget==null||potentialTarget.isDead())
-          continue;
-        if(potentialTarget.getTeam()==caster.getTeam())
-          continue;
-        GameCase potentialCell=potentialTarget.getCell();
-        if(potentialCell==null)
-          continue;
-        int distanceToPotential=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),potentialCell.getId());
-        if(distanceToPotential==1)
+        for(Fighter potentialTarget : fight.getFighters(3))
         {
-          enemyNearby=true;
-          break;
+          if(potentialTarget==null||potentialTarget.isDead())
+            continue;
+          if(potentialTarget.getTeam()==caster.getTeam())
+            continue;
+          GameCase potentialCell=potentialTarget.getCell();
+          if(potentialCell==null)
+            continue;
+          int distanceToPotential=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),potentialCell.getId());
+          if(distanceToPotential==1)
+          {
+            enemyNearby=true;
+            break;
+          }
         }
       }
       if(!enemyNearby)
-        continue;
-
-      int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
-      if(distanceToTarget<0)
         continue;
 
       int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),caster.getCell().getId());
       if(distanceToCaster<0)
         continue;
 
-      if(distanceToTarget<bestTargetDistance||(distanceToTarget==bestTargetDistance&&distanceToCaster<bestCasterDistance))
+      if(adjacentToTarget)
+      {
+        if(!foundAdjacent||distanceToCaster<bestCasterDistance||(distanceToCaster==bestCasterDistance&&distanceToTarget<bestTargetDistance))
+        {
+          bestCell=candidate.getId();
+          bestTargetDistance=distanceToTarget;
+          bestCasterDistance=distanceToCaster;
+          foundAdjacent=true;
+        }
+      }
+      else if(!foundAdjacent&&(distanceToTarget<bestTargetDistance||(distanceToTarget==bestTargetDistance&&distanceToCaster<bestCasterDistance)))
       {
         bestCell=candidate.getId();
         bestTargetDistance=distanceToTarget;
