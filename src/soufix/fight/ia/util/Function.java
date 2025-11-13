@@ -11,18 +11,22 @@ import soufix.fight.spells.LaunchedSpell;
 import soufix.fight.spells.SpellEffect;
 import soufix.fight.spells.Spell.SortStats;
 import soufix.fight.traps.Glyph;
+import soufix.fight.traps.Trap;
 import soufix.game.action.GameAction;
 import soufix.main.Config;
 import soufix.main.Constant;
 import soufix.main.Logging;
 import soufix.main.Main;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
-
-import java.util.HashMap;
 public class Function
 {
 
@@ -2706,7 +2710,15 @@ public class Function
     {
       if(target==null||SS==null)
         return -1;
-      int attack=fight.tryCastSpell(fighter,SS,target.getCell().getId());
+      int cellId=target.getCell().getId();
+      if(isTrapSpell(SS))
+      {
+        int trapCellId=findTrapCell(fight,fighter,target,SS);
+        if(trapCellId==-1)
+          return -1;
+        cellId=trapCellId;
+      }
+      int attack=fight.tryCastSpell(fighter,SS,cellId);
       if(attack==0)
         return SS.getSpell().getDuration();
     }
@@ -2748,6 +2760,102 @@ public class Function
         return SS2.getSpell().getDuration();
     }
     return 0;
+  }
+
+  private boolean isTrapSpell(SortStats spell)
+  {
+    if(spell==null)
+      return false;
+
+    if(Constant.getTrapsColor(spell.getSpellID())!=0)
+      return true;
+
+    for(SpellEffect effect : spell.getEffects())
+      if(effect!=null&&effect.getEffectID()==400)
+        return true;
+
+    for(SpellEffect effect : spell.getCCeffects())
+      if(effect!=null&&effect.getEffectID()==400)
+        return true;
+
+    return false;
+  }
+
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
+  {
+    if(fight==null||caster==null||target==null||spell==null)
+      return -1;
+    if(fight.getMap()==null||caster.getCell()==null||target.getCell()==null)
+      return -1;
+
+    GameCase targetCell=target.getCell();
+    GameCase casterCell=caster.getCell();
+    List<Trap> traps=fight.getAllTraps();
+
+    Queue<int[]> queue=new ArrayDeque<>();
+    Set<Integer> visited=new HashSet<>();
+    final char[] directions= { 'b', 'd', 'f', 'h' };
+
+    queue.offer(new int[] { targetCell.getId(),0 });
+    visited.add(targetCell.getId());
+
+    int bestCell=-1;
+    int bestTargetDistance=Integer.MAX_VALUE;
+    int bestCasterDistance=Integer.MAX_VALUE;
+
+    while(!queue.isEmpty())
+    {
+      int[] entry=queue.poll();
+      int cellId=entry[0];
+      int distanceFromTarget=entry[1];
+      GameCase candidate=fight.getMap().getCase(cellId);
+
+      if(candidate==null)
+        continue;
+
+      if(bestCell!=-1&&distanceFromTarget>bestTargetDistance)
+        break;
+
+      if(candidate.getId()!=targetCell.getId()&&candidate.getId()!=casterCell.getId()&&candidate.isWalkable(false))
+      {
+        Fighter occupant=candidate.getFirstFighter();
+        if(occupant==null)
+        {
+          boolean trapAlreadyPresent=false;
+          for(Trap trap : traps)
+            if(trap!=null&&trap.getCell()!=null&&trap.getCell().getId()==candidate.getId())
+            {
+              trapAlreadyPresent=true;
+              break;
+            }
+          if(!trapAlreadyPresent&&fight.canCastSpell1(caster,spell,candidate,-1))
+          {
+            int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),casterCell.getId());
+            if(distanceToCaster>=0)
+            {
+              if(bestCell==-1||distanceFromTarget<bestTargetDistance||(distanceFromTarget==bestTargetDistance&&distanceToCaster<bestCasterDistance))
+              {
+                bestCell=candidate.getId();
+                bestTargetDistance=distanceFromTarget;
+                bestCasterDistance=distanceToCaster;
+              }
+            }
+          }
+        }
+      }
+
+      for(char dir : directions)
+      {
+        int neighbourId=PathFinding.GetCaseIDFromDirrection(cellId,dir,fight.getMap(),true);
+        if(neighbourId<0)
+          continue;
+        if(!visited.add(neighbourId))
+          continue;
+        queue.offer(new int[] { neighbourId,distanceFromTarget+1 });
+      }
+    }
+
+    return bestCell;
   }
 
   public int attackIfPossibleCM1(Fight fight, Fighter fighter, List<SortStats> Spell, boolean notcac)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
