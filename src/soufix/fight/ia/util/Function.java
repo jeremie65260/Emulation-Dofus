@@ -10,6 +10,7 @@ import soufix.fight.Fighter;
 import soufix.fight.spells.LaunchedSpell;
 import soufix.fight.spells.SpellEffect;
 import soufix.fight.spells.Spell.SortStats;
+import soufix.fight.spells.Spell;
 import soufix.fight.traps.Glyph;
 import soufix.fight.traps.Trap;
 import soufix.game.action.GameAction;
@@ -2717,11 +2718,24 @@ public class Function
         int trapCellId=findTrapCell(fight,fighter,target,SS);
         if(trapCellId==-1)
           return -1;
+        boolean previousTrapState=fighter.getJustTrapped();
+        int trapCountBefore=fight.getAllTraps().size();
+        fighter.setJustTrapped(false);
         int attack=fight.tryCastSpell(fighter,SS,trapCellId);
         if(attack==0)
         {
-          rememberTrapCell(fight,fighter,trapCellId);
-          return SS.getSpell().getDuration();
+          boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+          if(trapPlaced)
+          {
+            rememberTrapCell(fight,fighter,trapCellId);
+            return SS.getSpell().getDuration();
+          }
+          fighter.setJustTrapped(previousTrapState);
+          getUsedTrapCells(fight,fighter).add(trapCellId);
+        }
+        else
+        {
+          fighter.setJustTrapped(previousTrapState);
         }
         return -1;
       }
@@ -2773,7 +2787,27 @@ public class Function
   {
     if(spell==null)
       return false;
-    for(SpellEffect effect : spell.getEffects())
+
+    if(hasTrapCreationEffect(spell.getEffects()))
+      return true;
+
+    if(hasTrapCreationEffect(spell.getCCeffects()))
+      return true;
+
+    Spell baseSpell=spell.getSpell();
+    if(baseSpell!=null)
+      for(SortStats levelStats : baseSpell.getSortsStats().values())
+        if(levelStats!=null&&hasTrapCreationEffect(levelStats.getEffects()))
+          return true;
+
+    return false;
+  }
+
+  private boolean hasTrapCreationEffect(List<SpellEffect> effects)
+  {
+    if(effects==null)
+      return false;
+    for(SpellEffect effect : effects)
       if(effect!=null&&effect.getEffectID()==400)
         return true;
     return false;
