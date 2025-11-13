@@ -2804,6 +2804,26 @@ public class Function
       if(!fight.canCastSpell1(caster,spell,candidate,-1))
         continue;
 
+      boolean enemyNearby=false;
+      for(Fighter potentialTarget : fight.getFighters(3))
+      {
+        if(potentialTarget==null||potentialTarget.isDead())
+          continue;
+        if(potentialTarget.getTeam()==caster.getTeam())
+          continue;
+        GameCase potentialCell=potentialTarget.getCell();
+        if(potentialCell==null)
+          continue;
+        int distanceToPotential=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),potentialCell.getId());
+        if(distanceToPotential==1)
+        {
+          enemyNearby=true;
+          break;
+        }
+      }
+      if(!enemyNearby)
+        continue;
+
       int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
       if(distanceToTarget<0)
         continue;
