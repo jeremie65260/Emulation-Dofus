@@ -6342,11 +6342,11 @@ public class SpellEffect
     Trap g=new Trap(fight,caster,cell,size,TS,spell);
     fight.getAllTraps().add(g);
     int unk=g.getColor();
-    int team=caster.getTeam()+1;
+    int teamMask=caster.getTeam()+1;
     String str="GDZ+"+cell.getId()+";"+size+";"+unk;
-    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,team,999,caster.getId()+"",str);
+    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,teamMask,999,caster.getId()+"",str);
     str="GDC"+cell.getId()+";Haaaaaaaaz3005;";
-    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,team,999,caster.getId()+"",str);
+    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,teamMask,999,caster.getId()+"",str);
     caster.setJustTrapped(true);
   }
 
