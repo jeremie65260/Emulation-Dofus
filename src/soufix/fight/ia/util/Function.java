@@ -2788,9 +2788,6 @@ public class Function
     if(spell==null)
       return false;
 
-    if(Constant.getTrapsColor(spell.getSpellID())!=0)
-      return true;
-
     if(hasTrapCreationEffect(spell.getEffects()))
       return true;
 
