@@ -2827,8 +2827,6 @@ public class Function
         continue;
       if(candidate.getFirstFighter()!=null)
         continue;
-      if(usedTrapCells.contains(candidate.getId()))
-        continue;
       // Évite de sélectionner la cellule déjà occupée par la cible
       if(target.getCell()!=null&&candidate.getId()==target.getCell().getId())
         continue;
