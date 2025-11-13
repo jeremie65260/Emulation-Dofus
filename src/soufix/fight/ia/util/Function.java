@@ -2722,20 +2722,16 @@ public class Function
         int trapCountBefore=fight.getAllTraps().size();
         fighter.setJustTrapped(false);
         int attack=fight.tryCastSpell(fighter,SS,trapCellId);
+        boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+        fighter.setJustTrapped(previousTrapState);
         if(attack==0)
         {
-          boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
           if(trapPlaced)
           {
             rememberTrapCell(fight,fighter,trapCellId);
             return SS.getSpell().getDuration();
           }
-          fighter.setJustTrapped(previousTrapState);
           getUsedTrapCells(fight,fighter).add(trapCellId);
-        }
-        else
-        {
-          fighter.setJustTrapped(previousTrapState);
         }
         return -1;
       }
