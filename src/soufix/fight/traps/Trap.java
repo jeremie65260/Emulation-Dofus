@@ -66,11 +66,11 @@ public class Trap
     StringBuilder str3=new StringBuilder();
     StringBuilder str4=new StringBuilder();
 
-    int team=this.caster.getTeam()+1;
+    int teamMask=this.caster.getTeam()+1;
     str.append("GDZ-").append(this.cell.getId()).append(";").append(this.size).append(";").append(this.color);
-    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,team,999,this.caster.getId()+"",str.toString());
+    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,teamMask,999,this.caster.getId()+"",str.toString());
     str2.append("GDC").append(this.cell.getId());
-    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,team,999,this.caster.getId()+"",str2.toString());
+    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,teamMask,999,this.caster.getId()+"",str2.toString());
     if(this.isUnHide)
     {
       int team2=this.teamUnHide+1;
@@ -87,10 +87,11 @@ public class Trap
     StringBuilder str2=new StringBuilder();
 
     int team=f.getTeam()+1;
+    String source=this.caster.getId()+"";
     str.append("GDZ+").append(this.cell.getId()).append(";").append(this.size).append(";").append(this.color);
-    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,team,999,this.caster.getId()+"",str.toString());
+    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,team,999,source,str.toString());
     str2.append("GDC").append(this.cell.getId()).append(";Haaaaaaaaz3005;");
-    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,team,999,this.caster.getId()+"",str2.toString());
+    SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,team,999,source,str2.toString());
   }
 
   public void onTraped(Fighter target)
