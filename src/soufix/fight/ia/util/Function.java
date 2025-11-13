@@ -2722,20 +2722,16 @@ public class Function
         int trapCountBefore=fight.getAllTraps().size();
         fighter.setJustTrapped(false);
         int attack=fight.tryCastSpell(fighter,SS,trapCellId);
+        boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+        fighter.setJustTrapped(previousTrapState);
         if(attack==0)
         {
-          boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
           if(trapPlaced)
           {
             rememberTrapCell(fight,fighter,trapCellId);
             return SS.getSpell().getDuration();
           }
-          fighter.setJustTrapped(previousTrapState);
           getUsedTrapCells(fight,fighter).add(trapCellId);
-        }
-        else
-        {
-          fighter.setJustTrapped(previousTrapState);
         }
         return -1;
       }
@@ -2853,6 +2849,52 @@ public class Function
     boolean foundAdjacent=false;
 
     Set<Integer> usedTrapCells=getUsedTrapCells(fight,caster);
+
+    GameCase targetCell=target.getCell();
+    if(targetCell!=null&&caster.getCell()!=null)
+    {
+      GameCase bestAdjacent=null;
+      int bestAdjacentDistance=Integer.MAX_VALUE;
+      char[] directions= { 'b','d','f','h' };
+      for(char direction : directions)
+      {
+        int cellId=PathFinding.GetCaseIDFromDirrection(targetCell.getId(),direction,fight.getMap(),true);
+        if(cellId==-1)
+          continue;
+        GameCase adjacent=fight.getMap().getCase(cellId);
+        if(adjacent==null)
+          continue;
+        if(!adjacent.isWalkable(false))
+          continue;
+        if(adjacent.getFirstFighter()!=null)
+          continue;
+        if(usedTrapCells.contains(adjacent.getId()))
+          continue;
+        boolean trapAlreadyPresent=false;
+        for(Trap trap : fight.getAllTraps())
+        {
+          if(trap!=null&&trap.getCell().getId()==adjacent.getId())
+          {
+            trapAlreadyPresent=true;
+            break;
+          }
+        }
+        if(trapAlreadyPresent)
+          continue;
+        if(!fight.canCastSpell1(caster,spell,adjacent,-1))
+          continue;
+        int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
+        if(distanceToCaster<0)
+          continue;
+        if(bestAdjacent==null||distanceToCaster<bestAdjacentDistance)
+        {
+          bestAdjacent=adjacent;
+          bestAdjacentDistance=distanceToCaster;
+        }
+      }
+      if(bestAdjacent!=null)
+        return bestAdjacent.getId();
+    }
 
     for(GameCase candidate : fight.getMap().getCases())
     {
