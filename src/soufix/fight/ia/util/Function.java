@@ -11,6 +11,7 @@ import soufix.fight.spells.LaunchedSpell;
 import soufix.fight.spells.SpellEffect;
 import soufix.fight.spells.Spell.SortStats;
 import soufix.fight.traps.Glyph;
+import soufix.fight.traps.Trap;
 import soufix.game.action.GameAction;
 import soufix.main.Config;
 import soufix.main.Constant;
@@ -2706,7 +2707,15 @@ public class Function
     {
       if(target==null||SS==null)
         return -1;
-      int attack=fight.tryCastSpell(fighter,SS,target.getCell().getId());
+      int cellId=target.getCell().getId();
+      if(isTrapSpell(SS))
+      {
+        int trapCellId=findTrapCell(fight,fighter,target,SS);
+        if(trapCellId==-1)
+          return -1;
+        cellId=trapCellId;
+      }
+      int attack=fight.tryCastSpell(fighter,SS,cellId);
       if(attack==0)
         return SS.getSpell().getDuration();
     }
@@ -2748,6 +2757,64 @@ public class Function
         return SS2.getSpell().getDuration();
     }
     return 0;
+  }
+
+  private boolean isTrapSpell(SortStats spell)
+  {
+    if(spell==null)
+      return false;
+    for(SpellEffect effect : spell.getEffects())
+      if(effect!=null&&effect.getEffectID()==400)
+        return true;
+    return false;
+  }
+
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
+  {
+    if(fight==null||caster==null||target==null||spell==null)
+      return -1;
+
+    int bestCell=-1;
+    int bestTargetDistance=Integer.MAX_VALUE;
+    int bestCasterDistance=Integer.MAX_VALUE;
+
+    for(GameCase candidate : fight.getMap().getCases())
+    {
+      if(candidate==null)
+        continue;
+      if(!candidate.isWalkable(false))
+        continue;
+      if(candidate.getFirstFighter()!=null)
+        continue;
+      boolean trapAlreadyPresent=false;
+      for(Trap trap : fight.getAllTraps())
+        if(trap!=null&&trap.getCell().getId()==candidate.getId())
+        {
+          trapAlreadyPresent=true;
+          break;
+        }
+      if(trapAlreadyPresent)
+        continue;
+      if(!fight.canCastSpell1(caster,spell,candidate,-1))
+        continue;
+
+      int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
+      if(distanceToTarget<0)
+        continue;
+
+      int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),caster.getCell().getId());
+      if(distanceToCaster<0)
+        continue;
+
+      if(distanceToTarget<bestTargetDistance||(distanceToTarget==bestTargetDistance&&distanceToCaster<bestCasterDistance))
+      {
+        bestCell=candidate.getId();
+        bestTargetDistance=distanceToTarget;
+        bestCasterDistance=distanceToCaster;
+      }
+    }
+
+    return bestCell;
   }
 
   public int attackIfPossibleCM1(Fight fight, Fighter fighter, List<SortStats> Spell, boolean notcac)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
