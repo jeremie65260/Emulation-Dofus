@@ -2766,18 +2766,9 @@ public class Function
   {
     if(spell==null)
       return false;
-
-    if(Constant.getTrapsColor(spell.getSpellID())!=0)
-      return true;
-
     for(SpellEffect effect : spell.getEffects())
       if(effect!=null&&effect.getEffectID()==400)
         return true;
-
-    for(SpellEffect effect : spell.getCCeffects())
-      if(effect!=null&&effect.getEffectID()==400)
-        return true;
-
     return false;
   }
 
@@ -2785,73 +2776,44 @@ public class Function
   {
     if(fight==null||caster==null||target==null||spell==null)
       return -1;
-    if(fight.getMap()==null||caster.getCell()==null||target.getCell()==null)
-      return -1;
-
-    GameCase targetCell=target.getCell();
-    GameCase casterCell=caster.getCell();
-    List<Trap> traps=fight.getAllTraps();
-
-    Queue<int[]> queue=new ArrayDeque<>();
-    Set<Integer> visited=new HashSet<>();
-    final char[] directions= { 'b', 'd', 'f', 'h' };
-
-    queue.offer(new int[] { targetCell.getId(),0 });
-    visited.add(targetCell.getId());
 
     int bestCell=-1;
     int bestTargetDistance=Integer.MAX_VALUE;
     int bestCasterDistance=Integer.MAX_VALUE;
 
-    while(!queue.isEmpty())
+    for(GameCase candidate : fight.getMap().getCases())
     {
-      int[] entry=queue.poll();
-      int cellId=entry[0];
-      int distanceFromTarget=entry[1];
-      GameCase candidate=fight.getMap().getCase(cellId);
-
       if(candidate==null)
         continue;
-
-      if(bestCell!=-1&&distanceFromTarget>bestTargetDistance)
-        break;
-
-      if(candidate.getId()!=targetCell.getId()&&candidate.getId()!=casterCell.getId()&&candidate.isWalkable(false))
-      {
-        Fighter occupant=candidate.getFirstFighter();
-        if(occupant==null)
+      if(!candidate.isWalkable(false))
+        continue;
+      if(candidate.getFirstFighter()!=null)
+        continue;
+      boolean trapAlreadyPresent=false;
+      for(Trap trap : fight.getAllTraps())
+        if(trap!=null&&trap.getCell().getId()==candidate.getId())
         {
-          boolean trapAlreadyPresent=false;
-          for(Trap trap : traps)
-            if(trap!=null&&trap.getCell()!=null&&trap.getCell().getId()==candidate.getId())
-            {
-              trapAlreadyPresent=true;
-              break;
-            }
-          if(!trapAlreadyPresent&&fight.canCastSpell1(caster,spell,candidate,-1))
-          {
-            int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),casterCell.getId());
-            if(distanceToCaster>=0)
-            {
-              if(bestCell==-1||distanceFromTarget<bestTargetDistance||(distanceFromTarget==bestTargetDistance&&distanceToCaster<bestCasterDistance))
-              {
-                bestCell=candidate.getId();
-                bestTargetDistance=distanceFromTarget;
-                bestCasterDistance=distanceToCaster;
-              }
-            }
-          }
+          trapAlreadyPresent=true;
+          break;
         }
-      }
+      if(trapAlreadyPresent)
+        continue;
+      if(!fight.canCastSpell1(caster,spell,candidate,-1))
+        continue;
 
-      for(char dir : directions)
+      int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
+      if(distanceToTarget<0)
+        continue;
+
+      int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),caster.getCell().getId());
+      if(distanceToCaster<0)
+        continue;
+
+      if(distanceToTarget<bestTargetDistance||(distanceToTarget==bestTargetDistance&&distanceToCaster<bestCasterDistance))
       {
-        int neighbourId=PathFinding.GetCaseIDFromDirrection(cellId,dir,fight.getMap(),true);
-        if(neighbourId<0)
-          continue;
-        if(!visited.add(neighbourId))
-          continue;
-        queue.offer(new int[] { neighbourId,distanceFromTarget+1 });
+        bestCell=candidate.getId();
+        bestTargetDistance=distanceToTarget;
+        bestCasterDistance=distanceToCaster;
       }
     }
 
