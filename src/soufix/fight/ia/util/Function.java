@@ -2924,6 +2924,8 @@ public class Function
       int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
       if(distanceToTarget<0)
         continue;
+      if(distanceToTarget==0)
+        continue;
 
       boolean adjacentToTarget=(distanceToTarget==1);
 
