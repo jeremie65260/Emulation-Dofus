@@ -2883,9 +2883,6 @@ public class Function
           continue;
         if(!fight.canCastSpell1(caster,spell,adjacent,-1))
           continue;
-        int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),targetCell.getId());
-        if(distanceToTarget<=0)
-          continue;
         int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
         if(distanceToCaster<0)
           continue;
