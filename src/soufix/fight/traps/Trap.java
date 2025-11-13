@@ -66,7 +66,7 @@ public class Trap
     StringBuilder str3=new StringBuilder();
     StringBuilder str4=new StringBuilder();
 
-    int teamMask=this.caster.getTeam()+1;
+    int teamMask=this.caster.getPersonnage()==null ? 7 : this.caster.getTeam()+1;
     str.append("GDZ-").append(this.cell.getId()).append(";").append(this.size).append(";").append(this.color);
     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(this.fight,teamMask,999,this.caster.getId()+"",str.toString());
     str2.append("GDC").append(this.cell.getId());
