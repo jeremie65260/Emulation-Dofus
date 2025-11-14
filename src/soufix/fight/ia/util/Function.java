@@ -5,6 +5,7 @@ import soufix.area.map.GameMap;
 import soufix.common.Formulas;
 import soufix.common.PathFinding;
 import soufix.common.SocketManager;
+import soufix.client.Player;
 import soufix.fight.Fight;
 import soufix.fight.Fighter;
 import soufix.fight.spells.LaunchedSpell;
@@ -2835,6 +2836,31 @@ public class Function
       if(effect!=null&&effect.getEffectID()==400)
         return true;
     return false;
+  }
+
+  private void logTrapDebug(Fight fight, Fighter caster, String detail)
+  {
+    if(detail==null||detail.isEmpty())
+      return;
+
+    String casterName=caster!=null?caster.getPacketsName():"Inconnu";
+    if(fight!=null)
+      Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+casterName+" "+detail);
+    else
+      Logging.getInstance().write("Trap",casterName+" "+detail);
+
+    if(fight==null)
+      return;
+
+    for(Fighter participant : fight.getFighters(3))
+    {
+      if(participant==null)
+        continue;
+      Player player=participant.getPersonnage();
+      if(player==null||!player.isOnline())
+        continue;
+      SocketManager.GAME_SEND_MESSAGE(player,"[Piège] "+casterName+" "+detail,"B22222");
+    }
   }
 
   private Set<Integer> getUsedTrapCells(Fight fight, Fighter caster)
