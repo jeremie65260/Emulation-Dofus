@@ -13,8 +13,13 @@ import soufix.object.ObjectTemplate;
 import soufix.utility.Pair;
 import soufix.utility.RandomStats;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Constant
 {
@@ -684,6 +689,293 @@ public class Constant
     return pos;*/
   }
 
+  private static final Map<Integer, List<Integer>> CLASS_START_SPELLS=new HashMap<>();
+  private static final Map<Integer, Map<Integer, List<Integer>>> CLASS_LEVEL_UP_SPELLS=new HashMap<>();
+  private static final Map<Integer, Set<Integer>> CLASS_SPELL_IDS=new HashMap<>();
+
+  static
+  {
+    initializeClassSpells();
+  }
+
+  private static void initializeClassSpells()
+  {
+    registerStartSpells(CLASS_FECA,3,6,17);
+    registerStartSpells(CLASS_SRAM,61,72,65);
+    registerStartSpells(CLASS_ENIRIPSA,125,128,121);
+    registerStartSpells(CLASS_ECAFLIP,102,103,105);
+    registerStartSpells(CLASS_CRA,161,169,164);
+    registerStartSpells(CLASS_IOP,143,141,142);
+    registerStartSpells(CLASS_SADIDA,183,200,193);
+    registerStartSpells(CLASS_OSAMODAS,34,21,23);
+    registerStartSpells(CLASS_XELOR,82,81,83);
+    registerStartSpells(CLASS_PANDAWA,686,692,687);
+    registerStartSpells(CLASS_ENUTROF,51,43,41);
+    registerStartSpells(CLASS_SACRIEUR,432,431,434);
+
+    registerLevelUpSpell(CLASS_FECA,3,4);
+    registerLevelUpSpell(CLASS_FECA,6,2);
+    registerLevelUpSpell(CLASS_FECA,9,1);
+    registerLevelUpSpell(CLASS_FECA,13,9);
+    registerLevelUpSpell(CLASS_FECA,17,18);
+    registerLevelUpSpell(CLASS_FECA,21,20);
+    registerLevelUpSpell(CLASS_FECA,26,14);
+    registerLevelUpSpell(CLASS_FECA,31,19);
+    registerLevelUpSpell(CLASS_FECA,36,5);
+    registerLevelUpSpell(CLASS_FECA,42,16);
+    registerLevelUpSpell(CLASS_FECA,48,8);
+    registerLevelUpSpell(CLASS_FECA,54,12);
+    registerLevelUpSpell(CLASS_FECA,60,11);
+    registerLevelUpSpell(CLASS_FECA,70,10);
+    registerLevelUpSpell(CLASS_FECA,80,7);
+    registerLevelUpSpell(CLASS_FECA,90,15);
+    registerLevelUpSpell(CLASS_FECA,100,13);
+    registerLevelUpSpell(CLASS_FECA,200,1901);
+
+    registerLevelUpSpell(CLASS_OSAMODAS,3,26);
+    registerLevelUpSpell(CLASS_OSAMODAS,6,22);
+    registerLevelUpSpell(CLASS_OSAMODAS,9,35);
+    registerLevelUpSpell(CLASS_OSAMODAS,13,28);
+    registerLevelUpSpell(CLASS_OSAMODAS,17,37);
+    registerLevelUpSpell(CLASS_OSAMODAS,21,30);
+    registerLevelUpSpell(CLASS_OSAMODAS,26,27);
+    registerLevelUpSpell(CLASS_OSAMODAS,31,24);
+    registerLevelUpSpell(CLASS_OSAMODAS,36,33);
+    registerLevelUpSpell(CLASS_OSAMODAS,42,25);
+    registerLevelUpSpell(CLASS_OSAMODAS,48,38);
+    registerLevelUpSpell(CLASS_OSAMODAS,54,36);
+    registerLevelUpSpell(CLASS_OSAMODAS,60,32);
+    registerLevelUpSpell(CLASS_OSAMODAS,70,29);
+    registerLevelUpSpell(CLASS_OSAMODAS,80,39);
+    registerLevelUpSpell(CLASS_OSAMODAS,90,40);
+    registerLevelUpSpell(CLASS_OSAMODAS,100,31);
+    registerLevelUpSpell(CLASS_OSAMODAS,200,1902);
+
+    registerLevelUpSpell(CLASS_ENUTROF,3,49);
+    registerLevelUpSpell(CLASS_ENUTROF,6,42);
+    registerLevelUpSpell(CLASS_ENUTROF,9,47);
+    registerLevelUpSpell(CLASS_ENUTROF,13,48);
+    registerLevelUpSpell(CLASS_ENUTROF,17,45);
+    registerLevelUpSpell(CLASS_ENUTROF,21,53);
+    registerLevelUpSpell(CLASS_ENUTROF,26,46);
+    registerLevelUpSpell(CLASS_ENUTROF,31,52);
+    registerLevelUpSpell(CLASS_ENUTROF,36,44);
+    registerLevelUpSpell(CLASS_ENUTROF,42,50);
+    registerLevelUpSpell(CLASS_ENUTROF,48,54);
+    registerLevelUpSpell(CLASS_ENUTROF,54,55);
+    registerLevelUpSpell(CLASS_ENUTROF,60,56);
+    registerLevelUpSpell(CLASS_ENUTROF,70,58);
+    registerLevelUpSpell(CLASS_ENUTROF,80,59);
+    registerLevelUpSpell(CLASS_ENUTROF,90,57);
+    registerLevelUpSpell(CLASS_ENUTROF,100,60);
+    registerLevelUpSpell(CLASS_ENUTROF,200,1903);
+
+    registerLevelUpSpell(CLASS_SRAM,3,66);
+    registerLevelUpSpell(CLASS_SRAM,6,68);
+    registerLevelUpSpell(CLASS_SRAM,9,63);
+    registerLevelUpSpell(CLASS_SRAM,13,74);
+    registerLevelUpSpell(CLASS_SRAM,17,64);
+    registerLevelUpSpell(CLASS_SRAM,21,79);
+    registerLevelUpSpell(CLASS_SRAM,26,78);
+    registerLevelUpSpell(CLASS_SRAM,31,71);
+    registerLevelUpSpell(CLASS_SRAM,36,62);
+    registerLevelUpSpell(CLASS_SRAM,42,69);
+    registerLevelUpSpell(CLASS_SRAM,48,77);
+    registerLevelUpSpell(CLASS_SRAM,54,73);
+    registerLevelUpSpell(CLASS_SRAM,60,67);
+    registerLevelUpSpell(CLASS_SRAM,70,70);
+    registerLevelUpSpell(CLASS_SRAM,80,75);
+    registerLevelUpSpell(CLASS_SRAM,90,76);
+    registerLevelUpSpell(CLASS_SRAM,100,80);
+    registerLevelUpSpell(CLASS_SRAM,200,1904);
+
+    registerLevelUpSpell(CLASS_XELOR,3,84);
+    registerLevelUpSpell(CLASS_XELOR,6,100);
+    registerLevelUpSpell(CLASS_XELOR,9,92);
+    registerLevelUpSpell(CLASS_XELOR,13,88);
+    registerLevelUpSpell(CLASS_XELOR,17,93);
+    registerLevelUpSpell(CLASS_XELOR,21,85);
+    registerLevelUpSpell(CLASS_XELOR,26,96);
+    registerLevelUpSpell(CLASS_XELOR,31,98);
+    registerLevelUpSpell(CLASS_XELOR,36,86);
+    registerLevelUpSpell(CLASS_XELOR,42,89);
+    registerLevelUpSpell(CLASS_XELOR,48,90);
+    registerLevelUpSpell(CLASS_XELOR,54,87);
+    registerLevelUpSpell(CLASS_XELOR,60,94);
+    registerLevelUpSpell(CLASS_XELOR,70,99);
+    registerLevelUpSpell(CLASS_XELOR,80,95);
+    registerLevelUpSpell(CLASS_XELOR,90,91);
+    registerLevelUpSpell(CLASS_XELOR,100,97);
+    registerLevelUpSpell(CLASS_XELOR,200,1905);
+
+    registerLevelUpSpell(CLASS_ECAFLIP,3,109);
+    registerLevelUpSpell(CLASS_ECAFLIP,6,113);
+    registerLevelUpSpell(CLASS_ECAFLIP,9,111);
+    registerLevelUpSpell(CLASS_ECAFLIP,13,104);
+    registerLevelUpSpell(CLASS_ECAFLIP,17,119);
+    registerLevelUpSpell(CLASS_ECAFLIP,21,101);
+    registerLevelUpSpell(CLASS_ECAFLIP,26,107);
+    registerLevelUpSpell(CLASS_ECAFLIP,31,116);
+    registerLevelUpSpell(CLASS_ECAFLIP,36,106);
+    registerLevelUpSpell(CLASS_ECAFLIP,42,117);
+    registerLevelUpSpell(CLASS_ECAFLIP,48,108);
+    registerLevelUpSpell(CLASS_ECAFLIP,54,115);
+    registerLevelUpSpell(CLASS_ECAFLIP,60,118);
+    registerLevelUpSpell(CLASS_ECAFLIP,70,110);
+    registerLevelUpSpell(CLASS_ECAFLIP,80,112);
+    registerLevelUpSpell(CLASS_ECAFLIP,90,114);
+    registerLevelUpSpell(CLASS_ECAFLIP,100,120);
+    registerLevelUpSpell(CLASS_ECAFLIP,200,1906);
+
+    registerLevelUpSpell(CLASS_ENIRIPSA,3,124);
+    registerLevelUpSpell(CLASS_ENIRIPSA,6,122);
+    registerLevelUpSpell(CLASS_ENIRIPSA,9,126);
+    registerLevelUpSpell(CLASS_ENIRIPSA,13,127);
+    registerLevelUpSpell(CLASS_ENIRIPSA,17,123);
+    registerLevelUpSpell(CLASS_ENIRIPSA,21,130);
+    registerLevelUpSpell(CLASS_ENIRIPSA,26,131);
+    registerLevelUpSpell(CLASS_ENIRIPSA,31,132);
+    registerLevelUpSpell(CLASS_ENIRIPSA,36,133);
+    registerLevelUpSpell(CLASS_ENIRIPSA,42,134);
+    registerLevelUpSpell(CLASS_ENIRIPSA,48,135);
+    registerLevelUpSpell(CLASS_ENIRIPSA,54,129);
+    registerLevelUpSpell(CLASS_ENIRIPSA,60,136);
+    registerLevelUpSpell(CLASS_ENIRIPSA,70,137);
+    registerLevelUpSpell(CLASS_ENIRIPSA,80,138);
+    registerLevelUpSpell(CLASS_ENIRIPSA,90,139);
+    registerLevelUpSpell(CLASS_ENIRIPSA,100,140);
+    registerLevelUpSpell(CLASS_ENIRIPSA,200,1907);
+
+    registerLevelUpSpell(CLASS_IOP,3,144);
+    registerLevelUpSpell(CLASS_IOP,6,145);
+    registerLevelUpSpell(CLASS_IOP,9,146);
+    registerLevelUpSpell(CLASS_IOP,13,147);
+    registerLevelUpSpell(CLASS_IOP,17,148);
+    registerLevelUpSpell(CLASS_IOP,21,154);
+    registerLevelUpSpell(CLASS_IOP,26,150);
+    registerLevelUpSpell(CLASS_IOP,31,151);
+    registerLevelUpSpell(CLASS_IOP,36,155);
+    registerLevelUpSpell(CLASS_IOP,42,152);
+    registerLevelUpSpell(CLASS_IOP,48,153);
+    registerLevelUpSpell(CLASS_IOP,54,149);
+    registerLevelUpSpell(CLASS_IOP,60,156);
+    registerLevelUpSpell(CLASS_IOP,70,157);
+    registerLevelUpSpell(CLASS_IOP,80,158);
+    registerLevelUpSpell(CLASS_IOP,90,160);
+    registerLevelUpSpell(CLASS_IOP,100,159);
+    registerLevelUpSpell(CLASS_IOP,200,1908);
+
+    registerLevelUpSpell(CLASS_CRA,3,163);
+    registerLevelUpSpell(CLASS_CRA,6,165);
+    registerLevelUpSpell(CLASS_CRA,9,172);
+    registerLevelUpSpell(CLASS_CRA,13,167);
+    registerLevelUpSpell(CLASS_CRA,17,168);
+    registerLevelUpSpell(CLASS_CRA,21,162);
+    registerLevelUpSpell(CLASS_CRA,26,170);
+    registerLevelUpSpell(CLASS_CRA,31,171);
+    registerLevelUpSpell(CLASS_CRA,36,166);
+    registerLevelUpSpell(CLASS_CRA,42,173);
+    registerLevelUpSpell(CLASS_CRA,48,174);
+    registerLevelUpSpell(CLASS_CRA,54,176);
+    registerLevelUpSpell(CLASS_CRA,60,175);
+    registerLevelUpSpell(CLASS_CRA,70,178);
+    registerLevelUpSpell(CLASS_CRA,80,177);
+    registerLevelUpSpell(CLASS_CRA,90,179);
+    registerLevelUpSpell(CLASS_CRA,100,180);
+    registerLevelUpSpell(CLASS_CRA,200,1909);
+
+    registerLevelUpSpell(CLASS_SADIDA,3,198);
+    registerLevelUpSpell(CLASS_SADIDA,6,195);
+    registerLevelUpSpell(CLASS_SADIDA,9,182);
+    registerLevelUpSpell(CLASS_SADIDA,13,192);
+    registerLevelUpSpell(CLASS_SADIDA,17,197);
+    registerLevelUpSpell(CLASS_SADIDA,21,189);
+    registerLevelUpSpell(CLASS_SADIDA,26,181);
+    registerLevelUpSpell(CLASS_SADIDA,31,199);
+    registerLevelUpSpell(CLASS_SADIDA,36,191);
+    registerLevelUpSpell(CLASS_SADIDA,42,186);
+    registerLevelUpSpell(CLASS_SADIDA,48,196);
+    registerLevelUpSpell(CLASS_SADIDA,54,190);
+    registerLevelUpSpell(CLASS_SADIDA,60,194);
+    registerLevelUpSpell(CLASS_SADIDA,70,185);
+    registerLevelUpSpell(CLASS_SADIDA,80,184);
+    registerLevelUpSpell(CLASS_SADIDA,90,188);
+    registerLevelUpSpell(CLASS_SADIDA,100,187);
+    registerLevelUpSpell(CLASS_SADIDA,200,1910);
+
+    registerLevelUpSpell(CLASS_SACRIEUR,3,444);
+    registerLevelUpSpell(CLASS_SACRIEUR,6,449);
+    registerLevelUpSpell(CLASS_SACRIEUR,9,436);
+    registerLevelUpSpell(CLASS_SACRIEUR,13,437);
+    registerLevelUpSpell(CLASS_SACRIEUR,17,439);
+    registerLevelUpSpell(CLASS_SACRIEUR,21,433);
+    registerLevelUpSpell(CLASS_SACRIEUR,26,443);
+    registerLevelUpSpell(CLASS_SACRIEUR,31,440);
+    registerLevelUpSpell(CLASS_SACRIEUR,36,442);
+    registerLevelUpSpell(CLASS_SACRIEUR,42,441);
+    registerLevelUpSpell(CLASS_SACRIEUR,48,445);
+    registerLevelUpSpell(CLASS_SACRIEUR,54,438);
+    registerLevelUpSpell(CLASS_SACRIEUR,60,446);
+    registerLevelUpSpell(CLASS_SACRIEUR,70,447);
+    registerLevelUpSpell(CLASS_SACRIEUR,80,448);
+    registerLevelUpSpell(CLASS_SACRIEUR,90,435);
+    registerLevelUpSpell(CLASS_SACRIEUR,100,450);
+    registerLevelUpSpell(CLASS_SACRIEUR,200,1911);
+
+    registerLevelUpSpell(CLASS_PANDAWA,3,689);
+    registerLevelUpSpell(CLASS_PANDAWA,6,690);
+    registerLevelUpSpell(CLASS_PANDAWA,9,691);
+    registerLevelUpSpell(CLASS_PANDAWA,13,688);
+    registerLevelUpSpell(CLASS_PANDAWA,17,693);
+    registerLevelUpSpell(CLASS_PANDAWA,21,694);
+    registerLevelUpSpell(CLASS_PANDAWA,26,695);
+    registerLevelUpSpell(CLASS_PANDAWA,31,696);
+    registerLevelUpSpell(CLASS_PANDAWA,36,697);
+    registerLevelUpSpell(CLASS_PANDAWA,42,698);
+    registerLevelUpSpell(CLASS_PANDAWA,48,699);
+    registerLevelUpSpell(CLASS_PANDAWA,54,700);
+    registerLevelUpSpell(CLASS_PANDAWA,60,701);
+    registerLevelUpSpell(CLASS_PANDAWA,70,702);
+    registerLevelUpSpell(CLASS_PANDAWA,80,703);
+    registerLevelUpSpell(CLASS_PANDAWA,90,704);
+    registerLevelUpSpell(CLASS_PANDAWA,100,705);
+    registerLevelUpSpell(CLASS_PANDAWA,200,1912);
+  }
+
+  private static void registerStartSpells(int classId, int... spellIds)
+  {
+    List<Integer> spells=CLASS_START_SPELLS.computeIfAbsent(classId,k -> new ArrayList<>());
+    for(int spellId : spellIds)
+    {
+      spells.add(spellId);
+      registerClassSpell(classId,spellId);
+    }
+  }
+
+  private static void registerLevelUpSpell(int classId, int level, int spellId)
+  {
+    Map<Integer, List<Integer>> perLevel=CLASS_LEVEL_UP_SPELLS.computeIfAbsent(classId,k -> new HashMap<>());
+    List<Integer> spells=perLevel.computeIfAbsent(level,k -> new ArrayList<>());
+    spells.add(spellId);
+    registerClassSpell(classId,spellId);
+  }
+
+  private static void registerClassSpell(int classId, int spellId)
+  {
+    CLASS_SPELL_IDS.computeIfAbsent(classId,k -> new HashSet<>()).add(spellId);
+  }
+
+  public static Set<Integer> getClassSpellIds(int classId)
+  {
+    Set<Integer> spells=CLASS_SPELL_IDS.get(classId);
+    return spells==null ? Collections.emptySet() : Collections.unmodifiableSet(spells);
+  }
+
+  public static boolean isClassSpell(int classId, int spellId)
+  {
+    return getClassSpellIds(classId).contains(spellId);
+  }
+
   public static HashMap<Integer, Character> getStartSortsPlaces(int classID)
   {
     HashMap<Integer, Character> start=new HashMap<Integer, Character>();
@@ -756,68 +1048,17 @@ public class Constant
   public static HashMap<Integer, SortStats> getStartSorts(int classID)
   {
     HashMap<Integer, SortStats> start=new HashMap<Integer, SortStats>();
-    switch(classID)
+    List<Integer> spells=CLASS_START_SPELLS.get(classID);
+    if(spells==null)
+      return start;
+    for(int spellId : spells)
     {
-      case CLASS_FECA:
-        start.put(3,Main.world.getSort(3).getStatsByLevel(1));//Attaque Naturelle
-        start.put(6,Main.world.getSort(6).getStatsByLevel(1));//Armure Terrestre
-        start.put(17,Main.world.getSort(17).getStatsByLevel(1));//Glyphe Agressif
-        break;
-      case CLASS_SRAM:
-        start.put(61,Main.world.getSort(61).getStatsByLevel(1));//Sournoiserie
-        start.put(72,Main.world.getSort(72).getStatsByLevel(1));//Invisibilité
-        start.put(65,Main.world.getSort(65).getStatsByLevel(1));//Piege sournois
-        break;
-      case CLASS_ENIRIPSA:
-        start.put(125,Main.world.getSort(125).getStatsByLevel(1));//Mot Interdit
-        start.put(128,Main.world.getSort(128).getStatsByLevel(1));//Mot de Frayeur
-        start.put(121,Main.world.getSort(121).getStatsByLevel(1));//Mot Curatif
-        break;
-      case CLASS_ECAFLIP:
-        start.put(102,Main.world.getSort(102).getStatsByLevel(1));//Pile ou Face
-        start.put(103,Main.world.getSort(103).getStatsByLevel(1));//Chance d'ecaflip
-        start.put(105,Main.world.getSort(105).getStatsByLevel(1));//Bond du felin
-        break;
-      case CLASS_CRA:
-        start.put(161,Main.world.getSort(161).getStatsByLevel(1));//Fleche Magique
-        start.put(169,Main.world.getSort(169).getStatsByLevel(1));//Fleche de Recul
-        start.put(164,Main.world.getSort(164).getStatsByLevel(1));//Fleche Empoisonnée(ex Fleche chercheuse)
-        break;
-      case CLASS_IOP:
-        start.put(143,Main.world.getSort(143).getStatsByLevel(1));//Intimidation
-        start.put(141,Main.world.getSort(141).getStatsByLevel(1));//Pression
-        start.put(142,Main.world.getSort(142).getStatsByLevel(1));//Bond
-        break;
-      case CLASS_SADIDA:
-        start.put(183,Main.world.getSort(183).getStatsByLevel(1));//Ronce
-        start.put(200,Main.world.getSort(200).getStatsByLevel(1));//Poison Paralysant
-        start.put(193,Main.world.getSort(193).getStatsByLevel(1));//La bloqueuse
-        break;
-      case CLASS_OSAMODAS:
-        start.put(34,Main.world.getSort(34).getStatsByLevel(1));//Invocation de tofu
-        start.put(21,Main.world.getSort(21).getStatsByLevel(1));//Griffe Spectrale
-        start.put(23,Main.world.getSort(23).getStatsByLevel(1));//Cri de l'ours
-        break;
-      case CLASS_XELOR:
-        start.put(82,Main.world.getSort(82).getStatsByLevel(1));//Contre
-        start.put(81,Main.world.getSort(81).getStatsByLevel(1));//Ralentissement
-        start.put(83,Main.world.getSort(83).getStatsByLevel(1));//Aiguille
-        break;
-      case CLASS_PANDAWA:
-        start.put(686,Main.world.getSort(686).getStatsByLevel(1));//Picole
-        start.put(692,Main.world.getSort(692).getStatsByLevel(1));//Gueule de bois
-        start.put(687,Main.world.getSort(687).getStatsByLevel(1));//Poing enflammé
-        break;
-      case CLASS_ENUTROF:
-        start.put(51,Main.world.getSort(51).getStatsByLevel(1));//Lancer de Piece
-        start.put(43,Main.world.getSort(43).getStatsByLevel(1));//Lancer de Pelle
-        start.put(41,Main.world.getSort(41).getStatsByLevel(1));//Sac animé
-        break;
-      case CLASS_SACRIEUR:
-        start.put(432,Main.world.getSort(432).getStatsByLevel(1));//Pied du Sacrieur
-        start.put(431,Main.world.getSort(431).getStatsByLevel(1));//Chatiment Forcé
-        start.put(434,Main.world.getSort(434).getStatsByLevel(1));//Attirance
-        break;
+      if(Main.world.getSort(spellId)!=null)
+      {
+        SortStats stats=Main.world.getSort(spellId).getStatsByLevel(1);
+        if(stats!=null)
+          start.put(spellId,stats);
+      }
     }
     return start;
   }
@@ -1350,476 +1591,14 @@ public class Constant
 
   public static void onLevelUpSpells(Player perso, int lvl)
   {
-    switch(perso.getClasse())
-    {
-      case CLASS_FECA:
-        if(lvl==3)
-          perso.learnSpell(4,1,true,false,false);//Renvoie de sort
-        if(lvl==6)
-          perso.learnSpell(2,1,true,false,false);//Aveuglement
-        if(lvl==9)
-          perso.learnSpell(1,1,true,false,false);//Armure Incandescente
-        if(lvl==13)
-          perso.learnSpell(9,1,true,false,false);//Attaque nuageuse
-        if(lvl==17)
-          perso.learnSpell(18,1,true,false,false);//Armure Aqueuse
-        if(lvl==21)
-          perso.learnSpell(20,1,true,false,false);//Immunité
-        if(lvl==26)
-          perso.learnSpell(14,1,true,false,false);//Armure Venteuse
-        if(lvl==31)
-          perso.learnSpell(19,1,true,false,false);//Bulle
-        if(lvl==36)
-          perso.learnSpell(5,1,true,false,false);//Tréve
-        if(lvl==42)
-          perso.learnSpell(16,1,true,false,false);//Science du béton
-        if(lvl==48)
-          perso.learnSpell(8,1,true,false,false);// falseur du béton
-        if(lvl==54)
-          perso.learnSpell(12,1,true,false,false);//glyphe d'Aveuglement
-        if(lvl==60)
-          perso.learnSpell(11,1,true,false,false);//Téléportation
-        if(lvl==70)
-          perso.learnSpell(10,1,true,false,false);//Glyphe Enflammé
-        if(lvl==80)
-          perso.learnSpell(7,1,true,false,false);//Bouclier Féca
-        if(lvl==90)
-          perso.learnSpell(15,1,true,false,false);//Glyphe d'Immobilisation
-        if(lvl==100)
-          perso.learnSpell(13,1,true,false,false);//Glyphe de Silence
-        if(lvl==200)
-          perso.learnSpell(1901,1,true,false,false);//Invocation de Dopeul Féca
-        break;
-
-      case CLASS_OSAMODAS:
-        if(lvl==3)
-          perso.learnSpell(26,1,true,false,false);//Bénédiction Animale
-        if(lvl==6)
-          perso.learnSpell(22,1,true,false,false);//Déplacement Félin
-        if(lvl==9)
-          perso.learnSpell(35,1,true,false,false);//Invocation de Bouftou
-        if(lvl==13)
-          perso.learnSpell(28,1,true,false,false);//Crapaud
-        if(lvl==17)
-          perso.learnSpell(37,1,true,false,false);//Invocation de Prespic
-        if(lvl==21)
-          perso.learnSpell(30,1,true,false,false);//Fouet
-        if(lvl==26)
-          perso.learnSpell(27,1,true,false,false);//Piqére Motivante
-        if(lvl==31)
-          perso.learnSpell(24,1,true,false,false);//Corbeau
-        if(lvl==36)
-          perso.learnSpell(33,1,true,false,false);//Griffe Cinglante
-        if(lvl==42)
-          perso.learnSpell(25,1,true,false,false);//Soin Animal
-        if(lvl==48)
-          perso.learnSpell(38,1,true,false,false);//Invocation de Sanglier
-        if(lvl==54)
-          perso.learnSpell(36,1,true,false,false);//Frappe du Craqueleur
-        if(lvl==60)
-          perso.learnSpell(32,1,true,false,false);//Résistance Naturelle
-        if(lvl==70)
-          perso.learnSpell(29,1,true,false,false);//Crocs du Mulou
-        if(lvl==80)
-          perso.learnSpell(39,1,true,false,false);//Invocation de Bwork Mage
-        if(lvl==90)
-          perso.learnSpell(40,1,true,false,false);//Invocation de Craqueleur
-        if(lvl==100)
-          perso.learnSpell(31,1,true,false,false);//Invocation de Dragonnet Rouge
-        if(lvl==200)
-          perso.learnSpell(1902,1,true,false,false);//Invocation de Dopeul Osamodas
-        break;
-
-      case CLASS_ENUTROF:
-        if(lvl==3)
-          perso.learnSpell(49,1,true,false,false);//Pelle Fantomatique
-        if(lvl==6)
-          perso.learnSpell(42,1,true,false,false);//Chance
-        if(lvl==9)
-          perso.learnSpell(47,1,true,false,false);//Boéte de Pandore
-        if(lvl==13)
-          perso.learnSpell(48,1,true,false,false);//Remblai
-        if(lvl==17)
-          perso.learnSpell(45,1,true,false,false);//Clé Réductrice
-        if(lvl==21)
-          perso.learnSpell(53,1,true,false,false);//Force de l'Age
-        if(lvl==26)
-          perso.learnSpell(46,1,true,false,false);//Désinvocation
-        if(lvl==31)
-          perso.learnSpell(52,1,true,false,false);//Cupidité
-        if(lvl==36)
-          perso.learnSpell(44,1,true,false,false);//Roulage de Pelle
-        if(lvl==42)
-          perso.learnSpell(50,1,true,false,false);//Maladresse
-        if(lvl==48)
-          perso.learnSpell(54,1,true,false,false);//Maladresse de Masse
-        if(lvl==54)
-          perso.learnSpell(55,1,true,false,false);//Accélération
-        if(lvl==60)
-          perso.learnSpell(56,1,true,false,false);//Pelle du Jugement
-        if(lvl==70)
-          perso.learnSpell(58,1,true,false,false);//Pelle Massacrante
-        if(lvl==80)
-          perso.learnSpell(59,1,true,false,false);//Corruption
-        if(lvl==90)
-          perso.learnSpell(57,1,true,false,false);//Pelle Animée
-        if(lvl==100)
-          perso.learnSpell(60,1,true,false,false);//Coffre Animé
-        if(lvl==200)
-          perso.learnSpell(1903,1,true,false,false);//Invocation de Dopeul Enutrof
-        break;
-
-      case CLASS_SRAM:
-        if(lvl==3)
-          perso.learnSpell(66,1,true,false,false);//Poison insidieux
-        if(lvl==6)
-          perso.learnSpell(68,1,true,false,false);//Fourvoiement
-        if(lvl==9)
-          perso.learnSpell(63,1,true,false,false);//Coup Sournois
-        if(lvl==13)
-          perso.learnSpell(74,1,true,false,false);//Double
-        if(lvl==17)
-          perso.learnSpell(64,1,true,false,false);//Repérage
-        if(lvl==21)
-          perso.learnSpell(79,1,true,false,false);//Piége de Masse
-        if(lvl==26)
-          perso.learnSpell(78,1,true,false,false);//Invisibilité d'Autrui
-        if(lvl==31)
-          perso.learnSpell(71,1,true,false,false);//Piége Empoisonné
-        if(lvl==36)
-          perso.learnSpell(62,1,true,false,false);//Concentration de Chakra
-        if(lvl==42)
-          perso.learnSpell(69,1,true,false,false);//Piége d'Immobilisation
-        if(lvl==48)
-          perso.learnSpell(77,1,true,false,false);//Piége de Silence
-        if(lvl==54)
-          perso.learnSpell(73,1,true,false,false);//Piége répulsif
-        if(lvl==60)
-          perso.learnSpell(67,1,true,false,false);//Peur
-        if(lvl==70)
-          perso.learnSpell(70,1,true,false,false);//Arnaque
-        if(lvl==80)
-          perso.learnSpell(75,1,true,false,false);//Pulsion de Chakra
-        if(lvl==90)
-          perso.learnSpell(76,1,true,false,false);//Attaque Mortelle
-        if(lvl==100)
-          perso.learnSpell(80,1,true,false,false);//Piége Mortel
-        if(lvl==200)
-          perso.learnSpell(1904,1,true,false,false);//Invocation de Dopeul Sram
-        break;
-
-      case CLASS_XELOR:
-        if(lvl==3)
-          perso.learnSpell(84,1,true,false,false);//Gelure
-        if(lvl==6)
-          perso.learnSpell(100,1,true,false,false);//Sablier de Xélor
-        if(lvl==9)
-          perso.learnSpell(92,1,true,false,false);//Rayon Obscur
-        if(lvl==13)
-          perso.learnSpell(88,1,true,false,false);//Téléportation
-        if(lvl==17)
-          perso.learnSpell(93,1,true,false,false);//Flétrissement
-        if(lvl==21)
-          perso.learnSpell(85,1,true,false,false);//Flou
-        if(lvl==26)
-          perso.learnSpell(96,1,true,false,false);//Poussiére Temporelle
-        if(lvl==31)
-          perso.learnSpell(98,1,true,false,false);//Vol du Temps
-        if(lvl==36)
-          perso.learnSpell(86,1,true,false,false);//Aiguille Chercheuse
-        if(lvl==42)
-          perso.learnSpell(89,1,true,false,false);//Dévouement
-        if(lvl==48)
-          perso.learnSpell(90,1,true,false,false);//Fuite
-        if(lvl==54)
-          perso.learnSpell(87,1,true,false,false);//Démotivation
-        if(lvl==60)
-          perso.learnSpell(94,1,true,false,false);//Protection Aveuglante
-        if(lvl==70)
-          perso.learnSpell(99,1,true,false,false);//Momification
-        if(lvl==80)
-          perso.learnSpell(95,1,true,false,false);//Horloge
-        if(lvl==90)
-          perso.learnSpell(91,1,true,false,false);//Frappe de Xélor
-        if(lvl==100)
-          perso.learnSpell(97,1,true,false,false);//Cadran de Xélor
-        if(lvl==200)
-          perso.learnSpell(1905,1,true,false,false);//Invocation de Dopeul Xélor
-        break;
-
-      case CLASS_ECAFLIP:
-        if(lvl==3)
-          perso.learnSpell(109,1,true,false,false);//Bluff
-        if(lvl==6)
-          perso.learnSpell(113,1,true,false,false);//Perception
-        if(lvl==9)
-          perso.learnSpell(111,1,true,false,false);//Contrecoup
-        if(lvl==13)
-          perso.learnSpell(104,1,true,false,false);//Tréfle
-        if(lvl==17)
-          perso.learnSpell(119,1,true,false,false);//Tout ou rien
-        if(lvl==21)
-          perso.learnSpell(101,1,true,false,false);//Roulette
-        if(lvl==26)
-          perso.learnSpell(107,1,true,false,false);//Topkaj
-        if(lvl==31)
-          perso.learnSpell(116,1,true,false,false);//Langue Répeuse
-        if(lvl==36)
-          perso.learnSpell(106,1,true,false,false);//Roue de la Fortune
-        if(lvl==42)
-          perso.learnSpell(117,1,true,false,false);//Griffe Invocatrice
-        if(lvl==48)
-          perso.learnSpell(108,1,true,false,false);//Esprit Félin
-        if(lvl==54)
-          perso.learnSpell(115,1,true,false,false);//Odorat
-        if(lvl==60)
-          perso.learnSpell(118,1,true,false,false);//Réflexes
-        if(lvl==70)
-          perso.learnSpell(110,1,true,false,false);//Griffe Joueuse
-        if(lvl==80)
-          perso.learnSpell(112,1,true,false,false);//Griffe de Ceangal
-        if(lvl==90)
-          perso.learnSpell(114,1,true,false,false);//Rekop
-        if(lvl==100)
-          perso.learnSpell(120,1,true,false,false);//Destin d'Ecaflip
-        if(lvl==200)
-          perso.learnSpell(1906,1,true,false,false);//Invocation de Dopeul Ecaflip
-        break;
-
-      case CLASS_ENIRIPSA:
-        if(lvl==3)
-          perso.learnSpell(124,1,true,false,false);//Mot Soignant
-        if(lvl==6)
-          perso.learnSpell(122,1,true,false,false);//Mot Blessant
-        if(lvl==9)
-          perso.learnSpell(126,1,true,false,false);//Mot Stimulant
-        if(lvl==13)
-          perso.learnSpell(127,1,true,false,false);//Mot de Prévention
-        if(lvl==17)
-          perso.learnSpell(123,1,true,false,false);//Mot Drainant
-        if(lvl==21)
-          perso.learnSpell(130,1,true,false,false);//Mot Revitalisant
-        if(lvl==26)
-          perso.learnSpell(131,1,true,false,false);//Mot de Régénération
-        if(lvl==31)
-          perso.learnSpell(132,1,true,false,false);//Mot d'Epine
-        if(lvl==36)
-          perso.learnSpell(133,1,true,false,false);//Mot de Jouvence
-        if(lvl==42)
-          perso.learnSpell(134,1,true,false,false);//Mot Vampirique
-        if(lvl==48)
-          perso.learnSpell(135,1,true,false,false);//Mot de Sacrifice
-        if(lvl==54)
-          perso.learnSpell(129,1,true,false,false);//Mot d'Amitié
-        if(lvl==60)
-          perso.learnSpell(136,1,true,false,false);//Mot d'Immobilisation
-        if(lvl==70)
-          perso.learnSpell(137,1,true,false,false);//Mot d'Envol
-        if(lvl==80)
-          perso.learnSpell(138,1,true,false,false);//Mot de Silence
-        if(lvl==90)
-          perso.learnSpell(139,1,true,false,false);//Mot d'Altruisme
-        if(lvl==100)
-          perso.learnSpell(140,1,true,false,false);//Mot de Reconstitution
-        if(lvl==200)
-          perso.learnSpell(1907,1,true,false,false);//Invocation de Dopeul Eniripsa
-        break;
-
-      case CLASS_IOP:
-        if(lvl==3)
-          perso.learnSpell(144,1,true,false,false);//Compulsion
-        if(lvl==6)
-          perso.learnSpell(145,1,true,false,false);//Epée Divine
-        if(lvl==9)
-          perso.learnSpell(146,1,true,false,false);//Epée du Destin
-        if(lvl==13)
-          perso.learnSpell(147,1,true,false,false);//Guide de Bravoure
-        if(lvl==17)
-          perso.learnSpell(148,1,true,false,false);//Amplification
-        if(lvl==21)
-          perso.learnSpell(154,1,true,false,false);//Epée Destructrice
-        if(lvl==26)
-          perso.learnSpell(150,1,true,false,false);//Couper
-        if(lvl==31)
-          perso.learnSpell(151,1,true,false,false);//Souffle
-        if(lvl==36)
-          perso.learnSpell(155,1,true,false,false);//Vitalité
-        if(lvl==42)
-          perso.learnSpell(152,1,true,false,false);//Epée du Jugement
-        if(lvl==48)
-          perso.learnSpell(153,1,true,false,false);//Puissance
-        if(lvl==54)
-          perso.learnSpell(149,1,true,false,false);//Mutilation
-        if(lvl==60)
-          perso.learnSpell(156,1,true,false,false);//Tempéte de Puissance
-        if(lvl==70)
-          perso.learnSpell(157,1,true,false,false);//Epée Céleste
-        if(lvl==80)
-          perso.learnSpell(158,1,true,false,false);//Concentration
-        if(lvl==90)
-          perso.learnSpell(160,1,true,false,false);//Epée de Iop
-        if(lvl==100)
-          perso.learnSpell(159,1,true,false,false);//Colére de Iop
-        if(lvl==200)
-          perso.learnSpell(1908,1,true,false,false);//Invocation de Dopeul Iop
-        break;
-
-      case CLASS_CRA:
-        if(lvl==3)
-          perso.learnSpell(163,1,true,false,false);//Fléche Glacée
-        if(lvl==6)
-          perso.learnSpell(165,1,true,false,false);//Fléche enflammée
-        if(lvl==9)
-          perso.learnSpell(172,1,true,false,false);//Tir Eloigné
-        if(lvl==13)
-          perso.learnSpell(167,1,true,false,false);//Fléche d'Expiation
-        if(lvl==17)
-          perso.learnSpell(168,1,true,false,false);//Oeil de Taupe
-        if(lvl==21)
-          perso.learnSpell(162,1,true,false,false);//Tir Critique
-        if(lvl==26)
-          perso.learnSpell(170,1,true,false,false);//Fléche d'Immobilisation
-        if(lvl==31)
-          perso.learnSpell(171,1,true,false,false);//Fléche Punitive
-        if(lvl==36)
-          perso.learnSpell(166,1,true,false,false);//Tir Puissant
-        if(lvl==42)
-          perso.learnSpell(173,1,true,false,false);//Fléche Harcelante
-        if(lvl==48)
-          perso.learnSpell(174,1,true,false,false);//Fléche Cinglante
-        if(lvl==54)
-          perso.learnSpell(176,1,true,false,false);//Fléche Persécutrice
-        if(lvl==60)
-          perso.learnSpell(175,1,true,false,false);//Fléche Destructrice
-        if(lvl==70)
-          perso.learnSpell(178,1,true,false,false);//Fléche Absorbante
-        if(lvl==80)
-          perso.learnSpell(177,1,true,false,false);//Fléche Ralentissante
-        if(lvl==90)
-          perso.learnSpell(179,1,true,false,false);//Fléche Explosive
-        if(lvl==100)
-          perso.learnSpell(180,1,true,false,false);//Maétrise de l'Arc
-        if(lvl==200)
-          perso.learnSpell(1909,1,true,false,false);//Invocation de Dopeul Cra
-        break;
-
-      case CLASS_SADIDA:
-        if(lvl==3)
-          perso.learnSpell(198,1,true,false,false);//Sacrifice Poupesque
-        if(lvl==6)
-          perso.learnSpell(195,1,true,false,false);//Larme
-        if(lvl==9)
-          perso.learnSpell(182,1,true,false,false);//Invocation de la Folle
-        if(lvl==13)
-          perso.learnSpell(192,1,true,false,false);//Ronce Apaisante
-        if(lvl==17)
-          perso.learnSpell(197,1,true,false,false);//Puissance Sylvestre
-        if(lvl==21)
-          perso.learnSpell(189,1,true,false,false);//Invocation de la Sacrifiée
-        if(lvl==26)
-          perso.learnSpell(181,1,true,false,false);//Tremblement
-        if(lvl==31)
-          perso.learnSpell(199,1,true,false,false);//Connaissance des Poupées
-        if(lvl==36)
-          perso.learnSpell(191,1,true,false,false);//Ronce Multiples
-        if(lvl==42)
-          perso.learnSpell(186,1,true,false,false);//Arbre
-        if(lvl==48)
-          perso.learnSpell(196,1,true,false,false);//Vent Empoisonné
-        if(lvl==54)
-          perso.learnSpell(190,1,true,false,false);//Invocation de la Gonflable
-        if(lvl==60)
-          perso.learnSpell(194,1,true,false,false);//Ronces Agressives
-        if(lvl==70)
-          perso.learnSpell(185,1,true,false,false);//Herbe Folle
-        if(lvl==80)
-          perso.learnSpell(184,1,true,false,false);//Feu de Brousse
-        if(lvl==90)
-          perso.learnSpell(188,1,true,false,false);//Ronce Insolente
-        if(lvl==100)
-          perso.learnSpell(187,1,true,false,false);//Invocation de la Surpuissante
-        if(lvl==200)
-          perso.learnSpell(1910,1,true,false,false);//Invocation de Dopeul Sadida
-        break;
-
-      case CLASS_SACRIEUR:
-        if(lvl==3)
-          perso.learnSpell(444,1,true,false,false);//Dérobade
-        if(lvl==6)
-          perso.learnSpell(449,1,true,false,false);//Détour
-        if(lvl==9)
-          perso.learnSpell(436,1,true,false,false);//Assaut
-        if(lvl==13)
-          perso.learnSpell(437,1,true,false,false);//Chétiment Agile
-        if(lvl==17)
-          perso.learnSpell(439,1,true,false,false);//Dissolution
-        if(lvl==21)
-          perso.learnSpell(433,1,true,false,false);//Chétiment Osé
-        if(lvl==26)
-          perso.learnSpell(443,1,true,false,false);//Chétiment Spirituel
-        if(lvl==31)
-          perso.learnSpell(440,1,true,false,false);//Sacrifice
-        if(lvl==36)
-          perso.learnSpell(442,1,true,false,false);//Absorption
-        if(lvl==42)
-          perso.learnSpell(441,1,true,false,false);//Chétiment Vilatesque
-        if(lvl==48)
-          perso.learnSpell(445,1,true,false,false);//Coopération
-        if(lvl==54)
-          perso.learnSpell(438,1,true,false,false);//Transposition
-        if(lvl==60)
-          perso.learnSpell(446,1,true,false,false);//Punition
-        if(lvl==70)
-          perso.learnSpell(447,1,true,false,false);//Furie
-        if(lvl==80)
-          perso.learnSpell(448,1,true,false,false);//Epée Volante
-        if(lvl==90)
-          perso.learnSpell(435,1,true,false,false);//Tansfert de Vie
-        if(lvl==100)
-          perso.learnSpell(450,1,true,false,false);//Folie Sanguinaire
-        if(lvl==200)
-          perso.learnSpell(1911,1,true,false,false);//Invocation de Dopeul Sacrieur
-        break;
-
-      case CLASS_PANDAWA:
-        if(lvl==3)
-          perso.learnSpell(689,1,true,false,false);//Epouvante
-        if(lvl==6)
-          perso.learnSpell(690,1,true,false,false);//Souffle Alcoolisé
-        if(lvl==9)
-          perso.learnSpell(691,1,true,false,false);//Vulnérabilité Aqueuse
-        if(lvl==13)
-          perso.learnSpell(688,1,true,false,false);//Vulnérabilité Incandescente
-        if(lvl==17)
-          perso.learnSpell(693,1,true,false,false);//Karcham
-        if(lvl==21)
-          perso.learnSpell(694,1,true,false,false);//Vulnérabilité Venteuse
-        if(lvl==26)
-          perso.learnSpell(695,1,true,false,false);//Stabilisation
-        if(lvl==31)
-          perso.learnSpell(696,1,true,false,false);//Chamrak
-        if(lvl==36)
-          perso.learnSpell(697,1,true,false,false);//Vulnérabilité Terrestre
-        if(lvl==42)
-          perso.learnSpell(698,1,true,false,false);//Souillure
-        if(lvl==48)
-          perso.learnSpell(699,1,true,false,false);//Lait de Bambou
-        if(lvl==54)
-          perso.learnSpell(700,1,true,false,false);//Vague é Lame
-        if(lvl==60)
-          perso.learnSpell(701,1,true,false,false);//Colére de Zatoéshwan
-        if(lvl==70)
-          perso.learnSpell(702,1,true,false,false);//Flasque Explosive
-        if(lvl==80)
-          perso.learnSpell(703,1,true,false,false);//Pandatak
-        if(lvl==90)
-          perso.learnSpell(704,1,true,false,false);//Pandanlku
-        if(lvl==100)
-          perso.learnSpell(705,1,true,false,false);//Lien Spiritueux
-        if(lvl==200)
-          perso.learnSpell(1912,1,true,false,false);//Invocation de Dopeul Pandawa
-        break;
-    }
+    Map<Integer, List<Integer>> spellsByLevel=CLASS_LEVEL_UP_SPELLS.get(perso.getClasse());
+    if(spellsByLevel==null)
+      return;
+    List<Integer> spells=spellsByLevel.get(lvl);
+    if(spells==null)
+      return;
+    for(int spellId : spells)
+      perso.learnSpell(spellId,1,true,false,false);
   }
 
   public static int getGlyphColor(int spell)
