@@ -2894,7 +2894,8 @@ public class Function
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
   {
-    return findTrapCell(fight,caster,target,spell,null);
+    Set<Integer> usedTrapCells=getUsedTrapCells(fight,caster);
+    return findTrapCell(fight,caster,target,spell,usedTrapCells.isEmpty()?null:usedTrapCells);
   }
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
@@ -2902,99 +2903,98 @@ public class Function
     if(fight==null||caster==null||target==null||spell==null)
       return -1;
 
+    GameCase targetCell=getKnownCell(target);
+    Set<Integer> visitedCells=new HashSet<>();
+    if(excludedCells!=null)
+      visitedCells.addAll(excludedCells);
+
+    GameCase immediateCandidate=getImmediateTrapCell(fight,caster,targetCell,spell,visitedCells);
+    if(immediateCandidate!=null)
+      return immediateCandidate.getId();
+
+    return findBestTrapCellOnMap(fight,caster,targetCell,spell,visitedCells);
+  }
+
+  private GameCase getImmediateTrapCell(Fight fight, Fighter caster, GameCase targetCell, SortStats spell, Set<Integer> visitedCells)
+  {
+    if(targetCell==null)
+      return null;
+
+    visitedCells.add(targetCell.getId());
+
+    List<Integer> unavailableCells=new ArrayList<>(visitedCells);
+    int attempts=0;
+    while(attempts<4)
+    {
+      int adjacentId=PathFinding.getAvailableCellArround(fight,targetCell.getId(),unavailableCells);
+      if(adjacentId==0)
+        break;
+      unavailableCells.add(adjacentId);
+      GameCase adjacent=fight.getMap().getCase(adjacentId);
+      if(adjacent==null)
+      {
+        attempts++;
+        continue;
+      }
+      if(isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,visitedCells))
+        return adjacent;
+      visitedCells.add(adjacent.getId());
+      attempts++;
+    }
+
+    if(caster.getCell()==null)
+      return null;
+
+    GameCase bestAdjacent=null;
+    int bestAdjacentDistance=Integer.MAX_VALUE;
+    char[] directions= { 'b','d','f','h' };
+    for(char direction : directions)
+    {
+      int cellId=PathFinding.GetCaseIDFromDirrection(targetCell.getId(),direction,fight.getMap(),true);
+      if(cellId==-1)
+        continue;
+      GameCase adjacent=fight.getMap().getCase(cellId);
+      if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,visitedCells))
+        continue;
+      int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
+      if(distanceToCaster<0)
+        continue;
+      if(bestAdjacent==null||distanceToCaster<bestAdjacentDistance)
+      {
+        bestAdjacent=adjacent;
+        bestAdjacentDistance=distanceToCaster;
+      }
+    }
+
+    if(bestAdjacent!=null)
+      visitedCells.add(bestAdjacent.getId());
+
+    return bestAdjacent;
+  }
+
+  private int findBestTrapCellOnMap(Fight fight, Fighter caster, GameCase targetCell, SortStats spell, Set<Integer> visitedCells)
+  {
     int bestCell=-1;
     int bestTargetDistance=Integer.MAX_VALUE;
     int bestCasterDistance=Integer.MAX_VALUE;
     boolean foundAdjacent=false;
 
-    Set<Integer> checkedCells=excludedCells!=null?new HashSet<>(excludedCells):new HashSet<>();
-
-    GameCase targetCell=getKnownCell(target);
-    if(targetCell!=null)
-    {
-      checkedCells.add(targetCell.getId());
-      List<Integer> unavailableCells=new ArrayList<>();
-      if(excludedCells!=null)
-        unavailableCells.addAll(excludedCells);
-      int attempts=0;
-      while(attempts<4)
-      {
-        int adjacentId=PathFinding.getAvailableCellArround(fight,targetCell.getId(),unavailableCells);
-        if(adjacentId==0)
-          break;
-        unavailableCells.add(adjacentId);
-        GameCase adjacent=fight.getMap().getCase(adjacentId);
-        if(adjacent!=null&&isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
-          return adjacent.getId();
-        if(adjacent!=null)
-          checkedCells.add(adjacent.getId());
-        attempts++;
-      }
-      if(caster.getCell()!=null)
-      {
-        GameCase bestAdjacent=null;
-        int bestAdjacentDistance=Integer.MAX_VALUE;
-        char[] directions= { 'b','d','f','h' };
-        for(char direction : directions)
-        {
-          int cellId=PathFinding.GetCaseIDFromDirrection(targetCell.getId(),direction,fight.getMap(),true);
-          if(cellId==-1)
-            continue;
-          GameCase adjacent=fight.getMap().getCase(cellId);
-          if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
-            continue;
-          int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
-          if(distanceToCaster<0)
-            continue;
-          if(bestAdjacent==null||distanceToCaster<bestAdjacentDistance)
-          {
-            bestAdjacent=adjacent;
-            bestAdjacentDistance=distanceToCaster;
-          }
-        }
-        if(bestAdjacent!=null)
-          return bestAdjacent.getId();
-      }
-    }
-
     for(GameCase candidate : fight.getMap().getCases())
     {
-      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,checkedCells))
+      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,visitedCells))
         continue;
 
       int distanceToTarget=Integer.MAX_VALUE;
       if(targetCell!=null)
       {
         distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),targetCell.getId());
-        if(distanceToTarget<0)
-          continue;
-        if(distanceToTarget==0)
+        if(distanceToTarget<=0)
           continue;
       }
 
       boolean adjacentToTarget=(targetCell!=null&&distanceToTarget==1);
 
-      boolean enemyNearby=adjacentToTarget;
-      if(!enemyNearby)
-      {
-        for(Fighter potentialTarget : fight.getFighters(3))
-        {
-          if(potentialTarget==null||potentialTarget.isDead())
-            continue;
-          if(potentialTarget.getTeam()==caster.getTeam())
-            continue;
-          GameCase potentialCell=potentialTarget.getCell();
-          if(potentialCell==null)
-            continue;
-          int distanceToPotential=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),potentialCell.getId());
-          if(distanceToPotential==1)
-          {
-            enemyNearby=true;
-            break;
-          }
-        }
-      }
-      if(!enemyNearby)
+      if(!adjacentToTarget&&!hasEnemyAdjacent(fight,caster,candidate))
         continue;
 
       int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),caster.getCell().getId());
@@ -3017,9 +3017,28 @@ public class Function
         bestTargetDistance=distanceToTarget;
         bestCasterDistance=distanceToCaster;
       }
+
+      visitedCells.add(candidate.getId());
     }
 
     return bestCell;
+  }
+
+  private boolean hasEnemyAdjacent(Fight fight, Fighter caster, GameCase candidate)
+  {
+    for(Fighter potentialTarget : fight.getFighters(3))
+    {
+      if(potentialTarget==null||potentialTarget.isDead())
+        continue;
+      if(potentialTarget.getTeam()==caster.getTeam())
+        continue;
+      GameCase potentialCell=potentialTarget.getCell();
+      if(potentialCell==null)
+        continue;
+      if(PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),potentialCell.getId())==1)
+        return true;
+    }
+    return false;
   }
 
   private boolean isValidTrapCandidate(Fight fight, Fighter caster, GameCase targetCell, SortStats spell,
