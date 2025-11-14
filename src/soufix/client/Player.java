@@ -1830,6 +1830,42 @@ public void setTotal_reculte() {
     return away;
   }
 
+  public boolean boostAllSpellsToMax(List<String> lockedSpells)
+  {
+    boolean boosted = false;
+    for(int spellId : new ArrayList<>(getSorts().keySet()))
+    {
+      Spell spell = Main.world.getSort(spellId);
+      if(spell == null)
+        continue;
+      Spell.SortStats currentStats = getSortStatBySortIfHas(spellId);
+      if(currentStats == null)
+        continue;
+      int currentLevel = currentStats.getLevel();
+      for(int level = currentLevel + 1; level <= 6; level++)
+      {
+        Spell.SortStats nextLevelStats = spell.getStatsByLevel(level);
+        if(nextLevelStats == null)
+          break;
+        if(nextLevelStats.getReqLevel() > this.getLevel())
+        {
+          if(lockedSpells != null && currentLevel < 6)
+          {
+            String spellName = (spell.getNombre() != null && !spell.getNombre().isEmpty()) ? spell.getNombre() : String.valueOf(spellId);
+            String lockInfo = spellName + " (niveau " + nextLevelStats.getReqLevel() + ")";
+            if(!lockedSpells.contains(lockInfo))
+              lockedSpells.add(lockInfo);
+          }
+          break;
+        }
+        if(!boostSpellpvp(spellId))
+          break;
+        boosted = true;
+      }
+    }
+    return boosted;
+  }
+
   public void boostSpellIncarnation()
   {
     for(Entry<Integer, Spell.SortStats> i : _sorts.entrySet())
