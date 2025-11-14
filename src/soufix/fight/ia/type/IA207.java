@@ -60,8 +60,8 @@ public class IA207 extends AbstractNeedSpell
             if(this.fighter.getCurPm(this.fight)>0&&!action&&target!=null)
             {
                 int value=Function.getInstance().moveautourIfPossible(this.fight,this.fighter,target);
-                if(value==0)
-                    value=Function.getInstance().moveNearIfPossible(this.fight,this.fighter,target);
+                if(value==0&&Function.getInstance().moveNearIfPossible(this.fight,this.fighter,target))
+                    value=1000;
                 if(value!=0)
                 {
                     time=value;
