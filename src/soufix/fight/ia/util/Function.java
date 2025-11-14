@@ -2852,7 +2852,7 @@ public class Function
       trapHistory.remove(fight.getId());
   }
 
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
   {
     if(fight==null||caster==null||target==null||spell==null)
       return -1;
@@ -2862,7 +2862,7 @@ public class Function
     int bestCasterDistance=Integer.MAX_VALUE;
     boolean foundAdjacent=false;
 
-    Set<Integer> usedTrapCells=getUsedTrapCells(fight,caster);
+    Set<Integer> checkedCells=excludedCells!=null?new HashSet<>(excludedCells):new HashSet<>();
 
     GameCase targetCell=target.getCell();
     if(targetCell!=null&&caster.getCell()!=null)
@@ -2876,7 +2876,7 @@ public class Function
         if(cellId==-1)
           continue;
         GameCase adjacent=fight.getMap().getCase(cellId);
-        if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,usedTrapCells))
+        if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
           continue;
         int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
         if(distanceToCaster<0)
@@ -2893,7 +2893,7 @@ public class Function
 
     for(GameCase candidate : fight.getMap().getCases())
     {
-      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,usedTrapCells))
+      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,checkedCells))
         continue;
 
       int distanceToTarget=Integer.MAX_VALUE;
@@ -2951,13 +2951,13 @@ public class Function
         bestTargetDistance=distanceToTarget;
         bestCasterDistance=distanceToCaster;
       }
+    }
+
+    return bestCell;
   }
 
-  return bestCell;
-}
-
   private boolean isValidTrapCandidate(Fight fight, Fighter caster, GameCase targetCell, SortStats spell,
-                                       GameCase candidate, Set<Integer> usedTrapCells)
+                                       GameCase candidate, Set<Integer> excludedCells)
   {
     if(fight==null||caster==null||spell==null||candidate==null)
       return false;
@@ -2967,7 +2967,7 @@ public class Function
       return false;
     if(targetCell!=null&&candidate.getId()==targetCell.getId())
       return false;
-    if(usedTrapCells!=null&&usedTrapCells.contains(candidate.getId()))
+    if(excludedCells!=null&&excludedCells.contains(candidate.getId()))
       return false;
     for(Trap trap : fight.getAllTraps())
       if(trap!=null&&trap.getCell().getId()==candidate.getId())
