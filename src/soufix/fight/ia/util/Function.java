@@ -5,6 +5,7 @@ import soufix.area.map.GameMap;
 import soufix.common.Formulas;
 import soufix.common.PathFinding;
 import soufix.common.SocketManager;
+import soufix.client.Player;
 import soufix.fight.Fight;
 import soufix.fight.Fighter;
 import soufix.fight.spells.LaunchedSpell;
@@ -2734,8 +2735,20 @@ public class Function
           boolean previousTrapState=fighter.getJustTrapped();
           int trapCountBefore=fight.getAllTraps().size();
           fighter.setJustTrapped(false);
+          logTrapDebug(fight,fighter,"tente de poser le piège "
+              +SS.getSpellID()+" sur la case "+trapCellId+(target!=null ? " (cible "+target.getPacketsName()+")" : ""));
           int attack=fight.tryCastSpell(fighter,SS,trapCellId);
           boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+          if(attack==0)
+          {
+            logTrapDebug(fight,fighter,(trapPlaced ? "a posé un piège sur la case " : "n'a pas généré de piège sur la case ")
+                +trapCellId+" avec le sort "+SS.getSpellID());
+          }
+          else
+          {
+            logTrapDebug(fight,fighter,"n'a pas pu lancer le sort de piège "+SS.getSpellID()+" (code "+attack+") sur la case "
+                +trapCellId);
+          }
           fighter.setJustTrapped(previousTrapState);
           if(attack==0&&trapPlaced)
           {
@@ -2823,6 +2836,31 @@ public class Function
     return false;
   }
 
+  private void logTrapDebug(Fight fight, Fighter caster, String detail)
+  {
+    if(detail==null||detail.isEmpty())
+      return;
+
+    String casterName=caster!=null?caster.getPacketsName():"Inconnu";
+    if(fight!=null)
+      Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+casterName+" "+detail);
+    else
+      Logging.getInstance().write("Trap",casterName+" "+detail);
+
+    if(fight==null)
+      return;
+
+    for(Fighter participant : fight.getFighters(3))
+    {
+      if(participant==null)
+        continue;
+      Player player=participant.getPersonnage();
+      if(player==null||!player.isOnline())
+        continue;
+      SocketManager.GAME_SEND_MESSAGE(player,"[Piège] "+casterName+" "+detail,"B22222");
+    }
+  }
+
   private Set<Integer> getUsedTrapCells(Fight fight, Fighter caster)
   {
     if(fight==null||caster==null)
@@ -2852,14 +2890,9 @@ public class Function
       trapHistory.remove(fight.getId());
   }
 
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
   {
-    return findTrapCell(fight,caster,target,spell,new HashSet<>());
-  }
-
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
-  {
-    return findTrapCell(fight,caster,target,spell,new HashSet<>());
+    return findTrapCell(fight,caster,target,spell,null);
   }
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
