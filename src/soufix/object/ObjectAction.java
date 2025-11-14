@@ -2,7 +2,9 @@ package soufix.object;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -799,20 +801,15 @@ public class ObjectAction
   			if(classe > 12 || classe < 1){
 					  break;
 					  }
-  			player0.setClasse(classe);
-  			player0.setGfxId(classe*10 + player0.getSexe());
-  			StringBuilder sort = new StringBuilder();
-  			for (final Entry<Integer, SortStats> i : player0.getSorts().entrySet()) {
-					if(i.getValue().getSpellID() == 350)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 366)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 370)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 367)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 413)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 414)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 369)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 364)sort.append(i.getValue().getSpellID()+";");
-					if(i.getValue().getSpellID() == 481)sort.append(i.getValue().getSpellID()+";");
-				}
+                        player0.setClasse(classe);
+                        player0.setGfxId(classe*10 + player0.getSexe());
+                        Map<Integer, Integer> preservedSpells=new HashMap<Integer, Integer>();
+                        for(Entry<Integer, SortStats> entry : player0.getSorts().entrySet())
+                        {
+                                        SortStats spellStats=entry.getValue();
+                                        if(!Constant.isClassSpell(classe,spellStats.getSpellID()))
+                                                preservedSpells.put(spellStats.getSpellID(),spellStats.getLevel());
+                        }
 				int parcho_sort = 0;
 				for (final Entry<Integer, SortStats> i : player0.getSorts().entrySet()) {
 					if(i.getValue().getLevel() == 1)continue;
@@ -824,10 +821,14 @@ public class ObjectAction
 				}
 				parcho_sort+= player0.get_spellPts();
             player0.setsorts(null);
-  			player0.setsorts(Constant.getStartSorts(classe));
-					for (int a = 1; a <= player0.getLevel(); a++) {
-						Constant.onLevelUpSpells(player0, a);
-					}
+                        player0.setsorts(Constant.getStartSorts(classe));
+                                        for (int a = 1; a <= player0.getLevel(); a++) {
+                                                Constant.onLevelUpSpells(player0, a);
+                                        }
+                                        for(Entry<Integer, Integer> preserved : preservedSpells.entrySet())
+                                        {
+                                                player0.learnSpell(preserved.getKey(),preserved.getValue(),false,true,false);
+                                        }
 					if((player0.getLevel() - 1) >= parcho_sort){
 						parcho_sort = ((player0.getLevel() - 1)-parcho_sort);
 					}else{
