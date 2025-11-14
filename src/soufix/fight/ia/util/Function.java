@@ -2734,8 +2734,22 @@ public class Function
           boolean previousTrapState=fighter.getJustTrapped();
           int trapCountBefore=fight.getAllTraps().size();
           fighter.setJustTrapped(false);
+          Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+fighter.getPacketsName()
+              +" tente de poser le piège "
+              +SS.getSpellID()+" sur la case "+trapCellId+" (cible "+target.getPacketsName()+")");
           int attack=fight.tryCastSpell(fighter,SS,trapCellId);
           boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+          if(attack==0)
+          {
+            Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+fighter.getPacketsName()
+                +(trapPlaced ? " a posé un piège sur la case " : " n'a pas généré de piège sur la case ")
+                +trapCellId+" avec le sort "+SS.getSpellID());
+          }
+          else
+          {
+            Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+fighter.getPacketsName()
+                +" n'a pas pu lancer le sort de piège "+SS.getSpellID()+" (code "+attack+") sur la case "+trapCellId);
+          }
           fighter.setJustTrapped(previousTrapState);
           if(attack==0&&trapPlaced)
           {
@@ -2852,14 +2866,9 @@ public class Function
       trapHistory.remove(fight.getId());
   }
 
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
   {
-    return findTrapCell(fight,caster,target,spell,new HashSet<>());
-  }
-
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
-  {
-    return findTrapCell(fight,caster,target,spell,new HashSet<>());
+    return findTrapCell(fight,caster,target,spell,null);
   }
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
