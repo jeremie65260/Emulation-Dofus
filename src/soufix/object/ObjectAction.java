@@ -915,13 +915,7 @@ public class ObjectAction
 		                }
 		            }
 				  player0.addCapital((player0.getLevel() - 1) * 5 - player0.get_capital());
-				  for(String sortid : sort.toString().split("\\;"))
-					{
-						if(sortid.equals(""))continue;
-						int id = Integer.parseInt(sortid);
-						player0.learnSpell(id, 1, false, true, false);
-					   }	
-				  //Database.getStatics().getPlayerData().update(player0);
+                                  //Database.getStatics().getPlayerData().update(player0);
 				  //kick
 		          player0.getAccount().getGameClient().kick();
 			break;
