@@ -1,11 +1,8 @@
 package soufix.fight.ia.type;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import soufix.fight.Fight;
 import soufix.fight.Fighter;
@@ -63,14 +60,11 @@ public class IA207 extends AbstractNeedSpell
             if(this.fighter.getCurPm(this.fight)>0&&!action&&target!=null)
             {
                 int value=Function.getInstance().moveautourIfPossible(this.fight,this.fighter,target);
+                if(value==0)
+                    value=Function.getInstance().moveNearIfPossible(this.fight,this.fighter,target);
                 if(value!=0)
                 {
                     time=value;
-                    action=true;
-                }
-                else if(Function.getInstance().moveNearIfPossible(this.fight,this.fighter,target))
-                {
-                    time=600;
                     action=true;
                 }
             }
@@ -128,21 +122,13 @@ public class IA207 extends AbstractNeedSpell
 
     private List<SortStats> getTrapSpells()
     {
-        Set<SortStats> traps=new LinkedHashSet<>();
-        collectTrapSpells(this.highests,traps);
-        collectTrapSpells(this.glyphs,traps);
-        if(traps.isEmpty()&&this.fighter.getMob()!=null)
-            collectTrapSpells(this.fighter.getMob().getSpells().values(),traps);
-        return new ArrayList<>(traps);
-    }
-
-    private void collectTrapSpells(Collection<SortStats> source, Set<SortStats> traps)
-    {
-        if(source==null||traps==null)
-            return;
-        for(SortStats spell : source)
+        List<SortStats> traps=new ArrayList<>();
+        if(this.highests==null)
+            return traps;
+        for(SortStats spell : this.highests)
             if(isTrapSpell(spell))
                 traps.add(spell);
+        return traps;
     }
 
     private boolean isTrapSpell(SortStats spell)
