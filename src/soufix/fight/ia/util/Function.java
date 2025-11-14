@@ -2852,14 +2852,9 @@ public class Function
       trapHistory.remove(fight.getId());
   }
 
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
   {
-    return findTrapCell(fight,caster,target,spell,new HashSet<>());
-  }
-
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
-  {
-    return findTrapCell(fight,caster,target,spell,new HashSet<>());
+    return findTrapCell(fight,caster,target,spell,null);
   }
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
