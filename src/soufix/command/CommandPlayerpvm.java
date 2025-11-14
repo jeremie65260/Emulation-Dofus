@@ -1,6 +1,7 @@
 package soufix.command;
 
 import java.util.ArrayList;
+import java.util.List;
 import soufix.Hdv.Hdv;
 import soufix.client.Player;
 import soufix.client.other.Party;
@@ -655,12 +656,48 @@ public class CommandPlayerpvm {
 				SocketManager.GAME_SEND_EL_BANK_PACKET(perso);
 				perso.setAway(true);
 				perso.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_BANK,0));
-				perso.getGameClient().show_cell_BANK = true;
-				}
-				return true;
-				
-			}
-			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("ornement")) {StringBuilder ornements = new StringBuilder();
+                                perso.getGameClient().show_cell_BANK = true;
+                                }
+                                return true;
+
+                        }
+                        if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("spellmax")) {
+
+                                if (perso.getFight() != null) {
+                                        return true;
+                                }
+                                if (System.currentTimeMillis() <  perso.getGameClient().timeLasttpcommande) {
+                        perso.sendMessage("Tu dois attendre encore "+(System.currentTimeMillis() -  perso.getGameClient().timeLasttpcommande) / 1000+" seconde(s)");
+                        return true;
+                    }
+                                perso.getGameClient().timeLasttpcommande = System.currentTimeMillis()+1000;
+
+                                final List<String> lockedSpells = new ArrayList<>();
+                                final boolean boosted = perso.boostAllSpellsToMax(lockedSpells);
+
+                                SocketManager.GAME_SEND_ASK(perso.getGameClient(),perso);
+                                SocketManager.GAME_SEND_SPELL_LIST(perso);
+
+                                if (boosted) {
+                                        perso.sendMessage("Vos sorts disponibles ont été améliorés.");
+                                } else {
+                                        perso.sendMessage("Aucun de vos sorts n'a pu être amélioré.");
+                                }
+                                if (!lockedSpells.isEmpty()) {
+                                        final StringBuilder message = new StringBuilder("Sorts nécessitant un niveau supérieur: <b>");
+                                        for (int i = 0; i < lockedSpells.size(); i++) {
+                                                if (i > 0) {
+                                                        message.append("</b>, <b>");
+                                                }
+                                                message.append(lockedSpells.get(i));
+                                        }
+                                        message.append("</b>.");
+                                        SocketManager.GAME_SEND_MESSAGE(perso, message.toString());
+                                }
+
+                                return true;
+                        }
+                        if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("ornement")) {StringBuilder ornements = new StringBuilder();
 			for (Ornements o : World.getOrnements().values()) {
 
 				if(perso.getOrnementsList().contains(o.getId())) {
@@ -1284,8 +1321,9 @@ public class CommandPlayerpvm {
 						+ "\n<b>.exopa</b> - Permet d' exo pa un item."
 						+ "\n<b>.exopm</b> - Permet de exo pm un item."
 						+ "\n<b>.fmcac</b> - Permet de fm votre cac."
-						+ "\n<b>.jetmax</b> - Permet de passer les items equiper jet max."
-						+ "\n<b>.vip</b> - Affiche les priviléges VIP."
+                                                + "\n<b>.jetmax</b> - Permet de passer les items equiper jet max."
+                                                + "\n<b>.spellmax</b> - permet de monter level 6 tous les sorts."
+                                                + "\n<b>.vip</b> - Affiche les priviléges VIP."
 						);
 				}else
 				{
@@ -1311,8 +1349,9 @@ public class CommandPlayerpvm {
 							+ "\n<b>.exopa</b> - Permet d' exo pa un item."
 							+ "\n<b>.exopm</b> - Permet de exo pm un item."
 							+ "\n<b>.fmcac</b> - Permet de fm votre cac."
-							+ "\n<b>.jetmax</b> - Permet de passer les items equiper jet max."
-							+ "\n<b>.vip</b> - Affiche les priviléges VIP."
+                                                        + "\n<b>.jetmax</b> - Permet de passer les items equiper jet max."
+                                                        + "\n<b>.spellmax</b> - permet de monter level 6 tous les sorts."
+                                                        + "\n<b>.vip</b> - Affiche les priviléges VIP."
 							);	
 				}
 				return true;
