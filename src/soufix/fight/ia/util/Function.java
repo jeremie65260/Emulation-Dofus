@@ -2864,7 +2864,9 @@ public class Function
 
     Set<Integer> checkedCells=excludedCells!=null?new HashSet<>(excludedCells):new HashSet<>();
 
-    GameCase targetCell=target.getCell();
+    GameCase targetCell=getKnownCell(target);
+    if(targetCell!=null)
+      checkedCells.add(targetCell.getId());
     if(targetCell!=null&&caster.getCell()!=null)
     {
       GameCase bestAdjacent=null;
@@ -2975,6 +2977,16 @@ public class Function
     if(!fight.canCastSpell1(caster,spell,candidate,-1))
       return false;
     return true;
+  }
+
+  private GameCase getKnownCell(Fighter fighter)
+  {
+    if(fighter==null)
+      return null;
+    GameCase cell=fighter.getCell();
+    if(cell!=null)
+      return cell;
+    return fighter.lastInvisCell;
   }
 
   public int attackIfPossibleCM1(Fight fight, Fighter fighter, List<SortStats> Spell, boolean notcac)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
