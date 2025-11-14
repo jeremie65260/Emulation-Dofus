@@ -2715,30 +2715,39 @@ public class Function
       int cellId=target.getCell().getId();
       if(isTrapSpell(SS))
       {
-        int trapCellId=findTrapCell(fight,fighter,target,SS);
-        if(trapCellId==-1)
-          return -1;
-        GameCase trapCell=fight.getMap().getCase(trapCellId);
-        GameCase targetCell=target.getCell();
-        if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
-            ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
+        Set<Integer> usedTrapCells=getUsedTrapCells(fight,fighter);
+        while(true)
         {
-          getUsedTrapCells(fight,fighter).add(trapCellId);
-          return -1;
+          int trapCellId=findTrapCell(fight,fighter,target,SS);
+          if(trapCellId==-1)
+            return -1;
+
+          GameCase trapCell=fight.getMap().getCase(trapCellId);
+          GameCase targetCell=target.getCell();
+          if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
+              ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
+          {
+            usedTrapCells.add(trapCellId);
+            continue;
+          }
+
+          boolean previousTrapState=fighter.getJustTrapped();
+          int trapCountBefore=fight.getAllTraps().size();
+          fighter.setJustTrapped(false);
+          int attack=fight.tryCastSpell(fighter,SS,trapCellId);
+          boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+          fighter.setJustTrapped(previousTrapState);
+          if(attack==0&&trapPlaced)
+          {
+            rememberTrapCell(fight,fighter,trapCellId);
+            return SS.getSpell().getDuration();
+          }
+
+          usedTrapCells.add(trapCellId);
+
+          if(usedTrapCells.size()>=fight.getMap().getCases().size())
+            return -1;
         }
-        boolean previousTrapState=fighter.getJustTrapped();
-        int trapCountBefore=fight.getAllTraps().size();
-        fighter.setJustTrapped(false);
-        int attack=fight.tryCastSpell(fighter,SS,trapCellId);
-        boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
-        fighter.setJustTrapped(previousTrapState);
-        if(attack==0&&trapPlaced)
-        {
-          rememberTrapCell(fight,fighter,trapCellId);
-          return SS.getSpell().getDuration();
-        }
-        getUsedTrapCells(fight,fighter).add(trapCellId);
-        return -1;
       }
       int attack=fight.tryCastSpell(fighter,SS,cellId);
       if(attack==0)
