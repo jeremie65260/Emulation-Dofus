@@ -2715,30 +2715,45 @@ public class Function
       int cellId=target.getCell().getId();
       if(isTrapSpell(SS))
       {
-        int trapCellId=findTrapCell(fight,fighter,target,SS);
-        if(trapCellId==-1)
-          return -1;
-        GameCase trapCell=fight.getMap().getCase(trapCellId);
-        GameCase targetCell=target.getCell();
-        if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
-            ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
+        Set<Integer> usedTrapCells=getUsedTrapCells(fight,fighter);
+        Set<Integer> attemptedCells=new HashSet<>(usedTrapCells);
+        GameCase targetCellReference=target.getCell();
+        if(targetCellReference!=null)
+          attemptedCells.add(targetCellReference.getId());
+        while(true)
         {
-          getUsedTrapCells(fight,fighter).add(trapCellId);
-          return -1;
+          int trapCellId=findTrapCell(fight,fighter,target,SS,attemptedCells);
+          if(trapCellId==-1)
+            return -1;
+
+          GameCase trapCell=fight.getMap().getCase(trapCellId);
+          GameCase targetCell=target.getCell();
+          if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
+              ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
+          {
+            usedTrapCells.add(trapCellId);
+            attemptedCells.add(trapCellId);
+            continue;
+          }
+
+          boolean previousTrapState=fighter.getJustTrapped();
+          int trapCountBefore=fight.getAllTraps().size();
+          fighter.setJustTrapped(false);
+          int attack=fight.tryCastSpell(fighter,SS,trapCellId);
+          boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+          fighter.setJustTrapped(previousTrapState);
+          if(attack==0&&trapPlaced)
+          {
+            rememberTrapCell(fight,fighter,trapCellId);
+            return SS.getSpell().getDuration();
+          }
+
+          usedTrapCells.add(trapCellId);
+          attemptedCells.add(trapCellId);
+
+          if(usedTrapCells.size()>=fight.getMap().getCases().size())
+            return -1;
         }
-        boolean previousTrapState=fighter.getJustTrapped();
-        int trapCountBefore=fight.getAllTraps().size();
-        fighter.setJustTrapped(false);
-        int attack=fight.tryCastSpell(fighter,SS,trapCellId);
-        boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
-        fighter.setJustTrapped(previousTrapState);
-        if(attack==0&&trapPlaced)
-        {
-          rememberTrapCell(fight,fighter,trapCellId);
-          return SS.getSpell().getDuration();
-        }
-        getUsedTrapCells(fight,fighter).add(trapCellId);
-        return -1;
       }
       int attack=fight.tryCastSpell(fighter,SS,cellId);
       if(attack==0)
@@ -2843,7 +2858,7 @@ public class Function
       trapHistory.remove(fight.getId());
   }
 
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
   {
     if(fight==null||caster==null||target==null||spell==null)
       return -1;
@@ -2853,7 +2868,7 @@ public class Function
     int bestCasterDistance=Integer.MAX_VALUE;
     boolean foundAdjacent=false;
 
-    Set<Integer> usedTrapCells=getUsedTrapCells(fight,caster);
+    Set<Integer> checkedCells=excludedCells!=null?new HashSet<>(excludedCells):new HashSet<>();
 
     GameCase targetCell=target.getCell();
     if(targetCell!=null&&caster.getCell()!=null)
@@ -2867,7 +2882,7 @@ public class Function
         if(cellId==-1)
           continue;
         GameCase adjacent=fight.getMap().getCase(cellId);
-        if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,usedTrapCells))
+        if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
           continue;
         int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
         if(distanceToCaster<0)
@@ -2884,7 +2899,7 @@ public class Function
 
     for(GameCase candidate : fight.getMap().getCases())
     {
-      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,usedTrapCells))
+      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,checkedCells))
         continue;
 
       int distanceToTarget=Integer.MAX_VALUE;
@@ -2942,13 +2957,13 @@ public class Function
         bestTargetDistance=distanceToTarget;
         bestCasterDistance=distanceToCaster;
       }
+    }
+
+    return bestCell;
   }
 
-  return bestCell;
-}
-
   private boolean isValidTrapCandidate(Fight fight, Fighter caster, GameCase targetCell, SortStats spell,
-                                       GameCase candidate, Set<Integer> usedTrapCells)
+                                       GameCase candidate, Set<Integer> excludedCells)
   {
     if(fight==null||caster==null||spell==null||candidate==null)
       return false;
@@ -2958,7 +2973,7 @@ public class Function
       return false;
     if(targetCell!=null&&candidate.getId()==targetCell.getId())
       return false;
-    if(usedTrapCells!=null&&usedTrapCells.contains(candidate.getId()))
+    if(excludedCells!=null&&excludedCells.contains(candidate.getId()))
       return false;
     for(Trap trap : fight.getAllTraps())
       if(trap!=null&&trap.getCell().getId()==candidate.getId())
