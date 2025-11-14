@@ -2911,31 +2911,50 @@ public class Function
 
     GameCase targetCell=getKnownCell(target);
     if(targetCell!=null)
-      checkedCells.add(targetCell.getId());
-    if(targetCell!=null&&caster.getCell()!=null)
     {
-      GameCase bestAdjacent=null;
-      int bestAdjacentDistance=Integer.MAX_VALUE;
-      char[] directions= { 'b','d','f','h' };
-      for(char direction : directions)
+      checkedCells.add(targetCell.getId());
+      List<Integer> unavailableCells=new ArrayList<>();
+      if(excludedCells!=null)
+        unavailableCells.addAll(excludedCells);
+      int attempts=0;
+      while(attempts<4)
       {
-        int cellId=PathFinding.GetCaseIDFromDirrection(targetCell.getId(),direction,fight.getMap(),true);
-        if(cellId==-1)
-          continue;
-        GameCase adjacent=fight.getMap().getCase(cellId);
-        if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
-          continue;
-        int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
-        if(distanceToCaster<0)
-          continue;
-        if(bestAdjacent==null||distanceToCaster<bestAdjacentDistance)
-        {
-          bestAdjacent=adjacent;
-          bestAdjacentDistance=distanceToCaster;
-        }
+        int adjacentId=PathFinding.getAvailableCellArround(fight,targetCell.getId(),unavailableCells);
+        if(adjacentId==0)
+          break;
+        unavailableCells.add(adjacentId);
+        GameCase adjacent=fight.getMap().getCase(adjacentId);
+        if(adjacent!=null&&isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
+          return adjacent.getId();
+        if(adjacent!=null)
+          checkedCells.add(adjacent.getId());
+        attempts++;
       }
-      if(bestAdjacent!=null)
-        return bestAdjacent.getId();
+      if(caster.getCell()!=null)
+      {
+        GameCase bestAdjacent=null;
+        int bestAdjacentDistance=Integer.MAX_VALUE;
+        char[] directions= { 'b','d','f','h' };
+        for(char direction : directions)
+        {
+          int cellId=PathFinding.GetCaseIDFromDirrection(targetCell.getId(),direction,fight.getMap(),true);
+          if(cellId==-1)
+            continue;
+          GameCase adjacent=fight.getMap().getCase(cellId);
+          if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,checkedCells))
+            continue;
+          int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
+          if(distanceToCaster<0)
+            continue;
+          if(bestAdjacent==null||distanceToCaster<bestAdjacentDistance)
+          {
+            bestAdjacent=adjacent;
+            bestAdjacentDistance=distanceToCaster;
+          }
+        }
+        if(bestAdjacent!=null)
+          return bestAdjacent.getId();
+      }
     }
 
     for(GameCase candidate : fight.getMap().getCases())
