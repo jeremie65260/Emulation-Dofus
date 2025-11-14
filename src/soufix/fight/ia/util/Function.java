@@ -3012,6 +3012,8 @@ public class Function
       return false;
     if(candidate.getFirstFighter()!=null)
       return false;
+    if(isPlayerOccupyingCell(fight,candidate))
+      return false;
     if(targetCell!=null&&candidate.getId()==targetCell.getId())
       return false;
     if(excludedCells!=null&&excludedCells.contains(candidate.getId()))
@@ -3022,6 +3024,27 @@ public class Function
     if(!fight.canCastSpell1(caster,spell,candidate,-1))
       return false;
     return true;
+  }
+
+  private boolean isPlayerOccupyingCell(Fight fight, GameCase cell)
+  {
+    if(fight==null||cell==null)
+      return false;
+
+    for(Fighter participant : fight.getFighters(3))
+    {
+      if(participant==null||participant.isDead())
+        continue;
+      if(participant.getPersonnage()==null)
+        continue;
+      GameCase playerCell=participant.getCell();
+      if(playerCell==null)
+        continue;
+      if(playerCell.getId()==cell.getId())
+        return true;
+    }
+
+    return false;
   }
 
   private GameCase getKnownCell(Fighter fighter)
