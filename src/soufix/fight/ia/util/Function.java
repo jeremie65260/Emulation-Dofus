@@ -2735,19 +2735,21 @@ public class Function
           boolean previousTrapState=fighter.getJustTrapped();
           int trapCountBefore=fight.getAllTraps().size();
           fighter.setJustTrapped(false);
-          logTrapDebug(fight,fighter,"tente de poser le piège "
-              +SS.getSpellID()+" sur la case "+trapCellId+(target!=null ? " (cible "+target.getPacketsName()+")" : ""));
+          Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+fighter.getPacketsName()
+              +" tente de poser le piège "
+              +SS.getSpellID()+" sur la case "+trapCellId+" (cible "+target.getPacketsName()+")");
           int attack=fight.tryCastSpell(fighter,SS,trapCellId);
           boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
           if(attack==0)
           {
-            logTrapDebug(fight,fighter,(trapPlaced ? "a posé un piège sur la case " : "n'a pas généré de piège sur la case ")
+            Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+fighter.getPacketsName()
+                +(trapPlaced ? " a posé un piège sur la case " : " n'a pas généré de piège sur la case ")
                 +trapCellId+" avec le sort "+SS.getSpellID());
           }
           else
           {
-            logTrapDebug(fight,fighter,"n'a pas pu lancer le sort de piège "+SS.getSpellID()+" (code "+attack+") sur la case "
-                +trapCellId);
+            Logging.getInstance().write("Trap","[Fight "+fight.getId()+"] "+fighter.getPacketsName()
+                +" n'a pas pu lancer le sort de piège "+SS.getSpellID()+" (code "+attack+") sur la case "+trapCellId);
           }
           fighter.setJustTrapped(previousTrapState);
           if(attack==0&&trapPlaced)
