@@ -299,7 +299,7 @@ public class IAHandler
           ia=new IA204(fight,fighter,(byte)8);
           break;
         case 205: // Buff self , alliés et invocations , plusieurs fois, pas d'attaque puis fuite
-          ia=new IA205(fight,fighter,(byte)8);
+          ia=new IA205(fight,fighter,(byte)4);
           break;
         case 206: // Variante IA39 avec gestion du bond effet 6
           ia=new IA206(fight,fighter,(byte)8);
