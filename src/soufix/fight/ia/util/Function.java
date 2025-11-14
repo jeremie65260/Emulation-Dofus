@@ -2725,8 +2725,11 @@ public class Function
 
           GameCase trapCell=fight.getMap().getCase(trapCellId);
           GameCase targetCell=target.getCell();
+          GameCase knownTargetCell=getKnownCell(target);
           if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
-              ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
+              ||isEnemyStandingOnCell(fight,fighter,trapCell)
+              ||(targetCell!=null&&trapCell.getId()==targetCell.getId())
+              ||(knownTargetCell!=null&&trapCell.getId()==knownTargetCell.getId()))
           {
             usedTrapCells.add(trapCellId);
             continue;
@@ -3041,6 +3044,29 @@ public class Function
     return false;
   }
 
+  private boolean isEnemyStandingOnCell(Fight fight, Fighter caster, GameCase cell)
+  {
+    if(fight==null||caster==null||cell==null)
+      return false;
+
+    for(Fighter potentialTarget : fight.getFighters(3))
+    {
+      if(potentialTarget==null||potentialTarget.isDead())
+        continue;
+      if(potentialTarget.getTeam()==caster.getTeam())
+        continue;
+
+      GameCase occupiedCell=potentialTarget.getCell();
+      if(occupiedCell==null)
+        continue;
+
+      if(occupiedCell.getId()==cell.getId())
+        return true;
+    }
+
+    return false;
+  }
+
   private boolean isValidTrapCandidate(Fight fight, Fighter caster, GameCase targetCell, SortStats spell,
                                        GameCase candidate, Set<Integer> excludedCells)
   {
@@ -3049,6 +3075,8 @@ public class Function
     if(!candidate.isWalkable(false))
       return false;
     if(candidate.getFirstFighter()!=null)
+      return false;
+    if(isEnemyStandingOnCell(fight,caster,candidate))
       return false;
     if(isPlayerOccupyingCell(fight,candidate))
       return false;
