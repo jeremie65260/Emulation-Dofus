@@ -2718,6 +2718,14 @@ public class Function
         int trapCellId=findTrapCell(fight,fighter,target,SS);
         if(trapCellId==-1)
           return -1;
+        GameCase trapCell=fight.getMap().getCase(trapCellId);
+        GameCase targetCell=target.getCell();
+        if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
+            ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
+        {
+          getUsedTrapCells(fight,fighter).add(trapCellId);
+          return -1;
+        }
         boolean previousTrapState=fighter.getJustTrapped();
         int trapCountBefore=fight.getAllTraps().size();
         fighter.setJustTrapped(false);
@@ -2898,27 +2906,36 @@ public class Function
 
     for(GameCase candidate : fight.getMap().getCases())
     {
-      if(candidate==null)
-        continue;
-      if(!candidate.isWalkable(false))
-        continue;
-      if(candidate.getFirstFighter()!=null)
-        continue;
-      // Évite de sélectionner la cellule déjà occupée par la cible
-      if(target.getCell()!=null&&candidate.getId()==target.getCell().getId())
-        continue;
-      if(usedTrapCells.contains(candidate.getId()))
-        continue;
-      boolean trapAlreadyPresent=false;
-      for(Trap trap : fight.getAllTraps())
-        if(trap!=null&&trap.getCell().getId()==candidate.getId())
+      GameCase bestAdjacent=null;
+      int bestAdjacentDistance=Integer.MAX_VALUE;
+      char[] directions= { 'b','d','f','h' };
+      for(char direction : directions)
+      {
+        int cellId=PathFinding.GetCaseIDFromDirrection(targetCell.getId(),direction,fight.getMap(),true);
+        if(cellId==-1)
+          continue;
+        GameCase adjacent=fight.getMap().getCase(cellId);
+        if(!isValidTrapCandidate(fight,caster,targetCell,spell,adjacent,usedTrapCells))
+          continue;
+        int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),targetCell.getId());
+        if(distanceToTarget<=0)
+          continue;
+        int distanceToCaster=PathFinding.getDistanceBetween(fight.getMap(),adjacent.getId(),caster.getCell().getId());
+        if(distanceToCaster<0)
+          continue;
+        if(bestAdjacent==null||distanceToCaster<bestAdjacentDistance)
         {
-          trapAlreadyPresent=true;
-          break;
+          bestAdjacent=adjacent;
+          bestAdjacentDistance=distanceToCaster;
         }
-      if(trapAlreadyPresent)
-        continue;
-      if(!fight.canCastSpell1(caster,spell,candidate,-1))
+      }
+      if(bestAdjacent!=null)
+        return bestAdjacent.getId();
+    }
+
+    for(GameCase candidate : fight.getMap().getCases())
+    {
+      if(!isValidTrapCandidate(fight,caster,targetCell,spell,candidate,usedTrapCells))
         continue;
 
       int distanceToTarget=PathFinding.getDistanceBetween(fight.getMap(),candidate.getId(),target.getCell().getId());
@@ -2972,9 +2989,30 @@ public class Function
         bestTargetDistance=distanceToTarget;
         bestCasterDistance=distanceToCaster;
       }
-    }
+  }
 
-    return bestCell;
+  return bestCell;
+}
+
+  private boolean isValidTrapCandidate(Fight fight, Fighter caster, GameCase targetCell, SortStats spell,
+                                       GameCase candidate, Set<Integer> usedTrapCells)
+  {
+    if(fight==null||caster==null||spell==null||candidate==null)
+      return false;
+    if(!candidate.isWalkable(false))
+      return false;
+    if(candidate.getFirstFighter()!=null)
+      return false;
+    if(targetCell!=null&&candidate.getId()==targetCell.getId())
+      return false;
+    if(usedTrapCells!=null&&usedTrapCells.contains(candidate.getId()))
+      return false;
+    for(Trap trap : fight.getAllTraps())
+      if(trap!=null&&trap.getCell().getId()==candidate.getId())
+        return false;
+    if(!fight.canCastSpell1(caster,spell,candidate,-1))
+      return false;
+    return true;
   }
 
   public int attackIfPossibleCM1(Fight fight, Fighter fighter, List<SortStats> Spell, boolean notcac)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
