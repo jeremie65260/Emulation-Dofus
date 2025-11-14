@@ -2716,13 +2716,9 @@ public class Function
       if(isTrapSpell(SS))
       {
         Set<Integer> usedTrapCells=getUsedTrapCells(fight,fighter);
-        Set<Integer> attemptedCells=new HashSet<>(usedTrapCells);
-        GameCase targetCellReference=target.getCell();
-        if(targetCellReference!=null)
-          attemptedCells.add(targetCellReference.getId());
         while(true)
         {
-          int trapCellId=findTrapCell(fight,fighter,target,SS,attemptedCells);
+          int trapCellId=findTrapCell(fight,fighter,target,SS);
           if(trapCellId==-1)
             return -1;
 
@@ -2732,7 +2728,6 @@ public class Function
               ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
           {
             usedTrapCells.add(trapCellId);
-            attemptedCells.add(trapCellId);
             continue;
           }
 
@@ -2749,7 +2744,6 @@ public class Function
           }
 
           usedTrapCells.add(trapCellId);
-          attemptedCells.add(trapCellId);
 
           if(usedTrapCells.size()>=fight.getMap().getCases().size())
             return -1;
