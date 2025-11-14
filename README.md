@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 
 # Game-Rpg-rampage
+    - Intégration de la commande spellmax
+    - sauvegarde des sorts après l'utilisation d'une potion de classe
 ## Version 0.9.2:
     - Création de l'IA 206 ( mix de l'IA 39 pour attirer , taper, invoquer, fuite) + injection de la méthode attackBondIfPossible() de l'IA 36
     - COrrection du Wa : il passait son tour si ne pouvait pas appliquer attackBondIfPossible()
