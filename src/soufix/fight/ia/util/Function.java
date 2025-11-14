@@ -2732,15 +2732,12 @@ public class Function
         int attack=fight.tryCastSpell(fighter,SS,trapCellId);
         boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
         fighter.setJustTrapped(previousTrapState);
-        if(attack==0)
+        if(attack==0&&trapPlaced)
         {
-          if(trapPlaced)
-          {
-            rememberTrapCell(fight,fighter,trapCellId);
-            return SS.getSpell().getDuration();
-          }
-          getUsedTrapCells(fight,fighter).add(trapCellId);
+          rememberTrapCell(fight,fighter,trapCellId);
+          return SS.getSpell().getDuration();
         }
+        getUsedTrapCells(fight,fighter).add(trapCellId);
         return -1;
       }
       int attack=fight.tryCastSpell(fighter,SS,cellId);
