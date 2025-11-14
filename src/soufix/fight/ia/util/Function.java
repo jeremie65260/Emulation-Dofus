@@ -2716,32 +2716,18 @@ public class Function
       if(isTrapSpell(SS))
       {
         Set<Integer> usedTrapCells=getUsedTrapCells(fight,fighter);
-        Set<Integer> attemptedCells=new HashSet<>(usedTrapCells);
-        GameCase targetCellReference=getKnownCell(target);
-        if(targetCellReference!=null)
-          attemptedCells.add(targetCellReference.getId());
         while(true)
         {
-          int trapCellId=findTrapCell(fight,fighter,target,SS,attemptedCells);
+          int trapCellId=findTrapCell(fight,fighter,target,SS);
           if(trapCellId==-1)
             return -1;
 
-          GameCase latestKnownTargetCell=getKnownCell(target);
-          int latestTargetCellId=latestKnownTargetCell!=null ? latestKnownTargetCell.getId() : -1;
-          if(latestTargetCellId!=-1&&trapCellId==latestTargetCellId)
-          {
-            usedTrapCells.add(trapCellId);
-            attemptedCells.add(trapCellId);
-            continue;
-          }
-
           GameCase trapCell=fight.getMap().getCase(trapCellId);
-          GameCase targetCell=latestKnownTargetCell;
+          GameCase targetCell=target.getCell();
           if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
               ||(targetCell!=null&&trapCell.getId()==targetCell.getId()))
           {
             usedTrapCells.add(trapCellId);
-            attemptedCells.add(trapCellId);
             continue;
           }
 
@@ -2758,7 +2744,6 @@ public class Function
           }
 
           usedTrapCells.add(trapCellId);
-          attemptedCells.add(trapCellId);
 
           if(usedTrapCells.size()>=fight.getMap().getCases().size())
             return -1;
@@ -2867,7 +2852,7 @@ public class Function
       trapHistory.remove(fight.getId());
   }
 
-  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
   {
     return findTrapCell(fight,caster,target,spell,new HashSet<>());
   }
