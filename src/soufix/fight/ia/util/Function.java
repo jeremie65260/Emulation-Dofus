@@ -2854,6 +2854,11 @@ public class Function
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
   {
+    return findTrapCell(fight,caster,target,spell,new HashSet<>());
+  }
+
+  private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell, Set<Integer> excludedCells)
+  {
     if(fight==null||caster==null||target==null||spell==null)
       return -1;
 
