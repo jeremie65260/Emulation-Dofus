@@ -3796,7 +3796,12 @@ public class Function
         continue;
       curInfl=getInfl(fight,SS);
       if(curInfl==0)
-        continue;
+      {
+        if(isTrapSpell(SS))
+          curInfl=1;
+        else
+          continue;
+      }
       if(curInfl>inflMax)
       {
         ss=SS;
@@ -3815,7 +3820,12 @@ public class Function
           continue;
         curInfl=getInfl(fight,SS2);
         if(curInfl==0)
-          continue;
+        {
+          if(isTrapSpell(SS2))
+            curInfl=1;
+          else
+            continue;
+        }
         if((Infl1+curInfl)>inflMax)
         {
           ss=SS;
@@ -3834,7 +3844,12 @@ public class Function
 
           curInfl=getInfl(fight,SS3);
           if(curInfl==0)
-            continue;
+          {
+            if(isTrapSpell(SS3))
+              curInfl=1;
+            else
+              continue;
+          }
           if((curInfl+Infl1+Infl2)>inflMax)
           {
             ss=SS;
