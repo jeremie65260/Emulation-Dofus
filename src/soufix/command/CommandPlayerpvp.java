@@ -6,6 +6,8 @@ import java.util.List;
 import soufix.client.Player;
 import soufix.client.other.Stats;
 import soufix.common.SocketManager;
+import soufix.fight.spells.Spell;
+import soufix.fight.spells.Spell.SortStats;
 import soufix.game.GameClient;
 import soufix.game.World;
 import soufix.game.action.ExchangeAction;
@@ -612,7 +614,7 @@ public class CommandPlayerpvp {
 				perso.teleport((short) 2196, 313);
 				return true;
 			}
-                                                if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("spellmax")) {
+                        if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("spellmax")) {
 
                                 if (perso.getFight() != null) {
                                         return true;
@@ -623,8 +625,42 @@ public class CommandPlayerpvp {
                     }
                                 perso.getGameClient().timeLasttpcommande = System.currentTimeMillis()+1000;
 
+                                final List<Integer> spellIds = new ArrayList<>(perso.getSorts().keySet());
                                 final List<String> lockedSpells = new ArrayList<>();
-                                final boolean boosted = perso.boostAllSpellsToMax(lockedSpells);
+                                boolean boosted = false;
+
+                                for (int spellId : spellIds) {
+                                        final Spell spell = Main.world.getSort(spellId);
+                                        if (spell == null) {
+                                                continue;
+                                        }
+                                        final SortStats currentStats = perso.getSortStatBySortIfHas(spellId);
+                                        if (currentStats == null) {
+                                                continue;
+                                        }
+                                        final int currentLevel = currentStats.getLevel();
+
+                                        for (int level = currentLevel + 1; level <= 6; level++) {
+                                                final SortStats nextLevelStats = spell.getStatsByLevel(level);
+                                                if (nextLevelStats == null) {
+                                                        break;
+                                                }
+                                                if (nextLevelStats.getReqLevel() > perso.getLevel()) {
+                                                        if (currentLevel < 6) {
+                                                                final String spellName = (spell.getNombre() != null && !spell.getNombre().isEmpty()) ? spell.getNombre() : String.valueOf(spellId);
+                                                                final String lockInfo = spellName + " (niveau " + nextLevelStats.getReqLevel() + ")";
+                                                                if (!lockedSpells.contains(lockInfo)) {
+                                                                        lockedSpells.add(lockInfo);
+                                                                }
+                                                        }
+                                                        break;
+                                                }
+                                                if (!perso.boostSpellpvp(spellId)) {
+                                                        break;
+                                                }
+                                                boosted = true;
+                                        }
+                                }
 
                                 SocketManager.GAME_SEND_ASK(perso.getGameClient(),perso);
                                 SocketManager.GAME_SEND_SPELL_LIST(perso);
@@ -635,7 +671,7 @@ public class CommandPlayerpvp {
                                         perso.sendMessage("Aucun de vos sorts n'a pu être amélioré.");
                                 }
                                 if (!lockedSpells.isEmpty()) {
-                                        final StringBuilder message = new StringBuilder("Sorts nécessitant un niveau supérieur: <b>");
+                                        final StringBuilder message = new StringBuilder("Sorts nécessitant un niveau supérieur : <b>");
                                         for (int i = 0; i < lockedSpells.size(); i++) {
                                                 if (i > 0) {
                                                         message.append("</b>, <b>");
@@ -648,7 +684,7 @@ public class CommandPlayerpvp {
 
                                 return true;
                         }
-                        if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("event")) {
+			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("event")) {
 				if (perso.isInPrison()) {
 					return true;
 				}
