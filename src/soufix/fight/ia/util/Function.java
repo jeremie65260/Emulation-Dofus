@@ -1864,6 +1864,31 @@ public class Function
 
     return false;
   }
+  /**
+   * Filtre un chemin pour éviter les pièges posés par le même lanceur.
+   */
+  private ArrayList<GameCase> filterPathToAvoidOwnTraps(Fight fight, Fighter caster, ArrayList<GameCase> path)
+  {
+    if (fight == null || caster == null || path == null)
+      return path;
+
+    ArrayList<GameCase> filtered = new ArrayList<>();
+
+    for (GameCase cell : path)
+    {
+      if (cell == null)
+        continue;
+
+      // Ne garde pas les cases contenant un piège du lanceur
+      if (!isOwnTrapOnCell(fight, caster, cell.getId()))
+      {
+        filtered.add(cell);
+      }
+    }
+
+    return filtered;
+  }
+
 
   public int moveIfPossiblecontremur(Fight fight, Fighter F, Fighter T)
   {
