@@ -1788,7 +1788,15 @@ public class Function
     if(path==null||path.isEmpty())
       return 0;
 
-    ArrayList<GameCase> safePath=filterPathToAvoidOwnTraps(fight,F,path);
+    ArrayList<GameCase> safePath=new ArrayList<GameCase>();
+    for(GameCase step : path)
+    {
+      if(step==null)
+        continue;
+      if(isOwnTrapOnCell(fight,F,step.getId()))
+        break;
+      safePath.add(step);
+    }
 
     if(safePath.isEmpty())
       return 0;
@@ -1837,55 +1845,24 @@ public class Function
     return nbrcase*Config.getInstance().AIMovementCellDelay+Config.getInstance().AIMovementFlatDelay;
   }
 
-  private static boolean isOwnTrapOnCell(Fight fight, Fighter caster, int cellId)
+  private boolean isOwnTrapOnCell(Fight fight, Fighter caster, int cellId)
   {
     if(fight==null||caster==null)
       return false;
 
-    GameMap map=fight.getMap();
     for(Trap trap : fight.getAllTraps())
     {
       if(trap==null)
         continue;
-
-      Fighter trapCaster=trap.getCaster();
-      if(trapCaster==null||trapCaster.getId()!=caster.getId())
-        continue;
-
       GameCase trapCell=trap.getCell();
-      if(trapCell==null)
+      if(trapCell==null||trapCell.getId()!=cellId)
         continue;
-
-      if(trapCell.getId()==cellId)
-        return true;
-
-      int trapSize=trap.getSize();
-      if(trapSize>0&&map!=null&&PathFinding.getDistanceBetween(map,trapCell.getId(),cellId)<=trapSize)
+      Fighter trapCaster=trap.getCaster();
+      if(trapCaster!=null&&trapCaster.getId()==caster.getId())
         return true;
     }
 
     return false;
-  }
-
-  private static ArrayList<GameCase> filterPathToAvoidOwnTraps(Fight fight, Fighter mover, List<GameCase> rawPath)
-  {
-    ArrayList<GameCase> safePath=new ArrayList<GameCase>();
-
-    if(rawPath==null||rawPath.isEmpty())
-      return safePath;
-
-    for(GameCase step : rawPath)
-    {
-      if(step==null)
-        continue;
-
-      if(isOwnTrapOnCell(fight,mover,step.getId()))
-        break;
-
-      safePath.add(step);
-    }
-
-    return safePath;
   }
 
   public int moveIfPossiblecontremur(Fight fight, Fighter F, Fighter T)
