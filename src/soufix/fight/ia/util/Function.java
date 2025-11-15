@@ -1790,7 +1790,15 @@ public class Function
     if(path==null||path.isEmpty())
       return 0;
 
-    ArrayList<GameCase> safePath=filterPathToAvoidOwnTraps(fight,F,path);
+    ArrayList<GameCase> safePath=new ArrayList<GameCase>();
+    for(GameCase step : path)
+    {
+      if(step==null)
+        continue;
+      if(isOwnTrapOnCell(fight,F,step.getId()))
+        break;
+      safePath.add(step);
+    }
 
     if(safePath.isEmpty())
       return 0;
@@ -1839,121 +1847,50 @@ public class Function
     return nbrcase*Config.getInstance().AIMovementCellDelay+Config.getInstance().AIMovementFlatDelay;
   }
 
-  private static boolean isOwnTrapOnCell(Fight fight, Fighter caster, int cellId)
+  private boolean isOwnTrapOnCell(Fight fight, Fighter caster, int cellId)
   {
     if(fight==null||caster==null)
-      return false;
-
-    GameMap map=fight.getMap();
-    if(map==null)
       return false;
 
     for(Trap trap : fight.getAllTraps())
     {
       if(trap==null)
         continue;
-
-      Fighter trapCaster=trap.getCaster();
-      if(trapCaster==null||trapCaster.getId()!=caster.getId())
-        continue;
-
       GameCase trapCell=trap.getCell();
-      if(trapCell==null)
+      if(trapCell==null||trapCell.getId()!=cellId)
         continue;
-
-      if(isCellInsideTrapZone(map,trapCell.getId(),trap.getSize(),cellId))
-        return true;
-    }
-
-    for(Glyph glyph : fight.getAllGlyphs())
-    {
-      if(glyph==null)
-        continue;
-
-      Fighter glyphCaster=glyph.getCaster();
-      if(glyphCaster==null||glyphCaster.getId()!=caster.getId())
-        continue;
-
-      GameCase glyphCell=glyph.getCell();
-      if(glyphCell==null)
-        continue;
-
-      if(isCellInsideTrapZone(map,glyphCell.getId(),glyph.getSize(),cellId))
+      Fighter trapCaster=trap.getCaster();
+      if(trapCaster!=null&&trapCaster.getId()==caster.getId())
         return true;
     }
 
     return false;
   }
-
-  private static boolean isCellInsideTrapZone(GameMap map, int originCellId, int trapSize, int targetCellId)
+  /**
+   * Filtre un chemin pour éviter les pièges posés par le même lanceur.
+   */
+  private ArrayList<GameCase> filterPathToAvoidOwnTraps(Fight fight, Fighter caster, ArrayList<GameCase> path)
   {
-    if(map==null)
-      return false;
+    if (fight == null || caster == null || path == null)
+      return path;
 
-    GameCase originCell=map.getCase(originCellId);
-    if(originCell==null)
-      return false;
+    ArrayList<GameCase> filtered = new ArrayList<>();
 
-    if(originCellId==targetCellId)
-      return true;
-
-    if(trapSize<=0)
-      return false;
-
-    Set<Integer> visited=new HashSet<>();
-    Queue<int[]> frontier=new ArrayDeque<>();
-
-    visited.add(originCellId);
-    frontier.add(new int[] { originCellId, 0 });
-
-    while(!frontier.isEmpty())
+    for (GameCase cell : path)
     {
-      int[] current=frontier.poll();
-      int currentCellId=current[0];
-      int distance=current[1];
-
-      if(currentCellId==targetCellId)
-        return true;
-
-      if(distance>=trapSize)
+      if (cell == null)
         continue;
 
-      for(char dir : TRAP_PROPAGATION_DIRECTIONS)
+      // Ne garde pas les cases contenant un piège du lanceur
+      if (!isOwnTrapOnCell(fight, caster, cell.getId()))
       {
-        int neighborId=PathFinding.GetCaseIDFromDirrection(currentCellId,dir,map,true);
-        if(neighborId==-1)
-          continue;
-        GameCase neighbor=map.getCase(neighborId);
-        if(neighbor==null)
-          continue;
-        if(visited.add(neighbor.getId()))
-          frontier.add(new int[] { neighbor.getId(), distance+1 });
+        filtered.add(cell);
       }
     }
 
-    return false;
+    return filtered;
   }
 
-  private static ArrayList<GameCase> filterPathToAvoidOwnTraps(Fight fight, Fighter mover, List<GameCase> rawPath)
-  {
-    ArrayList<GameCase> safePath=new ArrayList<GameCase>();
-
-    if(rawPath==null||rawPath.isEmpty())
-      return safePath;
-
-    for(GameCase step : rawPath)
-    {
-      if(step==null)
-        continue;
-
-      if(isOwnTrapOnCell(fight,mover,step.getId()))
-        break;
-
-      safePath.add(step);
-    }
-
-    return safePath;
-  }
 
   public int moveIfPossiblecontremur(Fight fight, Fighter F, Fighter T)
   {

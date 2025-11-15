@@ -1,6 +1,8 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 # Game-Rpg-rampage 0.9.3:
+    - Correction de la logique avec codex dans function.java : le monstre lance désormais les pièges sur cellule adjacente au player
     - Ajout de la logique ifTrapSpell dans function.java de Velzog + récupération de l'IA92 piège  de velzog
+    - Correctif 1 : Reussi ! , désormais le monstre le rentrera plus dans ses propres pièges (test multiple avec piège surnois)
 # Game-Rpg-rampage 0.9.3:
     - Intégration de la commande spellmax
     - sauvegarde des sorts après l'utilisation d'une potion de classe
