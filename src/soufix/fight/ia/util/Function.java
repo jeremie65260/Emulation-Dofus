@@ -2663,6 +2663,94 @@ public class Function
     }
     return list;
   }
+  public int trapIfPossible(Fight fight, Fighter fighter)
+  {
+    // Rien à faire si le contexte est invalide
+    if (fight == null || fighter == null)
+      return 0;
+
+    // Le mob doit avoir des sorts
+    if (fighter.getMob() == null || fighter.getMob().getSpells() == null || fighter.getMob().getSpells().isEmpty())
+      return 0;
+
+    // Récupérer un sort de piège (effet 400)
+    SortStats trapSpell = null;
+    for (SortStats spellStats : fighter.getMob().getSpells().values())
+    {
+      if (isTrapSpell(spellStats))
+      {
+        trapSpell = spellStats;
+        break;
+      }
+    }
+
+    // Aucun sort de piège trouvé
+    if (trapSpell == null)
+      return 0;
+
+    // Ennemi le plus proche
+    Fighter target = getNearestEnnemy(fight, fighter);
+    if (target == null || target.isDead())
+      return 0;
+
+    int fromCellId = fighter.getCell().getId();
+
+    // On récupère une case entre le lanceur et l’ennemi
+    int cellId = PathFinding.getCaseBetweenEnemy(fromCellId, fight.getMap(), fight);
+    if (cellId <= 0)
+      return 0;
+
+    GameCase cell = fight.getMap().getCase(cellId);
+    if (cell == null)
+      return 0;
+
+    // Case libre pour poser un piège (pas de combattant, pas de piège existant, etc.)
+    if (!isCellFreeForTrap(fight, fighter, cell))
+
+      return 0;
+
+    int dist = PathFinding.getDistanceBetween(fight.getMap(), fromCellId, cellId);
+    if (dist < trapSpell.getMinPO() || dist > trapSpell.getMaxPO())
+      return 0;
+
+    return fight.tryCastSpell(fighter, trapSpell, cellId);
+  }
+  // Vérifie si une case est libre pour poser un piège
+  private boolean isCellFreeForTrap(Fight fight, Fighter caster, GameCase cell)
+  {
+    if(fight == null || cell == null)
+      return false;
+
+    // Case non walkable
+    if(!cell.isWalkable(false))
+      return false;
+
+    // Un combattant est déjà sur la case
+    if(cell.getFirstFighter() != null)
+      return false;
+
+    // Un ennemi est sur la case
+    if(caster != null && isEnemyStandingOnCell(fight, caster, cell))
+      return false;
+
+    // Un joueur (personnage) est sur la case
+    if(isPlayerOccupyingCell(fight, cell))
+      return false;
+
+    // Un piège existe déjà sur cette case
+    for(Trap trap : fight.getAllTraps())
+    {
+      if(trap == null)
+        continue;
+
+      GameCase trapCell = trap.getCell();
+      if(trapCell != null && trapCell.getId() == cell.getId())
+        return false;
+    }
+
+    // Tout est OK
+    return true;
+  }
 
   public int attackIfPossible(Fight fight, Fighter fighter, List<SortStats> Spell)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
   {

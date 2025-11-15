@@ -286,6 +286,9 @@ public class IAHandler
         case 89: //Perceptor AI
           ia=new IA89(fight,fighter,(byte)8);
           break;
+        case 92: //IA Velzog Piège
+          ia=new IA92(fight,fighter,(byte)8);
+          break;
         case 200: //Perceptor AI
             ia=new IA200(fight,fighter,(byte)8);
             break;
