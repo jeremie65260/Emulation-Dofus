@@ -1828,25 +1828,15 @@ public class Function
     if(fight==null||caster==null)
       return false;
 
-    GameMap map=fight.getMap();
     for(Trap trap : fight.getAllTraps())
     {
       if(trap==null)
         continue;
-
-      Fighter trapCaster=trap.getCaster();
-      if(trapCaster==null||trapCaster.getId()!=caster.getId())
-        continue;
-
       GameCase trapCell=trap.getCell();
-      if(trapCell==null)
+      if(trapCell==null||trapCell.getId()!=cellId)
         continue;
-
-      if(trapCell.getId()==cellId)
-        return true;
-
-      int trapSize=trap.getSize();
-      if(trapSize>0&&map!=null&&PathFinding.getDistanceBetween(map,trapCell.getId(),cellId)<=trapSize)
+      Fighter trapCaster=trap.getCaster();
+      if(trapCaster!=null&&trapCaster.getId()==caster.getId())
         return true;
     }
 
