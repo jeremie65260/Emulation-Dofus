@@ -3017,8 +3017,14 @@ public class Function
     cleanupTrapHistory(fight);
     if(fight.getState()>=Constant.FIGHT_STATE_FINISHED)
       return new HashSet<>();
-    Map<Integer, Set<Integer>> fightHistory=trapHistory.computeIfAbsent(fight.getId(),id -> new HashMap<>());
-    return fightHistory.computeIfAbsent(caster.getId(),id -> new HashSet<>());
+    Map<Integer, Set<Integer>> fightHistory=getOrCreateFightTrapHistory(fight);
+    Set<Integer> casterHistory=fightHistory.get(caster.getId());
+    if(casterHistory==null)
+    {
+      casterHistory=new HashSet<>();
+      fightHistory.put(caster.getId(),casterHistory);
+    }
+    return casterHistory;
   }
 
   private void rememberTrapCell(Fight fight, Fighter caster, int cellId)
@@ -3037,6 +3043,17 @@ public class Function
       return;
     if(fight.getState()>=Constant.FIGHT_STATE_FINISHED)
       trapHistory.remove(fight.getId());
+  }
+
+  private Map<Integer, Set<Integer>> getOrCreateFightTrapHistory(Fight fight)
+  {
+    Map<Integer, Set<Integer>> fightHistory=trapHistory.get(fight.getId());
+    if(fightHistory==null)
+    {
+      fightHistory=new HashMap<>();
+      trapHistory.put(fight.getId(),fightHistory);
+    }
+    return fightHistory;
   }
 
   private int findTrapCell(Fight fight, Fighter caster, Fighter target, SortStats spell)
