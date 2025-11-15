@@ -32,6 +32,8 @@ import java.util.Set;
 public class Function
 {
 
+  private static final char[] TRAP_PROPAGATION_DIRECTIONS = {'b','d','f','h'};
+
   private final static Function instance=new Function();
   private final Map<Integer, Map<Integer, Set<Integer>>> trapHistory=new HashMap<>();
 
