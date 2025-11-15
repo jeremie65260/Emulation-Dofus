@@ -1766,12 +1766,25 @@ public class Function
     if(path==null||path.isEmpty())
       return 0;
 
+    ArrayList<GameCase> safePath=new ArrayList<GameCase>();
+    for(GameCase step : path)
+    {
+      if(step==null)
+        continue;
+      if(isOwnTrapOnCell(fight,F,step.getId()))
+        break;
+      safePath.add(step);
+    }
+
+    if(safePath.isEmpty())
+      return 0;
+
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
     for(int a=0;a<F.getCurPm(fight);a++)
     {
-      if(path.size()==a)
+      if(safePath.size()==a)
         break;
-      finalPath.add(path.get(a));
+      finalPath.add(safePath.get(a));
     }
 
     String pathstr="";
@@ -1808,6 +1821,26 @@ public class Function
       return 0;
 
     return nbrcase*Config.getInstance().AIMovementCellDelay+Config.getInstance().AIMovementFlatDelay;
+  }
+
+  private boolean isOwnTrapOnCell(Fight fight, Fighter caster, int cellId)
+  {
+    if(fight==null||caster==null)
+      return false;
+
+    for(Trap trap : fight.getAllTraps())
+    {
+      if(trap==null)
+        continue;
+      GameCase trapCell=trap.getCell();
+      if(trapCell==null||trapCell.getId()!=cellId)
+        continue;
+      Fighter trapCaster=trap.getCaster();
+      if(trapCaster!=null&&trapCaster.getId()==caster.getId())
+        return true;
+    }
+
+    return false;
   }
 
   public int moveIfPossiblecontremur(Fight fight, Fighter F, Fighter T)
