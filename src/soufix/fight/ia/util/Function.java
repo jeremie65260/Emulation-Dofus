@@ -2665,91 +2665,72 @@ public class Function
   }
   public int trapIfPossible(Fight fight, Fighter fighter)
   {
-    // Rien à faire si le contexte est invalide
-    if (fight == null || fighter == null)
+    if(fight==null||fighter==null)
       return 0;
 
-    // Le mob doit avoir des sorts
-    if (fighter.getMob() == null || fighter.getMob().getSpells() == null || fighter.getMob().getSpells().isEmpty())
+    if(fighter.getMob()==null||fighter.getMob().getSpells()==null||fighter.getMob().getSpells().isEmpty())
       return 0;
 
-    // Récupérer un sort de piège (effet 400)
-    SortStats trapSpell = null;
-    for (SortStats spellStats : fighter.getMob().getSpells().values())
+    Fighter target=getNearestEnnemy(fight,fighter);
+    if(target==null||target.isDead())
+      return 0;
+
+    SortStats trapSpell=null;
+    for(SortStats spellStats : fighter.getMob().getSpells().values())
     {
-      if (isTrapSpell(spellStats))
+      if(isTrapSpell(spellStats))
       {
-        trapSpell = spellStats;
+        trapSpell=spellStats;
         break;
       }
     }
 
-    // Aucun sort de piège trouvé
-    if (trapSpell == null)
+    if(trapSpell==null)
       return 0;
 
-    // Ennemi le plus proche
-    Fighter target = getNearestEnnemy(fight, fighter);
-    if (target == null || target.isDead())
-      return 0;
+    Set<Integer> usedTrapCells=getUsedTrapCells(fight,fighter);
 
-    int fromCellId = fighter.getCell().getId();
-
-    // On récupère une case entre le lanceur et l’ennemi
-    int cellId = PathFinding.getCaseBetweenEnemy(fromCellId, fight.getMap(), fight);
-    if (cellId <= 0)
-      return 0;
-
-    GameCase cell = fight.getMap().getCase(cellId);
-    if (cell == null)
-      return 0;
-
-    // Case libre pour poser un piège (pas de combattant, pas de piège existant, etc.)
-    if (!isCellFreeForTrap(fight, fighter, cell))
-
-      return 0;
-
-    int dist = PathFinding.getDistanceBetween(fight.getMap(), fromCellId, cellId);
-    if (dist < trapSpell.getMinPO() || dist > trapSpell.getMaxPO())
-      return 0;
-
-    return fight.tryCastSpell(fighter, trapSpell, cellId);
-  }
-  // Vérifie si une case est libre pour poser un piège
-  private boolean isCellFreeForTrap(Fight fight, Fighter caster, GameCase cell)
-  {
-    if(fight == null || cell == null)
-      return false;
-
-    // Case non walkable
-    if(!cell.isWalkable(false))
-      return false;
-
-    // Un combattant est déjà sur la case
-    if(cell.getFirstFighter() != null)
-      return false;
-
-    // Un ennemi est sur la case
-    if(caster != null && isEnemyStandingOnCell(fight, caster, cell))
-      return false;
-
-    // Un joueur (personnage) est sur la case
-    if(isPlayerOccupyingCell(fight, cell))
-      return false;
-
-    // Un piège existe déjà sur cette case
-    for(Trap trap : fight.getAllTraps())
+    while(true)
     {
-      if(trap == null)
+      int trapCellId=findTrapCell(fight,fighter,target,trapSpell,usedTrapCells.isEmpty()?null:usedTrapCells);
+      if(trapCellId==-1)
+        return 0;
+
+      GameCase trapCell=fight.getMap().getCase(trapCellId);
+      GameCase targetCell=target.getCell();
+      GameCase knownTargetCell=getKnownCell(target);
+      if(trapCell==null||!trapCell.isWalkable(false)||trapCell.getFirstFighter()!=null
+          ||isEnemyStandingOnCell(fight,fighter,trapCell)
+          ||isPlayerOccupyingCell(fight,trapCell)
+          ||(targetCell!=null&&trapCell.getId()==targetCell.getId())
+          ||(knownTargetCell!=null&&trapCell.getId()==knownTargetCell.getId()))
+      {
+        usedTrapCells.add(trapCellId);
+        if(usedTrapCells.size()>=fight.getMap().getCases().size())
+          return 0;
         continue;
+      }
 
-      GameCase trapCell = trap.getCell();
-      if(trapCell != null && trapCell.getId() == cell.getId())
-        return false;
+      boolean previousTrapState=fighter.getJustTrapped();
+      int trapCountBefore=fight.getAllTraps().size();
+      fighter.setJustTrapped(false);
+      int result=fight.tryCastSpell(fighter,trapSpell,trapCellId);
+      boolean trapPlaced=fighter.getJustTrapped()||fight.getAllTraps().size()>trapCountBefore;
+      fighter.setJustTrapped(previousTrapState);
+
+      if(result==0&&trapPlaced)
+      {
+        rememberTrapCell(fight,fighter,trapCellId);
+        int delay=trapSpell.getSpell()!=null?trapSpell.getSpell().getDuration():0;
+        if(delay<=0)
+          delay=750;
+        return delay;
+      }
+
+      usedTrapCells.add(trapCellId);
+      if(usedTrapCells.size()>=fight.getMap().getCases().size())
+        return 0;
     }
-
-    // Tout est OK
-    return true;
   }
 
   public int attackIfPossible(Fight fight, Fighter fighter, List<SortStats> Spell)// 0 = Rien, 5 = EC, 666 = NULL, 10 = SpellNull ou ActionEnCour ou Can'tCastSpell, 0 = AttaqueOK
