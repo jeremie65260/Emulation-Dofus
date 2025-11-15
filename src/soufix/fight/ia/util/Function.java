@@ -297,12 +297,19 @@ public class Function
 
     if(path==null)
       return -1;
+
+    path=filterPathToAvoidOwnTraps(fight,fighter,path);
+
+    if(path.isEmpty())
+      return -1;
     String pathstr="";
     try
     {
       int curCaseID=fighter.getCell().getId();
       int curDir=0;
-      path.add(fight.getMapOld().getCase(CellDest));
+      GameCase destination=fight.getMapOld().getCase(CellDest);
+      if(destination!=null&&!isOwnTrapOnCell(fight,fighter,CellDest))
+        path.add(destination);
       for(GameCase c : path)
       {
         if(curCaseID==c.getId())
@@ -909,6 +916,11 @@ public class Function
 
     if(path==null||path.isEmpty())
       return false;
+
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
+      return false;
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
     for(int a=0;a<F.getCurPm(fight);a++)
     {
@@ -964,6 +976,11 @@ public class Function
     ArrayList<GameCase> path=new AstarPathfinding(fight.getMapOld(),fight,cell.getId(),cell2.getId()).getShortestPath(-1);
 
     if(path==null||path.isEmpty())
+      return -1;
+
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
       return -1;
 
     int cellId=-1;
@@ -1204,6 +1221,11 @@ public class Function
     ArrayList<GameCase> path=new AstarPathfinding(fight.getMap(),fight,F.getCell().getId(),destCase).getShortestPath(-1);
 
     if(path==null)
+      return 0;
+
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
       return 0;
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
     for(int a=0;a<F.getCurPm(fight);a++)
@@ -1888,6 +1910,11 @@ public class Function
     if(path==null||path.isEmpty())
       return 0;
 
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
+      return 0;
+
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
     for(int a=0;a<F.getCurPm(fight);a++)
     {
@@ -1973,6 +2000,11 @@ public class Function
 
     ArrayList<GameCase> path=new AstarPathfinding(fight.getMapOld(),fight,cell.getId(),cellID).getShortestPath(-1);
     if(path==null||path.isEmpty())
+      return 0;
+
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
       return 0;
 
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
@@ -2068,6 +2100,11 @@ public class Function
     if(path==null||path.isEmpty())
       return 0;
 
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
+      return 0;
+
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
     boolean ligneok=false;
     for(int a=0;a<F.getCurPm(fight);a++)
@@ -2157,6 +2194,11 @@ public class Function
     ArrayList<GameCase> path=new AstarPathfinding(fight.getMapOld(),fight,cell.getId(),cellID).getShortestPath(-1);
 
     if(path==null||path.isEmpty())
+      return 0;
+
+    path=filterPathToAvoidOwnTraps(fight,F,path);
+
+    if(path.isEmpty())
       return 0;
 
     ArrayList<GameCase> finalPath=new ArrayList<GameCase>();
@@ -3350,6 +3392,14 @@ public class Function
 
     ArrayList<GameCase> path=new AstarPathfinding(fight.getMapOld(),fight,current.getCell().getId(),getNearestEnnemy(fight,current).getCell().getId()).getShortestPath(-1);
 
+    if(path==null)
+      return 0;
+
+    path=filterPathToAvoidOwnTraps(fight,current,path);
+
+    if(path.isEmpty())
+      return 0;
+
     int caseLaunch=-1;
     int newCase=-1;
     int bestNbTarget=0;
@@ -3592,12 +3642,19 @@ public class Function
 
     if(path==null)
       return -1;
+
+    path=filterPathToAvoidOwnTraps(fight,fighter,path);
+
+    if(path.isEmpty())
+      return -1;
     String pathstr="";
     try
     {
       int curCaseID=fighter.getCell().getId();
       int curDir=0;
-      path.add(fight.getMapOld().getCase(CellDest));
+      GameCase destination=fight.getMapOld().getCase(CellDest);
+      if(destination!=null&&!isOwnTrapOnCell(fight,fighter,CellDest))
+        path.add(destination);
       for(GameCase c : path)
       {
         if(curCaseID==c.getId())
@@ -4761,11 +4818,18 @@ public class Function
 
             if (path == null)
                 return "";
+
+            path = filterPathToAvoidOwnTraps(fight, fighter, path);
+
+            if (path.isEmpty())
+                return "";
             String pathstr = "";
             try {
                 int curCaseID = fighter.getCell().getId();
                 int curDir = 0;
-                path.add(fight.getMapOld().getCase(CellDest));
+                GameCase destination = fight.getMapOld().getCase(CellDest);
+                if (destination != null && !isOwnTrapOnCell(fight, fighter, CellDest))
+                    path.add(destination);
                 for (GameCase c : path) {
                     if (curCaseID == c.getId())
                         continue; // Empêche le d == 0
