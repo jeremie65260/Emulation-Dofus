@@ -307,9 +307,6 @@ public class IAHandler
         case 206: // Variante IA39 avec gestion du bond effet 6
           ia=new IA206(fight,fighter,(byte)8);
           break;
-        case 207: // IA orientée sur le placement de pièges
-          ia=new IA207(fight,fighter,(byte)8);
-          break;
       }
     }
 

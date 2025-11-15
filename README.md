@@ -1,6 +1,7 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
-
-# Game-Rpg-rampage
+# Game-Rpg-rampage 0.9.3:
+    - Ajout de la logique ifTrapSpell dans function.java de Velzog + récupération de l'IA92 piège  de velzog
+# Game-Rpg-rampage 0.9.3:
     - Intégration de la commande spellmax
     - sauvegarde des sorts après l'utilisation d'une potion de classe
 ## Version 0.9.2:
