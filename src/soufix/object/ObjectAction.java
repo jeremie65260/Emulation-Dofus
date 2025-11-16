@@ -801,13 +801,14 @@ public class ObjectAction
   			if(classe > 12 || classe < 1){
 					  break;
 					  }
+                        final int previousClass=player0.getClasse();
                         player0.setClasse(classe);
                         player0.setGfxId(classe*10 + player0.getSexe());
                         Map<Integer, Integer> preservedSpells=new HashMap<Integer, Integer>();
                         for(Entry<Integer, SortStats> entry : player0.getSorts().entrySet())
                         {
                                         SortStats spellStats=entry.getValue();
-                                        if(!Constant.isClassSpell(classe,spellStats.getSpellID()))
+                                        if(!Constant.isClassSpell(previousClass,spellStats.getSpellID()))
                                                 preservedSpells.put(spellStats.getSpellID(),spellStats.getLevel());
                         }
 				int parcho_sort = 0;
