@@ -1236,7 +1236,24 @@ public class SocketManager
   {
     if(controller==null||fighter==null||fighter.getMob()==null)
       return;
-    for(Spell.SortStats SS : fighter.getMob().getSpells().values())
+    Collection<Spell.SortStats> spells=fighter.getMob().getSpells().values();
+    if(spells==null)
+    {
+      controller.send("SL");
+      return;
+    }
+
+    StringBuilder spellList=new StringBuilder("SL");
+    char place='a';
+    for(Spell.SortStats SS : spells)
+    {
+      if(SS==null)
+        continue;
+      spellList.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(place++).append(";");
+    }
+    controller.send(spellList.toString());
+
+    for(Spell.SortStats SS : spells)
       if(SS!=null)
         controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
     for(LaunchedSpell S : fighter.getLaunchedSorts())
