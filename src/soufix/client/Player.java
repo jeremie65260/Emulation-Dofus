@@ -191,6 +191,9 @@ private String _savePos;
   private int _morphId;
   private Map<Integer, Spell.SortStats> _saveSorts=new HashMap<Integer, Spell.SortStats>();
   private Map<Integer, Character> _saveSortsPlaces=new HashMap<Integer, Character>();
+  private Map<Integer, Spell.SortStats> _invocationSortsBackup;
+  private Map<Integer, Character> _invocationSortPlacesBackup;
+  private boolean _hasInvocationSpellList;
   private int _saveSpellPts;
   private int pa=0, pm=0, vitalite=0, sagesse=0, terre=0, feu=0, eau=0, air=0, initiative=0;
   private boolean useStats=false;
@@ -7196,6 +7199,10 @@ public void setOne_windows(boolean one_windows) {
       return;
 
     this.invocationControlled=null;
+
+    if(this.getFight()==null)
+      return;
+
     this.send("kI"+this.getId());
 
     if(this.getParty()!=null&&this.getParty().getMaster()!=null&&this.getParty().getMaster().isOne_windows()&&this.getParty().getMaster().getId()!=this.getId())

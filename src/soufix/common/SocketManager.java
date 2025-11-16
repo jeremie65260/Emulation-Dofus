@@ -1236,24 +1236,26 @@ public class SocketManager
   {
     if(controller==null||fighter==null)
       return;
+    Collection<Spell.SortStats> spells=fighter.getMob().getSpells().values();
+    if(spells==null)
+    {
+      controller.send("SL");
+      return;
+    }
 
-    Collection<Spell.SortStats> spells=null;
-    if(fighter.getMob()!=null&&fighter.getMob().getSpells()!=null&&!fighter.getMob().getSpells().isEmpty())
-      spells=fighter.getMob().getSpells().values();
-    else if(fighter.isDouble()&&fighter.getDouble()!=null)
-      spells=fighter.getDouble().getSorts().values();
-    else if(fighter.getPersonnage()!=null)
-      spells=fighter.getPersonnage().getSorts().values();
+    StringBuilder spellList=new StringBuilder("SL");
+    char place='a';
+    for(Spell.SortStats SS : spells)
+    {
+      if(SS==null)
+        continue;
+      spellList.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(place++).append(";");
+    }
+    controller.send(spellList.toString());
 
-    String packet=buildInvocationSpellListPacket(spells);
-    controller.send(packet);
-    if(controller.getParty()!=null&&controller.getParty().getMaster()!=null&&controller.getParty().getMaster().isOne_windows()&&controller.getParty().getMaster().getId()!=controller.getId())
-      controller.getParty().getMaster().send(packet);
-
-    if(spells!=null)
-      for(Spell.SortStats SS : spells)
-        if(SS!=null)
-          controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
+    for(Spell.SortStats SS : spells)
+      if(SS!=null)
+        controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
     for(LaunchedSpell S : fighter.getLaunchedSorts())
       controller.send("kM"+fighter.getId()+","+S.getSpellId()+","+fighter.getCell().getId()+","+S.getCooldown());
   }
