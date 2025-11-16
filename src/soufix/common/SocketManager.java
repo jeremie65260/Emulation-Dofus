@@ -1236,7 +1236,19 @@ public class SocketManager
   {
     if(controller==null||fighter==null||fighter.getMob()==null)
       return;
-    for(Spell.SortStats SS : fighter.getMob().getSpells().values())
+    Collection<Spell.SortStats> spells=fighter.getMob().getSpells().values();
+    if(spells==null)
+    {
+      controller.send("SL");
+      return;
+    }
+
+    controller.applyInvocationSpellList(fighter);
+    GAME_SEND_SPELL_LIST(controller);
+    if(controller.getParty()!=null&&controller.getParty().getMaster()!=null&&controller.getParty().getMaster().isOne_windows()&&controller.getParty().getMaster().getId()!=controller.getId())
+      GAME_SEND_SPELL_LIST_ONE_WINDOWS(controller,controller.getParty().getMaster());
+
+    for(Spell.SortStats SS : spells)
       if(SS!=null)
         controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
     for(LaunchedSpell S : fighter.getLaunchedSorts())

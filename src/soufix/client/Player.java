@@ -11,6 +11,7 @@ import soufix.client.other.Stalk;
 import soufix.client.other.Stats;
 import soufix.command.administration.Group;
 import soufix.common.ConditionParser;
+import soufix.common.CryptManager;
 import soufix.common.Formulas;
 import soufix.common.SocketManager;
 import soufix.database.Database;
@@ -190,6 +191,9 @@ private String _savePos;
   private int _morphId;
   private Map<Integer, Spell.SortStats> _saveSorts=new HashMap<Integer, Spell.SortStats>();
   private Map<Integer, Character> _saveSortsPlaces=new HashMap<Integer, Character>();
+  private Map<Integer, Spell.SortStats> _invocationSortsBackup;
+  private Map<Integer, Character> _invocationSortPlacesBackup;
+  private boolean _hasInvocationSpellList;
   private int _saveSpellPts;
   private int pa=0, pm=0, vitalite=0, sagesse=0, terre=0, feu=0, eau=0, air=0, initiative=0;
   private boolean useStats=false;
@@ -7173,8 +7177,8 @@ public void setOne_windows(boolean one_windows) {
   public void setControlInvocations(boolean control)
   {
     this.controlInvocations=control;
-    if(!control)
-      this.invocationControlled=null;
+    if(!control&&this.invocationControlled!=null)
+      clearInvocationControlled(this.invocationControlled);
   }
 
   public Fighter getInvocationControlled()
@@ -7189,8 +7193,70 @@ public void setOne_windows(boolean one_windows) {
 
   public void clearInvocationControlled(Fighter fighter)
   {
-    if(fighter==null||this.invocationControlled==fighter)
-      this.invocationControlled=null;
+    if(fighter!=null&&this.invocationControlled!=fighter)
+      return;
+    if(fighter==null&&this.invocationControlled==null)
+      return;
+
+    this.invocationControlled=null;
+    restoreInvocationSpellList();
+
+    this.send("kI"+this.getId());
+
+    if(this.getParty()!=null&&this.getParty().getMaster()!=null&&this.getParty().getMaster().isOne_windows()&&this.getParty().getMaster().getId()!=this.getId())
+      SocketManager.GAME_SEND_SPELL_LIST_ONE_WINDOWS(this,this.getParty().getMaster());
+    else
+      SocketManager.GAME_SEND_SPELL_LIST(this);
+  }
+
+  public boolean applyInvocationSpellList(Fighter invocation)
+  {
+    if(invocation==null||invocation.getMob()==null||invocation.getMob().getSpells()==null)
+      return false;
+
+    if(!_hasInvocationSpellList)
+    {
+      _invocationSortsBackup=new LinkedHashMap<>(_sorts);
+      _invocationSortPlacesBackup=new HashMap<>(_sortsPlaces);
+      _hasInvocationSpellList=true;
+    }
+
+    Map<Integer, Spell.SortStats> overrideSorts=new LinkedHashMap<>();
+    Map<Integer, Character> overridePlaces=new HashMap<>();
+    int slotIndex=1;
+
+    for(Spell.SortStats spell : invocation.getMob().getSpells().values())
+    {
+      if(spell==null)
+        continue;
+      overrideSorts.put(spell.getSpellID(),spell);
+      overridePlaces.put(spell.getSpellID(),Main.world.getCryptManager().getHashedValueByInt(Math.min(slotIndex,CryptManager.HASH.length-1)));
+      slotIndex++;
+    }
+
+    _sorts=overrideSorts;
+    _sortsPlaces=overridePlaces;
+    return true;
+  }
+
+  public void restoreInvocationSpellList()
+  {
+    if(!_hasInvocationSpellList)
+      return;
+
+    if(_invocationSortsBackup!=null)
+      _sorts=_invocationSortsBackup;
+    else
+      _sorts=new TreeMap<Integer, Spell.SortStats>();
+
+    if(_invocationSortPlacesBackup!=null)
+      _sortsPlaces=_invocationSortPlacesBackup;
+    else
+      _sortsPlaces=new HashMap<Integer, Character>();
+
+    _invocationSortsBackup=null;
+    _invocationSortPlacesBackup=null;
+    _hasInvocationSpellList=false;
   }
 
 
