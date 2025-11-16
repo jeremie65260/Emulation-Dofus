@@ -11,6 +11,7 @@ import soufix.client.other.Stalk;
 import soufix.client.other.Stats;
 import soufix.command.administration.Group;
 import soufix.common.ConditionParser;
+import soufix.common.CryptManager;
 import soufix.common.Formulas;
 import soufix.common.SocketManager;
 import soufix.database.Database;
@@ -2069,6 +2070,33 @@ public void setTotal_reculte() {
       packet.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(_sortsPlaces.get(SS.getSpellID())).append(";");
     }
     return packet.toString();
+  }
+
+  public String buildTemporarySpellListPacket(Collection<Spell.SortStats> spells)
+  {
+    if(spells==null||spells.isEmpty())
+      return "SL";
+
+    Map<Integer, Spell.SortStats> savedSorts=new HashMap<>(_sorts);
+    Map<Integer, Character> savedPlaces=new HashMap<>(_sortsPlaces);
+    _sorts.clear();
+    _sortsPlaces.clear();
+    int slotIndex=1;
+    for(Spell.SortStats spell : spells)
+    {
+      if(spell==null)
+        continue;
+      _sorts.put(spell.getSpellID(),spell);
+      char place=Main.world.getCryptManager().getHashedValueByInt(Math.min(slotIndex,CryptManager.HASH.length-1));
+      _sortsPlaces.put(spell.getSpellID(),place);
+      slotIndex++;
+    }
+    String packet=parseSpellList();
+    _sorts.clear();
+    _sorts.putAll(savedSorts);
+    _sortsPlaces.clear();
+    _sortsPlaces.putAll(savedPlaces);
+    return packet;
   }
 
   public void set_SpellPlace(int SpellID, char Place)
@@ -7173,8 +7201,8 @@ public void setOne_windows(boolean one_windows) {
   public void setControlInvocations(boolean control)
   {
     this.controlInvocations=control;
-    if(!control)
-      this.invocationControlled=null;
+    if(!control&&this.invocationControlled!=null)
+      clearInvocationControlled(this.invocationControlled);
   }
 
   public Fighter getInvocationControlled()
@@ -7189,8 +7217,18 @@ public void setOne_windows(boolean one_windows) {
 
   public void clearInvocationControlled(Fighter fighter)
   {
-    if(fighter==null||this.invocationControlled==fighter)
-      this.invocationControlled=null;
+    if(fighter!=null&&this.invocationControlled!=fighter)
+      return;
+    if(fighter==null&&this.invocationControlled==null)
+      return;
+
+    this.invocationControlled=null;
+    this.send("kI"+this.getId());
+
+    if(this.getParty()!=null&&this.getParty().getMaster()!=null&&this.getParty().getMaster().isOne_windows()&&this.getParty().getMaster().getId()!=this.getId())
+      SocketManager.GAME_SEND_SPELL_LIST_ONE_WINDOWS(this,this.getParty().getMaster());
+    else
+      SocketManager.GAME_SEND_SPELL_LIST(this);
   }
 
 

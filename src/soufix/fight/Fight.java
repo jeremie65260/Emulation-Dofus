@@ -2181,7 +2181,15 @@ public void Anti_bug () {
 	    }
 	}
     
-    if(current.getPersonnage()==null||current.getDouble()!=null||current.getCollector()!=null)
+    boolean mustUseIA=current.getPersonnage()==null||current.getDouble()!=null||current.getCollector()!=null;
+    if(mustUseIA&&current.isInvocation())
+    {
+      Fighter invocator=current.getInvocator();
+      Player controller=invocator==null ? null : invocator.getPersonnage();
+      if(controller!=null&&controller.isControlInvocations())
+        mustUseIA=false;
+    }
+    if(mustUseIA)
       IAHandler.select(this,current);
   }
 
@@ -2212,9 +2220,17 @@ public void Anti_bug () {
     
     final Fighter current=this.getFighterByOrdreJeu();
     if(current==null) {
-    	this.setCurAction("");
-    	// startTurn();
+        this.setCurAction("");
+        // startTurn();
       return;
+    }
+
+    if(current.isInvocation())
+    {
+      Fighter invocator=current.getInvocator();
+      Player controller=invocator==null ? null : invocator.getPersonnage();
+      if(controller!=null)
+        controller.clearInvocationControlled(current);
     }
     current.start_turn = 0L;
     
@@ -3887,6 +3903,13 @@ public void Anti_bug () {
       }
 
       target.setIsDead(true);
+      if(target.isInvocation())
+      {
+        Fighter invocator=target.getInvocator();
+        Player controller=invocator==null ? null : invocator.getPersonnage();
+        if(controller!=null)
+          controller.clearInvocationControlled(target);
+      }
       if(!target.hasLeft())
         this.getDeadList().add(new Pair<Integer, Fighter>(target.getId(),target));
 

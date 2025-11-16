@@ -34,7 +34,10 @@ import soufix.object.ObjectTemplate;
 import soufix.quest.Quest;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class SocketManager
@@ -1234,14 +1237,43 @@ public class SocketManager
   }
   public static void GAME_SEND_SPELL_LIST_INVOCATION(Player controller, Fighter fighter)
   {
-    if(controller==null||fighter==null||fighter.getMob()==null)
+    if(controller==null||fighter==null)
       return;
-    for(Spell.SortStats SS : fighter.getMob().getSpells().values())
-      if(SS!=null)
-        controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
+
+    List<Spell.SortStats> spells=collectSummonSpells(fighter);
+    String packet=controller.buildTemporarySpellListPacket(spells);
+    controller.send(packet);
+    if(controller.getParty()!=null&&controller.getParty().getMaster()!=null&&controller.getParty().getMaster().isOne_windows()&&controller.getParty().getMaster().getId()!=controller.getId())
+      controller.getParty().getMaster().send(packet);
+
+    for(Spell.SortStats SS : spells)
+      controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
     for(LaunchedSpell S : fighter.getLaunchedSorts())
       controller.send("kM"+fighter.getId()+","+S.getSpellId()+","+fighter.getCell().getId()+","+S.getCooldown());
   }
+
+  private static List<Spell.SortStats> collectSummonSpells(Fighter fighter)
+  {
+    Map<Integer, Spell.SortStats> map=null;
+    if(fighter.getMob()!=null&&fighter.getMob().getSpells()!=null&&!fighter.getMob().getSpells().isEmpty())
+      map=fighter.getMob().getSpells();
+    else if(fighter.isDouble()&&fighter.getDouble()!=null&&fighter.getDouble().getSorts()!=null&&!fighter.getDouble().getSorts().isEmpty())
+      map=fighter.getDouble().getSorts();
+    else if(fighter.getPersonnage()!=null&&fighter.getPersonnage().getSorts()!=null&&!fighter.getPersonnage().getSorts().isEmpty())
+      map=fighter.getPersonnage().getSorts();
+
+    List<Spell.SortStats> spells=new ArrayList<>();
+    if(map==null)
+      return spells;
+
+    for(Spell.SortStats stats : map.values())
+      if(stats!=null)
+        spells.add(stats);
+
+    spells.sort(Comparator.comparingInt(Spell.SortStats::getSpellID));
+    return spells;
+  }
+
   public static void GAME_SEND_SPELL_LIST_CONTROL(Player perso1 , String sort)
   {
     send(perso1,sort);
