@@ -7189,8 +7189,22 @@ public void setOne_windows(boolean one_windows) {
 
   public void clearInvocationControlled(Fighter fighter)
   {
-    if(fighter==null||this.invocationControlled==fighter)
-      this.invocationControlled=null;
+    if(fighter!=null&&this.invocationControlled!=fighter)
+      return;
+    if(fighter==null&&this.invocationControlled==null)
+      return;
+
+    this.invocationControlled=null;
+
+    if(this.getFight()==null)
+      return;
+
+    this.send("kI"+this.getId());
+
+    if(this.getParty()!=null&&this.getParty().getMaster()!=null&&this.getParty().getMaster().isOne_windows()&&this.getParty().getMaster().getId()!=this.getId())
+      SocketManager.GAME_SEND_SPELL_LIST_ONE_WINDOWS(this,this.getParty().getMaster());
+    else
+      SocketManager.GAME_SEND_SPELL_LIST(this);
   }
 
 
