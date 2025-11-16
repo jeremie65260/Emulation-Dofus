@@ -1239,45 +1239,34 @@ public class SocketManager
   {
     if(controller==null||fighter==null)
       return;
+    Collection<Spell.SortStats> spells=fighter.getMob().getSpells().values();
+    if(spells==null)
+    {
+      controller.send("SL");
+      return;
+    }
 
-    List<Spell.SortStats> spells=collectSummonSpells(fighter);
-    String packet=buildInvocationSpellListPacket(spells);
-    controller.send(packet);
-    if(controller.getParty()!=null&&controller.getParty().getMaster()!=null&&controller.getParty().getMaster().isOne_windows()&&controller.getParty().getMaster().getId()!=controller.getId())
-      controller.getParty().getMaster().send(packet);
+    StringBuilder spellList=new StringBuilder("SL");
+    char place='a';
+    for(Spell.SortStats SS : spells)
+    {
+      if(SS==null)
+        continue;
+      spellList.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(place++).append(";");
+    }
+    controller.send(spellList.toString());
 
     for(Spell.SortStats SS : spells)
-      controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
+      if(SS!=null)
+        controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
     for(LaunchedSpell S : fighter.getLaunchedSorts())
       controller.send("kM"+fighter.getId()+","+S.getSpellId()+","+fighter.getCell().getId()+","+S.getCooldown());
-  }
-
-  private static List<Spell.SortStats> collectSummonSpells(Fighter fighter)
-  {
-    Map<Integer, Spell.SortStats> map=null;
-    if(fighter.getMob()!=null&&fighter.getMob().getSpells()!=null&&!fighter.getMob().getSpells().isEmpty())
-      map=fighter.getMob().getSpells();
-    else if(fighter.isDouble()&&fighter.getDouble()!=null&&fighter.getDouble().getSorts()!=null&&!fighter.getDouble().getSorts().isEmpty())
-      map=fighter.getDouble().getSorts();
-    else if(fighter.getPersonnage()!=null&&fighter.getPersonnage().getSorts()!=null&&!fighter.getPersonnage().getSorts().isEmpty())
-      map=fighter.getPersonnage().getSorts();
-
-    List<Spell.SortStats> spells=new ArrayList<>();
-    if(map==null)
-      return spells;
-
-    for(Spell.SortStats stats : map.values())
-      if(stats!=null)
-        spells.add(stats);
-
-    spells.sort(Comparator.comparingInt(Spell.SortStats::getSpellID));
-    return spells;
   }
 
   private static String buildInvocationSpellListPacket(Collection<Spell.SortStats> spells)
   {
     StringBuilder packet=new StringBuilder("SL");
-    if(spells==null||spells.isEmpty())
+    if(spells==null)
       return packet.toString();
 
     int slotIndex=1;
