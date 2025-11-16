@@ -2075,6 +2075,33 @@ public void setTotal_reculte() {
     return packet.toString();
   }
 
+  public String buildTemporarySpellListPacket(Collection<Spell.SortStats> spells)
+  {
+    if(spells==null||spells.isEmpty())
+      return "SL";
+
+    Map<Integer, Spell.SortStats> savedSorts=new HashMap<>(_sorts);
+    Map<Integer, Character> savedPlaces=new HashMap<>(_sortsPlaces);
+    _sorts.clear();
+    _sortsPlaces.clear();
+    int slotIndex=1;
+    for(Spell.SortStats spell : spells)
+    {
+      if(spell==null)
+        continue;
+      _sorts.put(spell.getSpellID(),spell);
+      char place=Main.world.getCryptManager().getHashedValueByInt(Math.min(slotIndex,CryptManager.HASH.length-1));
+      _sortsPlaces.put(spell.getSpellID(),place);
+      slotIndex++;
+    }
+    String packet=parseSpellList();
+    _sorts.clear();
+    _sorts.putAll(savedSorts);
+    _sortsPlaces.clear();
+    _sortsPlaces.putAll(savedPlaces);
+    return packet;
+  }
+
   public void set_SpellPlace(int SpellID, char Place)
   {
     replace_SpellInBook(Place);
