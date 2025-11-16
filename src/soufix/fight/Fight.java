@@ -2220,9 +2220,17 @@ public void Anti_bug () {
     
     final Fighter current=this.getFighterByOrdreJeu();
     if(current==null) {
-    	this.setCurAction("");
-    	// startTurn();
+        this.setCurAction("");
+        // startTurn();
       return;
+    }
+
+    if(current.isInvocation())
+    {
+      Fighter invocator=current.getInvocator();
+      Player controller=invocator==null ? null : invocator.getPersonnage();
+      if(controller!=null)
+        controller.clearInvocationControlled(current);
     }
     current.start_turn = 0L;
     
