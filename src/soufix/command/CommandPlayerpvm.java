@@ -465,10 +465,30 @@ public class CommandPlayerpvm {
 	                perso.sendMessage("Tu dois attendre encore "+(System.currentTimeMillis() - perso.getGameClient().getTimeLastTaverne()) / 1000+" seconde(s)");
 	                return true;
 	            }
-				perso.getGameClient().setTimeLastTaverne(System.currentTimeMillis()+15000);
-				perso.teleport(perso.getCurMap(), perso.getCurMap().getRandomFreeCellId());
-				return true;
-			}
+                                perso.getGameClient().setTimeLastTaverne(System.currentTimeMillis()+15000);
+                                perso.teleport(perso.getCurMap(), perso.getCurMap().getRandomFreeCellId());
+                                return true;
+                        }
+                        if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("rmobs")) {
+                                if (perso.getFight() != null) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso, "Commande indisponible en combat.", "C35617");
+                                        return true;
+                                }
+                                if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+                                        perso.sendMessage("Tu dois attendre encore "
+                                                        + (perso.getGameClient().timeLasttpcommande
+                                                                        - System.currentTimeMillis()) / 1000 + " seconde(s)");
+                                        return true;
+                                }
+                                if (perso.getCurMap() == null) {
+                                        return true;
+                                }
+                                perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 3000;
+                                perso.getCurMap().refreshSpawns();
+                                SocketManager.GAME_SEND_MESSAGE_TO_MAP(perso.getCurMap(),
+                                                "Les groupes de monstres ont été rafraîchis.", "008000");
+                                return true;
+                        }
 			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("staff")) {
 				String message = "Liste des membres du staff connect\u00e9s :";
 				boolean vide = true;
