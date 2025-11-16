@@ -1234,7 +1234,7 @@ public class SocketManager
   }
   public static void GAME_SEND_SPELL_LIST_INVOCATION(Player controller, Fighter fighter)
   {
-    if(controller==null||fighter==null||fighter.getMob()==null)
+    if(controller==null||fighter==null)
       return;
     Collection<Spell.SortStats> spells=fighter.getMob().getSpells().values();
     if(spells==null)
@@ -1258,6 +1258,24 @@ public class SocketManager
         controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
     for(LaunchedSpell S : fighter.getLaunchedSorts())
       controller.send("kM"+fighter.getId()+","+S.getSpellId()+","+fighter.getCell().getId()+","+S.getCooldown());
+  }
+
+  private static String buildInvocationSpellListPacket(Collection<Spell.SortStats> spells)
+  {
+    StringBuilder packet=new StringBuilder("SL");
+    if(spells==null)
+      return packet.toString();
+
+    int slotIndex=1;
+    for(Spell.SortStats spell : spells)
+    {
+      if(spell==null)
+        continue;
+      char place=Main.world.getCryptManager().getHashedValueByInt(Math.min(slotIndex,CryptManager.HASH.length-1));
+      packet.append(spell.getSpellID()).append("~").append(spell.getLevel()).append("~").append(place).append(";");
+      slotIndex++;
+    }
+    return packet.toString();
   }
   public static void GAME_SEND_SPELL_LIST_CONTROL(Player perso1 , String sort)
   {
