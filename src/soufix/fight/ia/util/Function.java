@@ -2842,8 +2842,6 @@ public class Function
     Map<Integer, Fighter> ennemyList=getLowHpEnnemyList(fight,fighter);
     SortStats SS=null;
     Fighter target=null;
-    if(fighter.haveState(7))
-        return -1;
     for(Map.Entry<Integer, Fighter> t : ennemyList.entrySet())
     {
       SS=getBestSpellForTargetDopeul(fight,fighter,t.getValue(),fighter.getCell().getId(),Spell);
@@ -3798,8 +3796,6 @@ public class Function
   {
     if(fight==null||fighter==null)
       return null;
-    if(fighter.haveState(7))
-      	 return null;
     ArrayList<Fighter> targets=new ArrayList<Fighter>();
     int distMax=0;
     for(SortStats S : sorts)

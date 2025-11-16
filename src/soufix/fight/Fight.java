@@ -1936,6 +1936,7 @@ public void Anti_bug () {
       this.endTurn(false,current);
       return;
     }
+
     // ONE WINDOWS
     if(current.getPersonnage() != null) {
     if(current.getPersonnage().getParty() != null && current.getPersonnage().getParty().getMaster() != null)
