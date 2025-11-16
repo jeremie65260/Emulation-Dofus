@@ -1244,7 +1244,7 @@ public class SocketManager
     }
 
     StringBuilder spellList=new StringBuilder("SL");
-    char place='b';
+    char place='a';
     for(Spell.SortStats SS : spells)
     {
       if(SS==null)
