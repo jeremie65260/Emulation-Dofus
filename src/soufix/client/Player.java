@@ -7199,7 +7199,9 @@ public void setOne_windows(boolean one_windows) {
       return;
 
     this.invocationControlled=null;
-    restoreInvocationSpellList();
+
+    if(this.getFight()==null)
+      return;
 
     this.send("kI"+this.getId());
 
@@ -7207,56 +7209,6 @@ public void setOne_windows(boolean one_windows) {
       SocketManager.GAME_SEND_SPELL_LIST_ONE_WINDOWS(this,this.getParty().getMaster());
     else
       SocketManager.GAME_SEND_SPELL_LIST(this);
-  }
-
-  public boolean applyInvocationSpellList(Fighter invocation)
-  {
-    if(invocation==null||invocation.getMob()==null||invocation.getMob().getSpells()==null)
-      return false;
-
-    if(!_hasInvocationSpellList)
-    {
-      _invocationSortsBackup=new LinkedHashMap<>(_sorts);
-      _invocationSortPlacesBackup=new HashMap<>(_sortsPlaces);
-      _hasInvocationSpellList=true;
-    }
-
-    Map<Integer, Spell.SortStats> overrideSorts=new LinkedHashMap<>();
-    Map<Integer, Character> overridePlaces=new HashMap<>();
-    int slotIndex=1;
-
-    for(Spell.SortStats spell : invocation.getMob().getSpells().values())
-    {
-      if(spell==null)
-        continue;
-      overrideSorts.put(spell.getSpellID(),spell);
-      overridePlaces.put(spell.getSpellID(),Main.world.getCryptManager().getHashedValueByInt(Math.min(slotIndex,CryptManager.HASH.length-1)));
-      slotIndex++;
-    }
-
-    _sorts=overrideSorts;
-    _sortsPlaces=overridePlaces;
-    return true;
-  }
-
-  public void restoreInvocationSpellList()
-  {
-    if(!_hasInvocationSpellList)
-      return;
-
-    if(_invocationSortsBackup!=null)
-      _sorts=_invocationSortsBackup;
-    else
-      _sorts=new TreeMap<Integer, Spell.SortStats>();
-
-    if(_invocationSortPlacesBackup!=null)
-      _sortsPlaces=_invocationSortPlacesBackup;
-    else
-      _sortsPlaces=new HashMap<Integer, Character>();
-
-    _invocationSortsBackup=null;
-    _invocationSortPlacesBackup=null;
-    _hasInvocationSpellList=false;
   }
 
 

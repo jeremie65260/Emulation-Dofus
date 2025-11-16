@@ -1243,10 +1243,15 @@ public class SocketManager
       return;
     }
 
-    controller.applyInvocationSpellList(fighter);
-    GAME_SEND_SPELL_LIST(controller);
-    if(controller.getParty()!=null&&controller.getParty().getMaster()!=null&&controller.getParty().getMaster().isOne_windows()&&controller.getParty().getMaster().getId()!=controller.getId())
-      GAME_SEND_SPELL_LIST_ONE_WINDOWS(controller,controller.getParty().getMaster());
+    StringBuilder spellList=new StringBuilder("SL");
+    char place='a';
+    for(Spell.SortStats SS : spells)
+    {
+      if(SS==null)
+        continue;
+      spellList.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(place++).append(";");
+    }
+    controller.send(spellList.toString());
 
     for(Spell.SortStats SS : spells)
       if(SS!=null)
