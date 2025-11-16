@@ -6197,23 +6197,34 @@ public void setTimeLastTaverne(long timeLastTaverne) {
     }
     else
     {    
-    	if(this.player.getParty() != null && this.player.getParty().getMaster() != null)
-    		if(this.player.getParty().getMaster().isOne_windows())
-    			if(this.player.getParty().getOne_windows() != null)
-    				if(this.player.getParty().getOne_windows().getFight() != null)
-    	if(this.player.getParty().getMaster().getId() == this.getPlayer().getId()) 
-    		if(this.player.getParty().getMaster().getFight().getId() == this.getPlayer().getFight().getId())
-    	{
-    		
-    		final Fighter fighter=this.getPlayer().getParty().getOne_windows().getFight().getFighterByPerso(this.getPlayer().getParty().getOne_windows());
-    	      if(fighter!=null)
-    	      {
-    	        GA.args=path;
-    	        this.getPlayer().getParty().getOne_windows().getFight().cast(this.getPlayer().getParty().getOne_windows().getFight().getFighterByPerso(this.getPlayer().getParty().getOne_windows()),() -> this.getPlayer().getParty().getOne_windows().getFight().onFighterDeplace(fighter,GA));
-    	         return;
-    	      }
-    	} 
-    
+        if(this.player.getParty() != null && this.player.getParty().getMaster() != null)
+                if(this.player.getParty().getMaster().isOne_windows())
+                        if(this.player.getParty().getOne_windows() != null)
+                                if(this.player.getParty().getOne_windows().getFight() != null)
+        if(this.player.getParty().getMaster().getId() == this.getPlayer().getId())
+                if(this.player.getParty().getMaster().getFight().getId() == this.getPlayer().getFight().getId())
+        {
+
+                final Fighter fighter=this.getPlayer().getParty().getOne_windows().getFight().getFighterByPerso(this.getPlayer().getParty().getOne_windows());
+              if(fighter!=null)
+              {
+                GA.args=path;
+                this.getPlayer().getParty().getOne_windows().getFight().cast(this.getPlayer().getParty().getOne_windows().getFight().getFighterByPerso(this.getPlayer().getParty().getOne_windows()),() -> this.getPlayer().getParty().getOne_windows().getFight().onFighterDeplace(fighter,GA));
+                 return;
+              }
+        }
+
+        if(this.player.getInvocationControlled()!=null)
+        {
+          Fighter invocation=this.player.getInvocationControlled();
+          if(invocation.getFight()!=null&&invocation.getFight()==this.player.getFight())
+          {
+            GA.args=path;
+            invocation.getFight().cast(invocation,() -> invocation.getFight().onFighterDeplace(invocation,GA));
+            return;
+          }
+        }
+
       final Fighter fighter=this.player.getFight().getFighterByPerso(this.player);
       if(fighter!=null)
       {
@@ -6247,11 +6258,22 @@ public void setTimeLastTaverne(long timeLastTaverne) {
       final Fight fight=this.player.getFight();
       if(fight!=null)
       {
-    	  if(this.player.getParty() != null && this.player.getParty().getMaster() != null)
-      		if(this.player.getParty().getMaster().isOne_windows())
-      			if(this.player.getParty().getOne_windows() != null)
-      				if(this.player.getParty().getOne_windows().getFight() != null)
-      	if(this.player.getParty().getMaster().getId() == this.getPlayer().getId()) 
+        if(this.player.getInvocationControlled()!=null)
+        {
+          Fighter invocation=this.player.getInvocationControlled();
+          if(invocation.getFight()==fight&&invocation.getMob()!=null)
+          {
+            Spell.SortStats SS=invocation.getMob().getSpells().get(id);
+            if(SS!=null&&invocation.getFight().getCurAction().isEmpty())
+              invocation.getFight().cast(invocation,() -> invocation.getFight().tryCastSpell(invocation,SS,cellId));
+            return;
+          }
+        }
+          if(this.player.getParty() != null && this.player.getParty().getMaster() != null)
+                if(this.player.getParty().getMaster().isOne_windows())
+                        if(this.player.getParty().getOne_windows() != null)
+                                if(this.player.getParty().getOne_windows().getFight() != null)
+        if(this.player.getParty().getMaster().getId() == this.getPlayer().getId())
       		if(this.player.getParty().getMaster().getFight().getId() == this.getPlayer().getFight().getId())
       	if(this.player.getParty().getMaster().getId() == this.getPlayer().getId()) {
       		

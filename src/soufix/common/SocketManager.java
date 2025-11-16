@@ -19,6 +19,8 @@ import soufix.entity.monster.MobGroup;
 import soufix.entity.mount.Mount;
 import soufix.fight.Fight;
 import soufix.fight.Fighter;
+import soufix.fight.spells.LaunchedSpell;
+import soufix.fight.spells.Spell;
 import soufix.game.GameClient;
 import soufix.guild.Guild;
 import soufix.guild.GuildMember;
@@ -1229,6 +1231,16 @@ public class SocketManager
     String packet=perso1.parseSpellList();
     send(perso2,packet);
 
+  }
+  public static void GAME_SEND_SPELL_LIST_INVOCATION(Player controller, Fighter fighter)
+  {
+    if(controller==null||fighter==null||fighter.getMob()==null)
+      return;
+    for(Spell.SortStats SS : fighter.getMob().getSpells().values())
+      if(SS!=null)
+        controller.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
+    for(LaunchedSpell S : fighter.getLaunchedSorts())
+      controller.send("kM"+fighter.getId()+","+S.getSpellId()+","+fighter.getCell().getId()+","+S.getCooldown());
   }
   public static void GAME_SEND_SPELL_LIST_CONTROL(Player perso1 , String sort)
   {
