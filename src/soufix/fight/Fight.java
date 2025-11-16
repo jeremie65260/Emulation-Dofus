@@ -2009,9 +2009,26 @@ public void Anti_bug () {
 		    }
             current.getPersonnage().refreshItemClasse(null);
     	}
-    } 	
+    }
     }
  // ONE WINDOWS
+
+    if(current.isInvocation())
+    {
+      Fighter invocator=current.getInvocator();
+      if(invocator!=null&&invocator.getPersonnage()!=null)
+      {
+        Player controller=invocator.getPersonnage();
+        if(controller.isControlInvocations())
+        {
+          controller.setInvocationControlled(current);
+          controller.send("kI"+current.getId());
+          SocketManager.GAME_SEND_SPELL_LIST_INVOCATION(controller,current);
+        }
+        else if(controller.getInvocationControlled()==current)
+          controller.clearInvocationControlled(current);
+      }
+    }
 
     current.applyBeginningTurnBuff(this);
 
@@ -2241,16 +2258,22 @@ public void Anti_bug () {
       current.setCanPlay(false);
       setCurAction("");
       if(current.getPersonnage() != null) {
-    	    if(current.getPersonnage().getParty() != null && current.getPersonnage().getParty().getMaster() != null) {
-    	    	if(current.getPersonnage().getParty().getMaster().isOne_windows() && current.getPersonnage().getParty().getMaster().getId() != current.getPersonnage().getId()) {
-    	    	 current.getPersonnage().getParty().setOne_windows(null);
-    	    	}
- 
-    	    }
+            if(current.getPersonnage().getParty() != null && current.getPersonnage().getParty().getMaster() != null) {
+                if(current.getPersonnage().getParty().getMaster().isOne_windows() && current.getPersonnage().getParty().getMaster().getId() != current.getPersonnage().getId()) {
+                 current.getPersonnage().getParty().setOne_windows(null);
+                }
+
+            }
+      }
+      if(current.isInvocation())
+      {
+        Fighter invocator=current.getInvocator();
+        if(invocator!=null&&invocator.getPersonnage()!=null)
+          invocator.getPersonnage().clearInvocationControlled(current);
       }
       if(onAction) {
-    	  this.setCurAction("");
-    	  TimerWaiterPlus.addNext(() -> this.newTurn(current),300);
+          this.setCurAction("");
+          TimerWaiterPlus.addNext(() -> this.newTurn(current),300);
       }
       else
       {
@@ -2362,7 +2385,11 @@ public void Anti_bug () {
 
   public void playerPass(Player player)
   {
-    final Fighter fighter=getFighterByPerso(player);
+    Fighter fighter=null;
+    if(player.getInvocationControlled()!=null&&player.getInvocationControlled().getFight()==this)
+      fighter=player.getInvocationControlled();
+    else
+      fighter=getFighterByPerso(player);
     if(fighter!=null)
       if(fighter.canPlay()&&this.getCurAction().isEmpty())
         this.endTurn(false,fighter);

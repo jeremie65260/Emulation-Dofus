@@ -338,11 +338,11 @@ public class CommandPlayerzoldik {
                                 soufix.main.Boutique.open(perso);
                                 return true;
                         }
-			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("window")) {
-				if(perso.getFight()!=null) {
-					SocketManager.GAME_SEND_MESSAGE(perso,"Error Combat", "008000");
-					return true;
-				}
+                if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("window")) {
+                                if(perso.getFight()!=null) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso,"Error Combat", "008000");
+                                        return true;
+                                }
 				if(perso.getParty() == null || perso.getParty().getMaster() == null ||
 						perso.getParty().getMaster().getId() != perso.getId())
 				{
@@ -357,9 +357,20 @@ public class CommandPlayerzoldik {
 				{
 					 SocketManager.GAME_SEND_MESSAGE(perso,"One Window On");
 				perso.setOne_windows(true);	
-				}
-				return true;
-			} 
+                                }
+                                return true;
+                        }
+                        if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("cinvoc")) {
+                                final boolean enable = !perso.isControlInvocations();
+                                perso.setControlInvocations(enable);
+                                if (!enable) {
+                                        perso.clearInvocationControlled(null);
+                                }
+                                SocketManager.GAME_SEND_MESSAGE(perso,
+                                                enable ? "Contrôle des invocations activé." : "Contrôle des invocations désactivé.",
+                                                "008000");
+                                return true;
+                        }
 			if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("hdv")) {
 				if(perso.getFight()!=null)
 				SocketManager.GAME_SEND_MESSAGE(perso,"Vous ne pouvez pas ouvrir le marché pendant le combat.");
@@ -819,12 +830,14 @@ public class CommandPlayerzoldik {
 							+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
 							+ "\n<b>.points</b> - Affiche ses points boutique."
 							+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
-							+ "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
-							+ "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
-							+ "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
-							+ "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
-							+ "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
-							+ "\n<b>.tp</b> - Permet de téléporter tes personnages sur ta map actuelle."
+                                                        + "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
+                                                        + "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
+                                                        + "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
+                                                        + "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
+                                                        + "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
+                                                        + "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
+                                                        + "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
+                                                        + "\n<b>.tp</b> - Permet de téléporter tes personnages sur ta map actuelle."
 							+ "\n<b>.tpgroupe</b> - Permets de téléporter ton groupe sur ta map actuelle."
 							+ "\n<b>.pass</b> - Permet au joueur de passer automatiquement ses tours."
 							+ "\n<b>.nodrop</b> - Vous empéche de recevoir des items de monstres."

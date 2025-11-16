@@ -239,6 +239,8 @@ private String _savePos;
   private Player Spioned_by;
   private final Map<Integer, SetRapido> _setsRapidos = new ConcurrentHashMap<Integer, SetRapido>();
   private boolean One_windows=false;
+  private boolean controlInvocations=false;
+  private Fighter invocationControlled;
   public boolean relique_paase=false;
   public boolean couleur=false;
   public int Song;
@@ -7156,12 +7158,40 @@ public void setTotal_reculte() {
   }
 
 public boolean isOne_windows() {
-	return One_windows;
+        return One_windows;
 }
 
 public void setOne_windows(boolean one_windows) {
-	One_windows = one_windows;
+        One_windows = one_windows;
 }
+
+  public boolean isControlInvocations()
+  {
+    return controlInvocations;
+  }
+
+  public void setControlInvocations(boolean control)
+  {
+    this.controlInvocations=control;
+    if(!control)
+      this.invocationControlled=null;
+  }
+
+  public Fighter getInvocationControlled()
+  {
+    return invocationControlled;
+  }
+
+  public void setInvocationControlled(Fighter fighter)
+  {
+    this.invocationControlled=fighter;
+  }
+
+  public void clearInvocationControlled(Fighter fighter)
+  {
+    if(fighter==null||this.invocationControlled==fighter)
+      this.invocationControlled=null;
+  }
 
 
   public void setAutoSkip(boolean autoSkip)

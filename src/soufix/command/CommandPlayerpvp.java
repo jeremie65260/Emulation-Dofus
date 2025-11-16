@@ -219,11 +219,22 @@ public class CommandPlayerpvp {
 				return true;
 				
 			}
-			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("boutique")) {
-				GameClient.leaveExchange(perso);
-				soufix.main.Boutique.open(perso);
-				return true;
-			}
+                        if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("boutique")) {
+                                GameClient.leaveExchange(perso);
+                                soufix.main.Boutique.open(perso);
+                                return true;
+                        }
+                        if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("cinvoc")) {
+                                final boolean enable = !perso.isControlInvocations();
+                                perso.setControlInvocations(enable);
+                                if (!enable) {
+                                        perso.clearInvocationControlled(null);
+                                }
+                                SocketManager.GAME_SEND_MESSAGE(perso,
+                                                enable ? "Contrôle des invocations activé." : "Contrôle des invocations désactivé.",
+                                                "008000");
+                                return true;
+                        }
 			if (msg.length() > 5
 					&& msg.substring(1, 6).equalsIgnoreCase("exopa"))
 			{
@@ -797,11 +808,13 @@ public class CommandPlayerpvp {
 						+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
 						+ "\n<b>.points</b> - Affiche ses points boutique."
 						+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
-						+ "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
-						+ "\n<b>.fmcac</b> - Permet de (Fm) son arme"
-						+ "\n<b>.exopa</b> - Permet de (exo)"
-						+ "\n<b>.exopm</b> - Permet de (exo)"
-						+ "\n<b>.vie</b> - Permet de mettre votre vie au maximum"
+                                                + "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
+                                                + "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
+                                                + "\n<b>.fmcac</b> - Permet de (Fm) son arme"
+                                                + "\n<b>.exopa</b> - Permet de (exo)"
+                                                + "\n<b>.exopm</b> - Permet de (exo)"
+                                                + "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
+                                                + "\n<b>.vie</b> - Permet de mettre votre vie au maximum"
 						+ "\n<b>.spellmax</b> - permet de monter level 6 tous les sorts"
 						+ "\n<b>.level</b> - Level - Ajoute des levels."
 						+ "\n<b>.ration</b> - Affiche son Ration PvP."
