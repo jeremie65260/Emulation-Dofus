@@ -93,6 +93,7 @@ public class NpcQuestion
                 
                 break;
               case 16: // Si on montre une clef
+              case 166: // Variante map courante
                 args=action.getArgs();
                 clef=Integer.parseInt(args.split(",")[2]);
                 if(!player.hasItemTemplate(clef,1))
@@ -567,7 +568,7 @@ public class NpcQuestion
                 str.append((str.toString().contains("|") ? ";6605" : "|6605"));
                 break;
               }
-              if(action.getId()==16)
+              if(action.getId()==16||action.getId()==166)
               {
                 str.append((str.toString().contains("|") ? ";6604" : "|6604"));
                 break;
