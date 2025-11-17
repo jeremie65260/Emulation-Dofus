@@ -1,5 +1,6 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
 # Game-Rpg-rampage 0.9.4:
+    - Le contôle des invocations est fonctionnel
     - Correction de de la récupération des sorts lié aux potions de changement de classe ( on efface maintenant les sorts de la classe d'avant)
     - Mode cinvoc à 90 % 
 # Game-Rpg-rampage 0.9.3:
