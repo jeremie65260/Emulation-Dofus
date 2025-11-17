@@ -1,4 +1,6 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
+# Game-Rpg-rampage 0.9.5:
+    - Ajout d'une action 116 pour limiter les téléportations via le transporteur brigandins en 4 args : MapDest,cellDest,objetRequis,-1 (ou nombre positif si on veutdéfinir une map spécifique)
 # Game-Rpg-rampage 0.9.4:
     - Le contôle des invocations est fonctionnel
     - Correction de de la récupération des sorts lié aux potions de changement de classe ( on efface maintenant les sorts de la classe d'avant)
