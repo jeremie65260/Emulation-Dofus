@@ -956,6 +956,46 @@ public class Action
         }
         break;
 
+      case 166://Tï¿½lï¿½portation donjon sans perte de clef (map courante)
+        try
+        {
+          String[] data=args.split(",");
+          for(int i=0;i<data.length;i++)
+            data[i]=data[i].trim();
+
+          if(data.length<2)
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"This transporter is misconfigured.","B9121B");
+            break;
+          }
+
+          short newMapID=Short.parseShort(data[0]);
+          int newCellID=Integer.parseInt(data[1]);
+          int objetNeed=data.length>2&&!data[2].isEmpty() ? Integer.parseInt(data[2]) : 0;
+          int configuredMapId=data.length>3&&!data[3].isEmpty() ? Integer.parseInt(data[3]) : -1;
+          int requiredMapId=resolveRequiredMapId(player,configuredMapId);
+
+          if(objetNeed>0&&!hasTeleportKey(player,objetNeed))
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"You do not have the necessary key.","009900");
+            break;
+          }
+
+          if(requiredMapId>0&&player.getCurMap()!=null&&player.getCurMap().getId()!=requiredMapId)
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"You are not on the correct map to be teleported to the dungeon.","009900");
+            break;
+          }
+
+          player.teleport(newMapID,newCellID);
+          SocketManager.GAME_SEND_Ow_PACKET(player);
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+        }
+        break;
+
       case 17://Xp mï¿½tier JobID,XpValue
         try
         {
@@ -4986,5 +5026,25 @@ public class Action
     }
 
     return true;
+  }
+
+  private int resolveRequiredMapId(Player player, int configuredMapId)
+  {
+    if(configuredMapId>0)
+      return configuredMapId;
+    if(this.map!=null)
+      return this.map.getId();
+    if(player!=null&&player.getCurMap()!=null)
+      return player.getCurMap().getId();
+    return -1;
+  }
+
+  private boolean hasTeleportKey(Player player, int objetNeed)
+  {
+    if(player==null||objetNeed<=0)
+      return true;
+    if(player.hasItemTemplate(objetNeed,1))
+      return true;
+    return player.getParty()!=null&&player.getParty().getMaster()!=null&&player.getParty().getMaster().hasItemTemplate(objetNeed,1);
   }
 }

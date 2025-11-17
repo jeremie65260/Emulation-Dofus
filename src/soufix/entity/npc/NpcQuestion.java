@@ -93,17 +93,24 @@ public class NpcQuestion
                 
                 break;
               case 16: // Si on montre une clef
-                args=action.getArgs();
-                clef=Integer.parseInt(args.split(",")[2]);
+              case 166: // Variante map courante
+                String actionArgs=action.getArgs();
+                String[] parts=(actionArgs==null) ? null : actionArgs.split(",");
+                if(parts==null||parts.length<3)
+                  break;
+                String keyArg=parts[2].trim();
+                if(keyArg.isEmpty())
+                  break;
+                int clef=Integer.parseInt(keyArg);
+                if(clef<=0)
+                  break;
                 if(!player.hasItemTemplate(clef,1))
                   ok=false;
-                if(!ok)
-                    if(player.getParty() != null)
-                    	if(player.getParty().getMaster() != null)
-                    	{
-                    		if(player.getParty().getMaster().hasItemTemplate(clef,1))
-                            ok=true;	
-                    	}
+                if(!ok&&player.getParty()!=null&&player.getParty().getMaster()!=null)
+                {
+                  if(player.getParty().getMaster().hasItemTemplate(clef,1))
+                    ok=true;
+                }
                 break;
               case 6: // Si on apprend un métier
                 int mId=Integer.parseInt(action.getArgs().split(",")[0]);
@@ -567,7 +574,7 @@ public class NpcQuestion
                 str.append((str.toString().contains("|") ? ";6605" : "|6605"));
                 break;
               }
-              if(action.getId()==16)
+              if(action.getId()==16||action.getId()==166)
               {
                 str.append((str.toString().contains("|") ? ";6604" : "|6604"));
                 break;
