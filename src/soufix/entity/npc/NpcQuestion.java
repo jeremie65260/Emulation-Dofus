@@ -98,13 +98,11 @@ public class NpcQuestion
                 clef=Integer.parseInt(args.split(",")[2]);
                 if(!player.hasItemTemplate(clef,1))
                   ok=false;
-                if(!ok)
-                    if(player.getParty() != null)
-                    	if(player.getParty().getMaster() != null)
-                    	{
-                    		if(player.getParty().getMaster().hasItemTemplate(clef,1))
-                            ok=true;	
-                    	}
+                if(!ok&&player.getParty()!=null&&player.getParty().getMaster()!=null)
+                {
+                  if(player.getParty().getMaster().hasItemTemplate(clef,1))
+                    ok=true;
+                }
                 break;
               case 6: // Si on apprend un métier
                 int mId=Integer.parseInt(action.getArgs().split(",")[0]);

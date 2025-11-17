@@ -5032,4 +5032,24 @@ public class Action
 
     return true;
   }
+
+  private int resolveRequiredMapId(Player player, int configuredMapId)
+  {
+    if(configuredMapId>0)
+      return configuredMapId;
+    if(this.map!=null)
+      return this.map.getId();
+    if(player!=null&&player.getCurMap()!=null)
+      return player.getCurMap().getId();
+    return -1;
+  }
+
+  private boolean hasTeleportKey(Player player, int objetNeed)
+  {
+    if(player==null||objetNeed<=0)
+      return true;
+    if(player.hasItemTemplate(objetNeed,1))
+      return true;
+    return player.getParty()!=null&&player.getParty().getMaster()!=null&&player.getParty().getMaster().hasItemTemplate(objetNeed,1);
+  }
 }
