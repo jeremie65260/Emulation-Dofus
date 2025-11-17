@@ -963,15 +963,11 @@ public class Action
           short newMapID=Short.parseShort(data[0]);
           int newCellID=Integer.parseInt(data[1]);
           int objetNeed=data.length>2 ? Integer.parseInt(data[2]) : 0;
-          int requiredMapId=data.length>3 ? Integer.parseInt(data[3]) : -1;
-
-          if(requiredMapId<=0)
-          {
-            if(this.map!=null)
-              requiredMapId=this.map.getId();
-            else if(player.getCurMap()!=null)
-              requiredMapId=player.getCurMap().getId();
-          }
+          int requiredMapId=-1;
+          if(this.map!=null)
+            requiredMapId=this.map.getId();
+          else if(player.getCurMap()!=null)
+            requiredMapId=player.getCurMap().getId();
 
           if(objetNeed==0)
           {
