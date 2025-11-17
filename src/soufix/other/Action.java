@@ -956,6 +956,55 @@ public class Action
         }
         break;
 
+      case 166://Tï¿½lï¿½portation donjon sans perte de clef (map courante)
+        try
+        {
+          String[] data=args.split(",");
+          short newMapID=Short.parseShort(data[0]);
+          int newCellID=Integer.parseInt(data[1]);
+          int objetNeed=data.length>2 ? Integer.parseInt(data[2]) : 0;
+          int requiredMapId=data.length>3 ? Integer.parseInt(data[3]) : -1;
+
+          if(requiredMapId<=0)
+          {
+            if(this.map!=null)
+              requiredMapId=this.map.getId();
+            else if(player.getCurMap()!=null)
+              requiredMapId=player.getCurMap().getId();
+          }
+
+          if(objetNeed==0)
+          {
+            player.teleport(newMapID,newCellID);
+            SocketManager.GAME_SEND_Ow_PACKET(player);
+            break;
+          }
+
+          boolean hasKey=player.hasItemTemplate(objetNeed,1);
+          if(!hasKey&&player.getParty()!=null&&player.getParty().getMaster()!=null)
+            hasKey=player.getParty().getMaster().hasItemTemplate(objetNeed,1);
+
+          if(!hasKey)
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"You do not have the necessary key.","009900");
+            break;
+          }
+
+          if(requiredMapId>0&&player.getCurMap()!=null&&player.getCurMap().getId()!=requiredMapId)
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"You are not on the correct map to be teleported to the dungeon.","009900");
+            break;
+          }
+
+          player.teleport(newMapID,newCellID);
+          SocketManager.GAME_SEND_Ow_PACKET(player);
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+        }
+        break;
+
       case 17://Xp mï¿½tier JobID,XpValue
         try
         {
