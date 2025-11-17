@@ -4783,6 +4783,8 @@ public void Anti_bug () {
           Player player=fighter.getPersonnage();
           if(player!=null)
           {
+            if(player.getInvocationControlled()!=null)
+              player.clearInvocationControlled(player.getInvocationControlled());
             player.setFight(null);
             SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(),fighter.getId());
           }
