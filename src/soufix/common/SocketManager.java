@@ -1246,15 +1246,17 @@ public class SocketManager
       return;
     }
 
-    StringBuilder spellList=new StringBuilder("SL");
-    char place='a';
-    for(Spell.SortStats SS : spells)
+    String spellPacket;
+    if(fighter.getMob()!=null)
     {
-      if(SS==null)
-        continue;
-      spellList.append(SS.getSpellID()).append("~").append(SS.getLevel()).append("~").append(place++).append(";");
+      String mobPacket=fighter.getMob().packetSpellsList();
+      spellPacket="SL"+(mobPacket==null ? "" : mobPacket);
     }
-    controller.send(spellList.toString());
+    else
+    {
+      spellPacket=buildInvocationSpellListPacket(spells);
+    }
+    controller.send(spellPacket);
 
     for(Spell.SortStats SS : spells)
       if(SS!=null)
