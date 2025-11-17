@@ -94,16 +94,8 @@ public class NpcQuestion
                 break;
               case 16: // Si on montre une clef
               case 166: // Variante map courante
-                String actionArgs=action.getArgs();
-                String[] parts=(actionArgs==null) ? null : actionArgs.split(",");
-                if(parts==null||parts.length<3)
-                  break;
-                String keyArg=parts[2].trim();
-                if(keyArg.isEmpty())
-                  break;
-                int clef=Integer.parseInt(keyArg);
-                if(clef<=0)
-                  break;
+                args=action.getArgs();
+                clef=Integer.parseInt(args.split(",")[2]);
                 if(!player.hasItemTemplate(clef,1))
                   ok=false;
                 if(!ok&&player.getParty()!=null&&player.getParty().getMaster()!=null)
