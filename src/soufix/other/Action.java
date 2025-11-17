@@ -960,22 +960,27 @@ public class Action
         try
         {
           String[] data=args.split(",");
-          for(int i=0;i<data.length;i++)
-            data[i]=data[i].trim();
+          short newMapID=Short.parseShort(data[0]);
+          int newCellID=Integer.parseInt(data[1]);
+          int objetNeed=data.length>2 ? Integer.parseInt(data[2]) : 0;
+          int requiredMapId=-1;
+          if(this.map!=null)
+            requiredMapId=this.map.getId();
+          else if(player.getCurMap()!=null)
+            requiredMapId=player.getCurMap().getId();
 
-          if(data.length<2)
+          if(objetNeed==0)
           {
-            SocketManager.GAME_SEND_MESSAGE(player,"This transporter is misconfigured.","B9121B");
+            player.teleport(newMapID,newCellID);
+            SocketManager.GAME_SEND_Ow_PACKET(player);
             break;
           }
 
-          short newMapID=Short.parseShort(data[0]);
-          int newCellID=Integer.parseInt(data[1]);
-          int objetNeed=data.length>2&&!data[2].isEmpty() ? Integer.parseInt(data[2]) : 0;
-          int configuredMapId=data.length>3&&!data[3].isEmpty() ? Integer.parseInt(data[3]) : -1;
-          int requiredMapId=resolveRequiredMapId(player,configuredMapId);
+          boolean hasKey=player.hasItemTemplate(objetNeed,1);
+          if(!hasKey&&player.getParty()!=null&&player.getParty().getMaster()!=null)
+            hasKey=player.getParty().getMaster().hasItemTemplate(objetNeed,1);
 
-          if(objetNeed>0&&!hasTeleportKey(player,objetNeed))
+          if(!hasKey)
           {
             SocketManager.GAME_SEND_MESSAGE(player,"You do not have the necessary key.","009900");
             break;
