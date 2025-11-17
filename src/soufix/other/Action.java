@@ -908,7 +908,7 @@ public class Action
         }
         break;
 
-      case 16://Tï¿½lï¿½portation donjon sans perte de clef
+      case 16://Téléportation donjon sans perte de clef
         try
         {
           short newMapID=Short.parseShort(args.split(",")[0]);
@@ -917,14 +917,14 @@ public class Action
           int MapNeed=Integer.parseInt(args.split(",")[3]);
           if(ObjetNeed==0)
           {
-            //Tï¿½lï¿½portation sans objets
+            //Téléportation sans objets
             player.teleport(newMapID,newCellID);
           }
           else if(ObjetNeed>0)
           {
             if(MapNeed==0)
             {
-              //Tï¿½lï¿½portation sans map
+              //Téléportation sans map
               player.teleport(newMapID,newCellID);
             }
             else if(MapNeed>0)
@@ -933,7 +933,7 @@ public class Action
               {
                 //Le perso a l'item
                 //Le perso est sur la bonne map
-                //On tï¿½lï¿½porte
+                //On téléporte
                 player.teleport(newMapID,newCellID);
                 SocketManager.GAME_SEND_Ow_PACKET(player);
               }
@@ -944,7 +944,7 @@ public class Action
               }
               else
               {
-                //Le perso ne possï¿½de pas l'item
+                //Le perso ne possède pas l'item
                 SocketManager.GAME_SEND_MESSAGE(player,"You do not have the necessary key.","009900");
               }
             }
