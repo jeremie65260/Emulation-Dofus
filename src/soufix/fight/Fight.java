@@ -1968,51 +1968,6 @@ public void Anti_bug () {
     }
     // ONE WINDOWS
  
-    // ONE WINDOWS
-    if(current.getPersonnage() != null) {
-    if(current.getPersonnage().getParty() != null && current.getPersonnage().getParty().getMaster() != null)
-      if(current.getPersonnage().getParty().getMaster().isOne_windows())
-    {
-    	if(current.getPersonnage().getParty().getMaster().getId() != current.getPersonnage().getId())
-    	
-    	{
-    		for(int key : current.getPersonnage().getSorts().keySet())
-  	      {
-
-  	        SortStats SS=current.getPersonnage().getSorts().get(key);
-  	        if(SS==null)
-  	          continue;
-  	        current.getPersonnage().getParty().getMaster().send("kM"+current.getId()+","+SS.getSpellID()+","+current.getCell().getId()+","+0);
-  	       }
-      for(LaunchedSpell S : current.getLaunchedSorts())
-    	       
-    		    {
-    			  current.getPersonnage().getParty().getMaster().send("kM"+current.getId()+","+S.getSpellId()+","+current.getCell().getId()+","+S.getCooldown()); 
-    			 
-    		    }
-      current.getPersonnage().refreshItemClasse(current.getPersonnage().getParty().getMaster());
-                }
-    	      else
-    	       {
-    		 for(int key : current.getPersonnage().getSorts().keySet())
-    	      {
- 
-    	        SortStats SS=current.getPersonnage().getSorts().get(key);
-    	        if(SS==null)
-    	          continue;
-    	        current.getPersonnage().send("kM"+current.getId()+","+SS.getSpellID()+","+current.getCell().getId()+","+0);
-    	      }
-            for(LaunchedSpell S : current.getLaunchedSorts())
-		    {
-            	current.getPersonnage().send("kM"+current.getId()+","+S.getSpellId()+","+current.getCell().getId()+","+S.getCooldown()); 
-
-		    }
-            current.getPersonnage().refreshItemClasse(null);
-    	}
-    }
-    }
- // ONE WINDOWS
-
     if(current.isInvocation())
     {
       Fighter invocator=current.getInvocator();
@@ -2049,6 +2004,24 @@ public void Anti_bug () {
     }
     // On actualise les sorts launch
     current.refreshLaunchedSort();
+    if(current.getPersonnage()!=null)
+    {
+      Player perso=current.getPersonnage();
+      Player master=null;
+      if(perso.getParty()!=null)
+        master=perso.getParty().getMaster();
+      boolean sendToMaster=master!=null&&master.isOne_windows()&&master.getId()!=perso.getId();
+      if(sendToMaster)
+      {
+        sendSpellCooldownsTo(master,current);
+        perso.refreshItemClasse(master);
+      }
+      else
+      {
+        sendSpellCooldownsTo(perso,current);
+        perso.refreshItemClasse(null);
+      }
+    }
     // reset des Max des Chatis
     current.getChatiValue().clear();
 
@@ -4552,6 +4525,26 @@ public void Anti_bug () {
     return true;
   }
 
+  private void sendSpellCooldownsTo(Player receiver, Fighter fighter)
+  {
+    if(receiver==null||fighter==null)
+      return;
+    if(fighter.getPersonnage()==null||fighter.getCell()==null)
+      return;
+
+    for(SortStats SS : fighter.getPersonnage().getSorts().values())
+    {
+      if(SS==null)
+        continue;
+      receiver.send("kM"+fighter.getId()+","+SS.getSpellID()+","+fighter.getCell().getId()+","+0);
+    }
+
+    for(LaunchedSpell S : fighter.getLaunchedSorts())
+    {
+      receiver.send("kM"+fighter.getId()+","+S.getSpellId()+","+fighter.getCell().getId()+","+S.getCooldown());
+    }
+  }
+
   public void verifIfAllReady()
   {
     boolean val=true;
@@ -4783,6 +4776,8 @@ public void Anti_bug () {
           Player player=fighter.getPersonnage();
           if(player!=null)
           {
+            if(player.getInvocationControlled()!=null)
+              player.clearInvocationControlled(player.getInvocationControlled());
             player.setFight(null);
             SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(),fighter.getId());
           }
