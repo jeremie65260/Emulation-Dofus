@@ -1601,8 +1601,10 @@ public class Formulas
 
   public static double getMobCountBonus(int mobCount)
   {
-    if(mobCount<=3)
+    if(mobCount<=2)
       return 1.0;
+    if(mobCount==3)
+      return 1.5;
 
     switch(Math.min(mobCount,8))
     {
