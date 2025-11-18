@@ -4192,6 +4192,8 @@ public void Anti_bug () {
     final String monsterLabel=mobCount>1 ? " monstres." : " monstre.";
     final String bonusMultiplier=mobCountBonus%1==0 ? Integer.toString((int)mobCountBonus) : Double.toString(mobCountBonus);
 
+    final String bonusDetails=mobCount==3 ? " Comme vous affrontez 3 monstres, vous bénéficiez d'un bonus supplémentaire de +50%." : "";
+
     for(Fighter fighter : fighters)
     {
       if(fighter==null||fighter.hasLeft())
@@ -4201,7 +4203,7 @@ public void Anti_bug () {
       if(player==null)
         continue;
 
-      SocketManager.GAME_SEND_MESSAGE(player,"Votre bonus XP actuel est de "+bonusPercent+"% (x"+bonusMultiplier+") pour un combat de "+mobCount+monsterLabel);
+      SocketManager.GAME_SEND_MESSAGE(player,"Votre bonus XP actuel est de "+bonusPercent+"% (x"+bonusMultiplier+") pour un combat de "+mobCount+monsterLabel+bonusDetails);
     }
   }
 
