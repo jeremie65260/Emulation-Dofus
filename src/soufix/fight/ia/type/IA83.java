@@ -101,6 +101,15 @@ public class IA83 extends AbstractNeedSpell
         }
       }
 
+      if(this.fighter.getCurPa(this.fight)>0&&!action)
+      {
+        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
+        {
+          time=400;
+          action=true;
+        }
+      }
+
       int percentPdv=(this.fighter.getPdv()*100)/this.fighter.getPdvMax();
 
       if(this.fighter.getCurPa(this.fight)>0&&!action&&percentPdv<50&&percentPdv<95)
@@ -115,15 +124,6 @@ public class IA83 extends AbstractNeedSpell
       if(this.fighter.getCurPa(this.fight)>0&&!action)
       {
         if(Function.getInstance().HealIfPossible(this.fight,this.fighter,false,80)!=0)
-        {
-          time=400;
-          action=true;
-        }
-      }
-
-      if(this.fighter.getCurPa(this.fight)>0&&!action)
-      {
-        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
         {
           time=400;
           action=true;

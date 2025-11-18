@@ -33,14 +33,6 @@ public class IA85 extends AbstractNeedSpell
       Fighter ennemy1=Function.getInstance().getNearestEnnemynbrcasemax(this.fight,this.fighter,0,8);// pomax +1;
       Fighter ennemy2=this.getNearestLowerHpEnemy();// low hp enemy
 
-      if(this.fighter.getCurPa(this.fight)>0)
-      {
-        if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,40)!=0)
-        {
-          time=1000;
-        }
-      }
-
       if(ennemy1==null)
       {
         Function.getInstance().moveNearIfPossible(this.fight,this.fighter,nearestEnnemy);
@@ -65,6 +57,13 @@ public class IA85 extends AbstractNeedSpell
               time=1200;
             }
           }
+        }
+      }
+      if(this.fighter.getCurPa(this.fight)>0)
+      {
+        if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,40)!=0)
+        {
+          time=1000;
         }
       }
 

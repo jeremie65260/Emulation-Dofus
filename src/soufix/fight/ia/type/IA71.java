@@ -65,15 +65,6 @@ public class IA71 extends AbstractNeedSpell
           action=true;
         }
       }
-      if(this.fighter.getCurPa(this.fight)>0&&!action)
-      {
-        if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,50)!=0)
-        {
-          time=1000;
-          action=true;
-        }
-      }
-
       if(!hasSummons)
       {
         Iterator<Fighter> fightItt=this.fight.getFighters(this.fighter.getOtherTeam()).iterator();
@@ -94,6 +85,15 @@ public class IA71 extends AbstractNeedSpell
         if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
         {
           time=1200;
+          action=true;
+        }
+      }
+
+      if(this.fighter.getCurPa(this.fight)>0&&!action)
+      {
+        if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,50)!=0)
+        {
+          time=1000;
           action=true;
         }
       }
