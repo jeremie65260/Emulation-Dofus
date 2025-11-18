@@ -179,38 +179,10 @@ public class Challenge
         showCibleToFight();//On le montre a tous les joueurs
         break;
       case 10://Cruel
-        int levelMin=2000;
-        for(Fighter fighter : fight.getFighters(2))//La cible sera le niveau le plus faible
-        {
-        	 if(fighter == null)
-                 continue;
-          if(fighter.isInvocation())
-            continue;
-          if(fighter.getPersonnage()==null&&fighter.getMob()!=null&&fighter.getLvl()<levelMin&&fighter.getInvocator()==null)
-          {
-            levelMin=fighter.getLvl();
-            target=fighter;
-          }
-        }
-        if(target!=null)
-          showCibleToFight();
+        initializeOrderedChallenge(true);
         break;
       case 25://Ordonné
-        int levelMax=0;
-        for(Fighter fighter : fight.getFighters(2))//la cible sera le niveau le plus élevé
-        {
-        	if(fighter == null)
-                continue;
-          if(fighter.isInvocation()||fighter.isDouble())
-            continue;
-          if(fighter.getPersonnage()==null&&fighter.getMob()!=null&&fighter.getInvocator()==null&&fighter.getLvl()>levelMax)
-          {
-            levelMax=fighter.getLvl();
-            this.target=fighter;
-          }
-        }
-        if(target!=null)
-          showCibleToFight();
+        initializeOrderedChallenge(false);
         break;
     }
   }
@@ -634,74 +606,25 @@ public class Challenge
         break;
 
       case 10: // Cruel
-        if(target==null)
+        if(mob.getPersonnage()!=null||mob.isInvocation()||mob.isDouble())
           return;
-        if(target.isInvocation()||target.isDouble()||mob.getPersonnage()!=null)
+        if(!validateOrderedKill(mob))
+        {
+          challengeLoose(fight.getFighterByOrdreJeu());
           return;
-        if(target.getId()!=mob.getId()&&target.getLvl()!=mob.getLvl()&&killer.getPersonnage()!=null)
-        {
-          if(mob.getLvl()>target.getLvl()&&!mob.isInvocation())
-            challengeLoose(fight.getFighterByOrdreJeu());
         }
-        else
-        {
-          try
-          {
-            int levelMin=2000;
-            for(Fighter fighter : fight.getFighters(2))
-            {
-              if(fighter.isInvocation()||fighter.isDouble()||fighter.getPersonnage()!=null||fighter.isDead())
-                continue;
-              if(fighter.getPersonnage()==null&&fighter.getLvl()<levelMin)
-              {
-                levelMin=fighter.getLvl();
-                target=fighter;
-              }
-            }
-            if(target!=null)
-              showCibleToFight();
-          }
-          catch(Exception e)
-          {
-            e.printStackTrace();
-          }
-        }
+        refreshOrderedTarget();
         break;
 
       case 25: // Ordonné
-        if(target==null)
+        if(mob.getPersonnage()!=null||mob.isInvocation()||mob.isDouble())
           return;
-        if(mob.isInvocation()||mob.isDouble()||mob.getPersonnage()!=null)
+        if(!validateOrderedKill(mob))
+        {
+          challengeLoose(fight.getFighterByOrdreJeu());
           return;
-
-        if(target.getId()!=mob.getId()&&killer.getPersonnage()!=null)
-        {
-          if(mob.getLvl()<target.getLvl())
-            challengeLoose(fight.getFighterByOrdreJeu());
         }
-        else
-        {
-          try
-          {
-            int levelMax=0;
-            for(Fighter fighter : fight.getFighters(2))
-            {
-              if(fighter.isInvocation()||fighter.isDouble()||fighter.getPersonnage()!=null||fighter.isDead())
-                continue;
-              if(fighter.getLvl()>levelMax)
-              {
-                levelMax=fighter.getLvl();
-                target=fighter;
-              }
-            }
-            if(target!=null)
-              showCibleToFight();
-          }
-          catch(Exception e)
-          {
-            e.printStackTrace();
-          }
-        }
+        refreshOrderedTarget();
         break;
     }
   }
