@@ -21,8 +21,6 @@ public class Challenge
   private Fight fight;
   private Fighter target;
   private List<Fighter> _ordreJeu=new ArrayList<>();
-  private boolean orderedChallengeAscending=true;
-  private boolean orderedChallengeInitialized=false;
   private static final String ARG_DELIMITER=";";
 
   public Challenge(Fight fight, int Type, int xp, int drop)
@@ -138,68 +136,6 @@ public class Challenge
   private String buildDelimitedArg(int id)
   {
     return ARG_DELIMITER+id+ARG_DELIMITER;
-  }
-
-  private boolean isEligibleOrderedMob(Fighter fighter)
-  {
-    return fighter!=null&&!fighter.isInvocation()&&!fighter.isDouble()&&fighter.getPersonnage()==null&&fighter.getInvocator()==null;
-  }
-
-  private Fighter findOrderedTarget(boolean ascending)
-  {
-    Fighter candidate=null;
-    int referenceLevel=ascending ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-    for(Fighter fighter : fight.getFighters(2))
-    {
-      if(!isEligibleOrderedMob(fighter)||fighter.isDead())
-        continue;
-      int level=fighter.getLvl();
-      if((ascending&&level<referenceLevel)||(!ascending&&level>referenceLevel))
-      {
-        referenceLevel=level;
-        candidate=fighter;
-      }
-    }
-    return candidate;
-  }
-
-  private void refreshOrderedTarget()
-  {
-    if(!orderedChallengeInitialized)
-      return;
-    target=findOrderedTarget(orderedChallengeAscending);
-    if(target!=null)
-      showCibleToFight();
-  }
-
-  private void initializeOrderedChallenge(boolean ascending)
-  {
-    orderedChallengeAscending=ascending;
-    orderedChallengeInitialized=true;
-    refreshOrderedTarget();
-  }
-
-  private boolean validateOrderedKill(Fighter mob)
-  {
-    if(!orderedChallengeInitialized||!isEligibleOrderedMob(mob))
-      return true;
-
-    final int mobLevel=mob.getLvl();
-    for(Fighter fighter : fight.getFighters(2))
-    {
-      if(!isEligibleOrderedMob(fighter)||fighter==mob||fighter.isDead())
-        continue;
-
-      if(orderedChallengeAscending)
-      {
-        if(fighter.getLvl()<mobLevel)
-          return false;
-      }
-      else if(fighter.getLvl()>mobLevel)
-        return false;
-    }
-
-    return true;
   }
 
   private boolean argsContainsId(int id)
