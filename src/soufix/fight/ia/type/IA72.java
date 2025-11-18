@@ -66,20 +66,20 @@ public class IA72 extends AbstractNeedSpell
         }
       }
 
-      int percentPdv=(this.fighter.getPdv()*100)/this.fighter.getPdvMax();
-
-      if(this.fighter.getCurPa(this.fight)>0&&!action&&percentPdv<50)
+      if(this.fighter.getCurPa(this.fight)>0&&!action)
       {
-        if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,50)!=0)
+        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
         {
           time=400;
           action=true;
         }
       }
 
-      if(this.fighter.getCurPa(this.fight)>0&&!action)
+      int percentPdv=(this.fighter.getPdv()*100)/this.fighter.getPdvMax();
+
+      if(this.fighter.getCurPa(this.fight)>0&&!action&&percentPdv<50)
       {
-        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
+        if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,50)!=0)
         {
           time=400;
           action=true;

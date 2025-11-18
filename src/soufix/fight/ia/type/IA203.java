@@ -70,21 +70,21 @@ public class IA203 extends AbstractNeedSpell
                 }
             }
 
-            // 3) Soin perso si <50%
-            int percentPdv=(this.fighter.getPdv()*100)/this.fighter.getPdvMax();
-            if(this.fighter.getCurPa(this.fight)>0 && !action && percentPdv<50)
+            // 3) Buff sur soi
+            if(this.fighter.getCurPa(this.fight)>0 && !action)
             {
-                if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,50)!=0)
+                if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
                 {
                     time=400;
                     action=true;
                 }
             }
 
-            // 4) Buff sur soi
-            if(this.fighter.getCurPa(this.fight)>0 && !action)
+            // 4) Soin perso si <50%
+            int percentPdv=(this.fighter.getPdv()*100)/this.fighter.getPdvMax();
+            if(this.fighter.getCurPa(this.fight)>0 && !action && percentPdv<50)
             {
-                if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
+                if(Function.getInstance().HealIfPossible(this.fight,this.fighter,true,50)!=0)
                 {
                     time=400;
                     action=true;

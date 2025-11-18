@@ -23,11 +23,11 @@ public class IA6 extends AbstractIA
         Fighter friend=Function.getInstance().getNearestFriend(this.fight,this.fighter);
         Fighter ennemy=Function.getInstance().getNearestEnnemy(this.fight,this.fighter);
 
-        if(!Function.getInstance().HealIfPossible(this.fight,this.fighter,false))
+        if(!Function.getInstance().buffIfPossible(this.fight,this.fighter,friend))
         {
-          if(!Function.getInstance().buffIfPossible(this.fight,this.fighter,friend))
+          if(!Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter))
           {
-            if(!Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter))
+            if(!Function.getInstance().HealIfPossible(this.fight,this.fighter,false))
             {
               if(!Function.getInstance().HealIfPossible(this.fight,this.fighter,true))
               {

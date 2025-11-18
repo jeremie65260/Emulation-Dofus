@@ -60,17 +60,17 @@ public class IA63 extends AbstractNeedSpell
       }
       if(this.fighter.getCurPa(this.fight)>0&&!action)
       {
-        if(Function.getInstance().HealIfPossible(fight,this.fighter,true,50)!=0)
+        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
         {
-          time=1000;
+          time=1200;
           action=true;
         }
       }
       if(this.fighter.getCurPa(this.fight)>0&&!action)
       {
-        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,this.fighter,this.buffs))
+        if(Function.getInstance().HealIfPossible(fight,this.fighter,true,50)!=0)
         {
-          time=1200;
+          time=1000;
           action=true;
         }
       }

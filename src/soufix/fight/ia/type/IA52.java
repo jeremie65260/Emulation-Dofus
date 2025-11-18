@@ -33,6 +33,15 @@ public class IA52 extends AbstractNeedSpell
       if(C!=null&&C.isHide())
         C=null;
 
+      if(this.fighter.getCurPa(this.fight)>0&&!action&&A!=null)
+      {
+        if(Function.getInstance().buffIfPossible(this.fight,this.fighter,A,this.buffs))
+        {
+          time=1000;
+          action=true;
+        }
+      }
+
       if(this.fighter.getCurPa(this.fight)>0)
       {
         if(Function.getInstance().HealIfPossible(this.fight,this.fighter,false,98)!=0)
