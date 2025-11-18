@@ -21,6 +21,7 @@ public class Challenge
   private Fight fight;
   private Fighter target;
   private List<Fighter> _ordreJeu=new ArrayList<>();
+  private static final String ARG_DELIMITER=";";
 
   public Challenge(Fight fight, int Type, int xp, int drop)
   {
@@ -132,6 +133,23 @@ public class Challenge
     SocketManager.GAME_SEND_FIGHT_SHOW_CASE(Pws,target.getId(),target.getCell().getId());
   }
 
+  private String buildDelimitedArg(int id)
+  {
+    return ARG_DELIMITER+id+ARG_DELIMITER;
+  }
+
+  private boolean argsContainsId(int id)
+  {
+    return !Args.isEmpty()&&Args.contains(buildDelimitedArg(id));
+  }
+
+  private void addIdToArgs(int id)
+  {
+    String token=buildDelimitedArg(id);
+    if(!Args.contains(token))
+      Args+=token;
+  }
+
   public void fightStart()
   {//Définit les cibles au début du combat
     if(!challengeAlive)
@@ -207,8 +225,9 @@ public class Challenge
       case 46://Chacun son monstre
         for(Fighter fighter : fight.getFighters(1))
         {
-        	if(!fighter.isInvocation())
-          if(!Args.contains(String.valueOf(fighter.getId())))
+          if(fighter.isInvocation())
+            continue;
+          if(!argsContainsId(fighter.getId()))
           {
             challengeLoose(fighter);
             return;
@@ -234,7 +253,7 @@ public class Challenge
         break;
       case 44://Partage
         if(fighter.getPersonnage()!=null)
-          if(!Args.contains(String.valueOf(fighter.getId())))
+          if(!argsContainsId(fighter.getId()))
             challengeLoose(fighter);
         break;
     }
@@ -259,8 +278,8 @@ public class Challenge
         if(caster.getTeam()==0&&target.getTeam()==1&&!caster.isInvocation())
         {
           if(Args.isEmpty())
-            Args+=""+target.getId();
-          else if(!Args.contains(""+target.getId()))
+            addIdToArgs(target.getId());
+          else if(!argsContainsId(target.getId()))
             challengeLoose(caster);
         }
         break;
@@ -533,7 +552,7 @@ public class Challenge
       case 31: // Focus
         if(mob.getLevelUp())
           break;
-        if(Args.contains(""+mob.getId()))
+        if(argsContainsId(mob.getId()))
           Args="";
         else if(!mob.isInvocation())
           challengeLoose(killer);
@@ -554,8 +573,8 @@ public class Challenge
         break;
       case 44: // Partage
       case 46: // Chacun son monstre
-        if(isKiller&&!mob.isInvocation())
-          Args+=(Args.isEmpty() ? killer.getId() : ";"+killer.getId());
+        if(isKiller&&killer!=null&&!mob.isInvocation())
+          addIdToArgs(killer.getId());
         break;
       case 30: // Les petits d'abord
       case 48: // Les mules d'abord
