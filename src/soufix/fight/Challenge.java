@@ -21,10 +21,6 @@ public class Challenge
   private Fight fight;
   private Fighter target;
   private List<Fighter> _ordreJeu=new ArrayList<>();
-  private final List<Integer> orderedLevels=new ArrayList<>();
-  private int orderedLevelIndex=0;
-  private boolean orderedChallengeAscending=true;
-  private boolean orderedChallengeInitialized=false;
   private static final String ARG_DELIMITER=";";
 
   public Challenge(Fight fight, int Type, int xp, int drop)
@@ -140,67 +136,6 @@ public class Challenge
   private String buildDelimitedArg(int id)
   {
     return ARG_DELIMITER+id+ARG_DELIMITER;
-  }
-
-  private boolean isEligibleOrderedMob(Fighter fighter)
-  {
-    return fighter!=null&&!fighter.isInvocation()&&!fighter.isDouble()&&fighter.getPersonnage()==null&&fighter.getInvocator()==null;
-  }
-
-  private Fighter findOrderedTarget(boolean ascending)
-  {
-    Fighter candidate=null;
-    int referenceLevel=ascending ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-    for(Fighter fighter : fight.getFighters(2))
-    {
-      if(!isEligibleOrderedMob(fighter)||fighter.isDead())
-        continue;
-      int level=fighter.getLvl();
-      if((ascending&&level<referenceLevel)||(!ascending&&level>referenceLevel))
-      {
-        referenceLevel=level;
-        candidate=fighter;
-      }
-    }
-    return candidate;
-  }
-
-  private void refreshOrderedTarget()
-  {
-    if(!orderedChallengeInitialized)
-      return;
-    target=findOrderedTarget(orderedChallengeAscending);
-    if(target!=null)
-      showCibleToFight();
-  }
-
-  private void initializeOrderedChallenge(boolean ascending)
-  {
-    orderedChallengeAscending=ascending;
-    orderedChallengeInitialized=true;
-    orderedLevels.clear();
-    orderedLevelIndex=0;
-    for(Fighter fighter : fight.getFighters(2))
-    {
-      if(isEligibleOrderedMob(fighter)&&!fighter.isDead())
-        orderedLevels.add(fighter.getLvl());
-    }
-    Collections.sort(orderedLevels);
-    if(!ascending)
-      Collections.reverse(orderedLevels);
-    refreshOrderedTarget();
-  }
-
-  private boolean validateOrderedKill(Fighter mob)
-  {
-    if(!orderedChallengeInitialized||!isEligibleOrderedMob(mob))
-      return true;
-    if(orderedLevelIndex>=orderedLevels.size())
-      return true;
-    if(mob.getLvl()!=orderedLevels.get(orderedLevelIndex))
-      return false;
-    orderedLevelIndex++;
-    return true;
   }
 
   private boolean argsContainsId(int id)
