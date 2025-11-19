@@ -4458,6 +4458,9 @@ public void setTotal_reculte() {
       return;
     }
 
+    // Always reset OT state before announcing the usable jobs
+    SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),-1);
+
     for(JobStat jobStat : this._metiers.values())
     {
       if(jobStat.getTemplate()!=null&&jobStat.getTemplate().isValidTool(weapon.getTemplate().getId()))
