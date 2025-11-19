@@ -830,11 +830,12 @@ public class ObjectAction
                                         {
                                                 player0.learnSpell(preserved.getKey(),preserved.getValue(),false,true,false);
                                         }
-					if((player0.getLevel() - 1) >= parcho_sort){
-						parcho_sort = ((player0.getLevel() - 1)-parcho_sort);
-					}else{
-						 parcho_sort = (parcho_sort-(player0.getLevel() - 1));	
-					}
+                                        player0.refreshSpellBarAfterClassChange();
+                                        if((player0.getLevel() - 1) >= parcho_sort){
+                                                parcho_sort = ((player0.getLevel() - 1)-parcho_sort);
+                                        }else{
+                                                 parcho_sort = (parcho_sort-(player0.getLevel() - 1));
+                                        }
 					player0.set_spellPts((player0.getLevel() - 1)+parcho_sort);
             Database.getStatics().getPlayerData().updateInfos(player0);
 				  player0.getStats().addOneStat(125, -player0.getStats().getEffect(125));
