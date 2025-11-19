@@ -1,4 +1,6 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
+# Game-Rpg-rampage 0.9.6:
+    - correction des challenges id 10 et 25 ( ordonné et cruel) + tentative résoudre challenge id 4 : sursis
 # Game-Rpg-rampage 0.9.5:
     - Ajout d'une action 116 pour limiter les téléportations via le transporteur brigandins en 4 args : MapDest,cellDest,objetRequis,-1 (ou nombre positif si on veutdéfinir une map spécifique)
 # Game-Rpg-rampage 0.9.4:

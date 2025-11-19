@@ -26,7 +26,6 @@ public class Challenge
   private List<Fighter> _ordreJeu=new ArrayList<>();
   private final List<Integer> orderedTargets=new ArrayList<>();
   private final Map<Integer,Integer> orderedTargetInitiatives=new HashMap<>();
-  private int lastKilledMonsterId=-1;
   private static final String ARG_DELIMITER=";";
 
   public Challenge(Fight fight, int Type, int xp, int drop)
@@ -169,8 +168,6 @@ public class Challenge
       case 35://Tueur é gages
         if(target==null)
           target=getRandomMonsterTarget();
-        if(Type==4)
-          lastKilledMonsterId=-1;
         showCibleToFight();//On le montre a tous les joueurs
         break;
       case 10://Cruel
