@@ -10,6 +10,7 @@ import soufix.game.GameClient;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class Challenge
   private Fight fight;
   private Fighter target;
   private List<Fighter> _ordreJeu=new ArrayList<>();
+  private final List<Integer> orderedTargets=new ArrayList<>();
   private static final String ARG_DELIMITER=";";
 
   public Challenge(Fight fight, int Type, int xp, int drop)
@@ -154,7 +156,7 @@ public class Challenge
   {//Définit les cibles au début du combat
     if(!challengeAlive)
       return;
-    
+
     switch(Type)
     {
       case 3://Désigné Volontaire
@@ -179,12 +181,73 @@ public class Challenge
         showCibleToFight();//On le montre a tous les joueurs
         break;
       case 10://Cruel
-        initializeOrderedChallenge(true);
+        initializeOrderedChallenge(Comparator.comparingInt(Fighter::getInitiative).reversed());
         break;
       case 25://Ordonné
-        initializeOrderedChallenge(false);
+        initializeOrderedChallenge(Comparator.comparingInt(Fighter::getInitiative));
         break;
     }
+  }
+
+  private void initializeOrderedChallenge(Comparator<Fighter> ordering)
+  {
+    orderedTargets.clear();
+    target=null;
+
+    ArrayList<Fighter> monsters=new ArrayList<>(fight.getFighters(2));
+    monsters.removeIf(fighter -> fighter==null||fighter.isInvocation()||fighter.isDouble()||fighter.isDead()||fighter.getPersonnage()!=null);
+
+    if(monsters.isEmpty())
+      return;
+
+    if(ordering!=null)
+      monsters.sort(ordering);
+    else
+      Collections.shuffle(monsters);
+
+    for(Fighter fighter : monsters)
+      orderedTargets.add(fighter.getId());
+
+    refreshOrderedTarget();
+  }
+
+  private boolean validateOrderedKill(Fighter mob)
+  {
+    if(mob==null||mob.getPersonnage()!=null||mob.isInvocation()||mob.isDouble())
+      return true;
+    if(orderedTargets.isEmpty())
+      return true;
+    if(orderedTargets.get(0)!=mob.getId())
+      return false;
+    orderedTargets.remove(0);
+    return true;
+  }
+
+  private void refreshOrderedTarget()
+  {
+    if(!challengeAlive)
+      return;
+    target=null;
+    while(!orderedTargets.isEmpty())
+    {
+      Fighter nextTarget=getFighterById(orderedTargets.get(0));
+      if(nextTarget==null||nextTarget.isDead()||nextTarget.hasLeft())
+      {
+        orderedTargets.remove(0);
+        continue;
+      }
+      target=nextTarget;
+      showCibleToFight();
+      break;
+    }
+  }
+
+  private Fighter getFighterById(int fighterId)
+  {
+    for(Fighter fighter : fight.getFighters(3))
+      if(fighter!=null&&fighter.getId()==fighterId)
+        return fighter;
+    return null;
   }
 
   public void fightEnd()
