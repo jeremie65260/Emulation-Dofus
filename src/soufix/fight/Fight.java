@@ -7479,6 +7479,19 @@ public void Anti_bug () {
     return current;
   }
 
+  public Fighter getNextOrderedFighter()
+  {
+    for(Challenge challenge : getAllChallenges().values())
+    {
+      if(challenge==null)
+        continue;
+      Fighter orderedTarget=challenge.getCurrentOrderedTarget();
+      if(orderedTarget!=null)
+        return orderedTarget;
+    }
+    return null;
+  }
+
   int getOrderPlayingSize()
   {
     if(this.orderPlaying==null)
