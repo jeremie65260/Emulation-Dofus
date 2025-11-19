@@ -168,8 +168,6 @@ public class Challenge
       case 35://Tueur é gages
         if(target==null)
           target=getRandomMonsterTarget();
-        if(Type==4)
-          Arg=-1;
         showCibleToFight();//On le montre a tous les joueurs
         break;
       case 10://Cruel
@@ -326,7 +324,7 @@ public class Challenge
       case 4://Sursis
         if(target==null)
           break;
-        if(Arg!=target.getId())
+        if(lastKilledMonsterId!=target.getId())
         {
           challengeLoose(fight.getFighterByOrdreJeu());
           return;
@@ -634,7 +632,7 @@ public class Challenge
       case 4: // Sursis
         if(mob.isInvocation()||mob.isDouble())
           return;
-        Arg=mob.getId();
+        lastKilledMonsterId=mob.getId();
         if(target==null)
           return;
 
