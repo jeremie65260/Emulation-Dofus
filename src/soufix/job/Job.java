@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import soufix.client.Player;
 import soufix.job.fm.Rune;
 import soufix.object.GameObject;
+import soufix.job.JobConstant;
 
 public class Job
 {
@@ -81,6 +82,9 @@ public class Job
 
   public boolean isValidTool(int id1)
   {
+    if(this.id!=JobConstant.JOB_PECHEUR)
+      return true;
+
     if(id1==20053 && this.id!=36)
       return true;
 
