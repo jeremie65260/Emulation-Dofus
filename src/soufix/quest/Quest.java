@@ -289,6 +289,16 @@ public class Quest
 
   public void applyQuest(Player player)
   {
+    QuestPlayer current=player.getQuestPersoByQuest(this);
+    if(current!=null)
+    {
+      if(!this.isDelete()&&current.isFinish())
+      {
+        SocketManager.GAME_SEND_MESSAGE(player,"Vous avez déjà terminé cette quête.");
+      }
+      return;
+    }
+
     if(this.condition!=null)
     {
       switch(this.condition.getLeft())
