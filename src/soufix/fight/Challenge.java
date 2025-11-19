@@ -27,6 +27,8 @@ public class Challenge
   private final List<Integer> orderedTargets=new ArrayList<>();
   private final Map<Integer,Integer> orderedTargetInitiatives=new HashMap<>();
   private static final String ARG_DELIMITER=";";
+  private int lastKilledMonsterId = -1;
+
 
   public Challenge(Fight fight, int Type, int xp, int drop)
   {
