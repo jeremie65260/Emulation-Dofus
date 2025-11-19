@@ -940,6 +940,43 @@ public class Constant
     registerLevelUpSpell(CLASS_PANDAWA,90,704);
     registerLevelUpSpell(CLASS_PANDAWA,100,705);
     registerLevelUpSpell(CLASS_PANDAWA,200,1912);
+
+    int specialSpell=getSpecialSpellByClasse(CLASS_FECA);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_FECA,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_OSAMODAS);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_OSAMODAS,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_ENUTROF);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_ENUTROF,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_SRAM);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_SRAM,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_XELOR);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_XELOR,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_ECAFLIP);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_ECAFLIP,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_ENIRIPSA);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_ENIRIPSA,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_IOP);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_IOP,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_CRA);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_CRA,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_SADIDA);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_SADIDA,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_SACRIEUR);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_SACRIEUR,specialSpell);
+    specialSpell=getSpecialSpellByClasse(CLASS_PANDAWA);
+    if(specialSpell>0)
+      registerClassSpell(CLASS_PANDAWA,specialSpell);
   }
 
   private static void registerStartSpells(int classId, int... spellIds)
