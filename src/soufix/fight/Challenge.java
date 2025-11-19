@@ -205,6 +205,19 @@ public class Challenge
     refreshOrderedTarget();
   }
 
+  public Fighter getCurrentOrderedTarget()
+  {
+    if(!challengeAlive)
+      return null;
+    switch(Type)
+    {
+      case 10://Cruel
+      case 25://Ordonné
+        return target;
+    }
+    return null;
+  }
+
   private boolean validateOrderedKill(Fighter mob)
   {
     if(mob==null||mob.getPersonnage()!=null||mob.isInvocation()||mob.isDouble())
