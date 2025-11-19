@@ -11,8 +11,10 @@ import soufix.game.GameClient;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Challenge
 {
@@ -23,6 +25,7 @@ public class Challenge
   private Fighter target;
   private List<Fighter> _ordreJeu=new ArrayList<>();
   private final List<Integer> orderedTargets=new ArrayList<>();
+  private final Map<Integer,Integer> orderedTargetInitiatives=new HashMap<>();
   private static final String ARG_DELIMITER=";";
 
   public Challenge(Fight fight, int Type, int xp, int drop)
@@ -163,21 +166,10 @@ public class Challenge
       case 4://Sursis
       case 32://Elitiste
       case 35://Tueur é gages
-        if(target==null&&_ordreJeu.size()>0)//Si aucun cible n'est choise on en choisie une
-        {
-          List<Fighter> Choix=new ArrayList<Fighter>();
-          Choix.addAll(_ordreJeu);
-          Collections.shuffle(Choix);//Mélange l'ArrayList
-          for(Fighter f : Choix)
-          {
-        	  if(f == null)
-                  continue;
-            if(f.getPersonnage()!=null)
-              continue;
-            if(f.getMob()!=null&&f.getTeam2()==2&&!f.isDead()&&!f.isInvocation())
-              target=f;
-          }
-        }
+        if(target==null)
+          target=getRandomMonsterTarget();
+        if(Type==4)
+          Arg=-1;
         showCibleToFight();//On le montre a tous les joueurs
         break;
       case 10://Cruel
@@ -192,6 +184,7 @@ public class Challenge
   private void initializeOrderedChallenge(Comparator<Fighter> ordering)
   {
     orderedTargets.clear();
+    orderedTargetInitiatives.clear();
     target=null;
 
     ArrayList<Fighter> monsters=new ArrayList<>(fight.getFighters(2));
@@ -206,20 +199,45 @@ public class Challenge
       Collections.shuffle(monsters);
 
     for(Fighter fighter : monsters)
+    {
       orderedTargets.add(fighter.getId());
+      orderedTargetInitiatives.put(fighter.getId(),fighter.getInitiative());
+    }
 
     refreshOrderedTarget();
+  }
+
+  public Fighter getCurrentOrderedTarget()
+  {
+    if(!challengeAlive)
+      return null;
+    switch(Type)
+    {
+      case 10://Cruel
+      case 25://Ordonné
+        return target;
+    }
+    return null;
   }
 
   private boolean validateOrderedKill(Fighter mob)
   {
     if(mob==null||mob.getPersonnage()!=null||mob.isInvocation()||mob.isDouble())
       return true;
+    pruneOrderedTargets(mob.getId());
     if(orderedTargets.isEmpty())
       return true;
-    if(orderedTargets.get(0)!=mob.getId())
+
+    int expectedInitiative=getOrderedTargetInitiative(orderedTargets.get(0));
+    int killerInitiative=getOrderedTargetInitiative(mob.getId());
+    if(expectedInitiative==Integer.MIN_VALUE||killerInitiative==Integer.MIN_VALUE)
+      return true;
+
+    if(killerInitiative!=expectedInitiative)
       return false;
-    orderedTargets.remove(0);
+
+    orderedTargets.remove((Integer)mob.getId());
+    orderedTargetInitiatives.remove(mob.getId());
     return true;
   }
 
@@ -228,18 +246,53 @@ public class Challenge
     if(!challengeAlive)
       return;
     target=null;
-    while(!orderedTargets.isEmpty())
+    pruneOrderedTargets(-1);
+    if(orderedTargets.isEmpty())
+      return;
+    Fighter nextTarget=getFighterById(orderedTargets.get(0));
+    if(nextTarget==null||nextTarget.isDead()||nextTarget.hasLeft())
+      return;
+    target=nextTarget;
+    showCibleToFight();
+  }
+
+  private void pruneOrderedTargets(int protectedId)
+  {
+    Iterator<Integer> iterator=orderedTargets.iterator();
+    while(iterator.hasNext())
     {
-      Fighter nextTarget=getFighterById(orderedTargets.get(0));
-      if(nextTarget==null||nextTarget.isDead()||nextTarget.hasLeft())
-      {
-        orderedTargets.remove(0);
+      int fighterId=iterator.next();
+      if(fighterId==protectedId)
         continue;
+      Fighter fighter=getFighterById(fighterId);
+      if(fighter==null||fighter.isDead()||fighter.hasLeft())
+      {
+        iterator.remove();
+        orderedTargetInitiatives.remove(fighterId);
       }
-      target=nextTarget;
-      showCibleToFight();
-      break;
     }
+  }
+
+  private int getOrderedTargetInitiative(int fighterId)
+  {
+    Integer value=orderedTargetInitiatives.get(fighterId);
+    if(value!=null)
+      return value;
+    Fighter fighter=getFighterById(fighterId);
+    if(fighter==null)
+      return Integer.MIN_VALUE;
+    return fighter.getInitiative();
+  }
+
+  private Fighter getRandomMonsterTarget()
+  {
+    ArrayList<Fighter> choices=new ArrayList<>();
+    choices.addAll(fight.getFighters(2));
+    choices.removeIf(fighter -> fighter==null||fighter.getPersonnage()!=null||fighter.isDead()||fighter.isInvocation()||fighter.isDouble());
+    if(choices.isEmpty())
+      return null;
+    Collections.shuffle(choices);
+    return choices.get(0);
   }
 
   private Fighter getFighterById(int fighterId)
@@ -250,12 +303,35 @@ public class Challenge
     return null;
   }
 
+  private boolean hasOtherLivingMonsters(int excludedId)
+  {
+    for(Fighter fighter : fight.getTeam1().values())
+    {
+      if(fighter==null||fighter.isInvocation()||fighter.isDouble())
+        continue;
+      if(fighter.isDead()||fighter.hasLeft())
+        continue;
+      if(fighter.getId()!=excludedId)
+        return true;
+    }
+    return false;
+  }
+
   public void fightEnd()
   {//Vérifie la validité des challenges en fin de combat (si nécessaire)
     if(!challengeAlive)
       return;
     switch(Type)
     {
+      case 4://Sursis
+        if(target==null)
+          break;
+        if(Arg!=target.getId())
+        {
+          challengeLoose(fight.getFighterByOrdreJeu());
+          return;
+        }
+        break;
       case 44://Partage
       case 46://Chacun son monstre
         for(Fighter fighter : fight.getFighters(1))
@@ -556,10 +632,13 @@ public class Challenge
         break;
 
       case 4: // Sursis
+        if(mob.isInvocation()||mob.isDouble())
+          return;
+        Arg=mob.getId();
         if(target==null)
           return;
 
-        if(target.getId()==mob.getId()&&!fight.verifIfTeamIsDead())
+        if(target.getId()==mob.getId()&&hasOtherLivingMonsters(mob.getId()))
         {
           challengeLoose(fight.getFighterByOrdreJeu());
         }
@@ -642,23 +721,7 @@ public class Challenge
         {
           try
           {
-            target=null;
-            ArrayList<Fighter> fighters=new ArrayList<Fighter>(fight.getFighters(2));
-            for(Iterator<Fighter> it=fighters.iterator();it.hasNext();) //remove unavailable targets from new target selector
-            {
-              Fighter f=it.next();
-              if(f.isInvocation()||f.isDead()||f.getPersonnage()!=null)
-                it.remove();
-            }
-            Collections.shuffle(fighters); //randomly shuffle
-            for(Fighter f : fighters)
-            {
-              if(!f.isInvocation()&&!f.isDead()&&f.getPersonnage()==null)
-              {
-                target=f;
-                break;
-              }
-            }
+            target=getRandomMonsterTarget();
             showCibleToFight();
           }
           catch(Exception e)
