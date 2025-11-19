@@ -250,15 +250,6 @@ public class Challenge
     return null;
   }
 
-  public Fighter getCurrentOrderedTarget()
-  {
-    if(Type!=10&&Type!=25)
-      return null;
-    if(target==null||target.isDead()||target.hasLeft())
-      refreshOrderedTarget();
-    return target;
-  }
-
   public void fightEnd()
   {//Vérifie la validité des challenges en fin de combat (si nécessaire)
     if(!challengeAlive)
