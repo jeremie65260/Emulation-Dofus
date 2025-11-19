@@ -1669,6 +1669,46 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_SPELL_LIST(this);
   }
 
+  public void refreshSpellBarAfterClassChange()
+  {
+    Map<Integer, Spell.SortStats> knownSpells=new HashMap<>(_sorts);
+
+    Map<Integer, Character> refreshedPlaces=new HashMap<>();
+    for(Map.Entry<Integer, Character> starter : Constant.getStartSortsPlaces(this.getClasse()).entrySet())
+      if(knownSpells.containsKey(starter.getKey()))
+        refreshedPlaces.put(starter.getKey(),starter.getValue());
+
+    for(Map.Entry<Integer, Character> placeEntry : _sortsPlaces.entrySet())
+      if(placeEntry.getValue()!=null&&knownSpells.containsKey(placeEntry.getKey())&&!refreshedPlaces.containsKey(placeEntry.getKey()))
+        refreshedPlaces.put(placeEntry.getKey(),placeEntry.getValue());
+
+    Set<Character> usedPlaces=new HashSet<>(refreshedPlaces.values());
+    for(int spellId : knownSpells.keySet())
+    {
+      if(refreshedPlaces.containsKey(spellId))
+        continue;
+
+      char freeSlot=findNextFreeSpellSlot(usedPlaces);
+      usedPlaces.add(freeSlot);
+      refreshedPlaces.put(spellId,freeSlot);
+    }
+
+    _sortsPlaces.clear();
+    _sortsPlaces.putAll(refreshedPlaces);
+    SocketManager.GAME_SEND_SPELL_LIST(this);
+  }
+
+  private char findNextFreeSpellSlot(Set<Character> usedPlaces)
+  {
+    for(int index=0;index<CryptManager.HASH.length;index++)
+    {
+      char candidate=Main.world.getCryptManager().getHashedValueByInt(index);
+      if(!usedPlaces.contains(candidate))
+        return candidate;
+    }
+    return Main.world.getCryptManager().getHashedValueByInt(CryptManager.HASH.length-1);
+  }
+
   public void learnSpell(int spell, int level, char pos)
   {
     if(Main.world.getSort(spell).getStatsByLevel(level)==null)
@@ -4458,8 +4498,15 @@ public void setTotal_reculte() {
       return;
     }
 
-    // Always reset OT state before announcing the usable jobs
-    SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),-1);
+    if(weapon.getTemplate().getId()==20053)
+    {
+      for(JobStat jobStat : this._metiers.values())
+      {
+        if(jobStat.getTemplate()!=null&&jobStat.getTemplate().getId()!=JobConstant.JOB_PECHEUR)
+          SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
+      }
+      return;
+    }
 
     for(JobStat jobStat : this._metiers.values())
     {
