@@ -2483,6 +2483,9 @@ public void setTotal_reculte() {
     if(this.needEndFight()==-1)
     {
       SocketManager.GAME_SEND_MAPDATA(client,this.curMap.getId(),this.curMap.getDate(),this.curMap.getKey());
+      // Réactive l'outil de métier en fonction de l'arme équipée après le chargement de la carte
+      if(!this._metiers.isEmpty())
+        this.refreshJobToolPackets();
       SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client,this.getCurMap());
       if(this.getFight()==null)
         this.curMap.addPlayer(this);
@@ -3874,6 +3877,9 @@ public void setTotal_reculte() {
       this.isInPrivateArea=false;
     }
     SocketManager.GAME_SEND_MAPDATA(client,newMapID,this.curMap.getDate(),this.curMap.getKey());
+    // Réactive l'outil de métier en fonction de l'arme équipée après un changement de carte
+    if(!this._metiers.isEmpty())
+      this.refreshJobToolPackets();
     this.curMap.addPlayer(this);
     if(fullmorph)
       this.unsetFullMorph();
