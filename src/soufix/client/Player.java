@@ -2245,11 +2245,7 @@ public void setTotal_reculte() {
       SocketManager.GAME_SEND_JX_PACKET(this,list);
       //Packet JO (Job Option)
       SocketManager.GAME_SEND_JO_PACKET(this,list);
-      GameObject obj=getObjetByPos(Constant.ITEM_POS_ARME);
-      if(obj!=null)
-        for(JobStat sm : list)
-        	if (sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-            SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),sm.getTemplate().getId());
+      this.refreshJobToolPackets();
     }
 
     SocketManager.GAME_SEND_ALIGNEMENT(client,_align);
@@ -2487,6 +2483,9 @@ public void setTotal_reculte() {
     if(this.needEndFight()==-1)
     {
       SocketManager.GAME_SEND_MAPDATA(client,this.curMap.getId(),this.curMap.getDate(),this.curMap.getKey());
+      // Réactive l'outil de métier en fonction de l'arme équipée après le chargement de la carte
+      if(!this._metiers.isEmpty())
+        this.refreshJobToolPackets();
       SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client,this.getCurMap());
       if(this.getFight()==null)
         this.curMap.addPlayer(this);
@@ -3878,6 +3877,9 @@ public void setTotal_reculte() {
       this.isInPrivateArea=false;
     }
     SocketManager.GAME_SEND_MAPDATA(client,newMapID,this.curMap.getDate(),this.curMap.getKey());
+    // Réactive l'outil de métier en fonction de l'arme équipée après un changement de carte
+    if(!this._metiers.isEmpty())
+      this.refreshJobToolPackets();
     this.curMap.addPlayer(this);
     if(fullmorph)
       this.unsetFullMorph();
@@ -4441,6 +4443,26 @@ public void setTotal_reculte() {
   public Map<Integer, JobStat> getMetiers()
   {
     return _metiers;
+  }
+
+  public void refreshJobToolPackets()
+  {
+    if(this.account==null||this.account.getGameClient()==null)
+      return;
+
+    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+
+    if(weapon==null)
+    {
+      SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),-1);
+      return;
+    }
+
+    for(JobStat jobStat : this._metiers.values())
+    {
+      if(jobStat.getTemplate()!=null&&jobStat.getTemplate().isValidTool(weapon.getTemplate().getId()))
+        SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
+    }
   }
 
   public void doJobAction(int actionID, InteractiveObject object, GameAction GA, GameCase cell)

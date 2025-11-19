@@ -4024,17 +4024,13 @@ public void setTimeLastTaverne(long timeLastTaverne) {
 	    		      ArrayList<JobStat> list=new ArrayList<JobStat>();
 	    		      list.addAll(this.getPlayer().getMetiers().values());
 	    		      //packet JS
-	    		      SocketManager.GAME_SEND_JS_PACKET(this.player,list);
-	    		      //packet JX
-	    		      SocketManager.GAME_SEND_JX_PACKET(this.player,list);
-	    		      //Packet JO (Job Option)
-	    		      SocketManager.GAME_SEND_JO_PACKET(this.player,list);
-	    		      GameObject obj=this.player.getObjetByPos(Constant.ITEM_POS_ARME);
-	    		      if(obj!=null)
-	    		        for(JobStat sm : list)
-	    		          if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-	    		            SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),sm.getTemplate().getId());
-	    		    }
+                              SocketManager.GAME_SEND_JS_PACKET(this.player,list);
+                              //packet JX
+                              SocketManager.GAME_SEND_JX_PACKET(this.player,list);
+                              //Packet JO (Job Option)
+                              SocketManager.GAME_SEND_JO_PACKET(this.player,list);
+                              this.player.refreshJobToolPackets();
+                            }
         }
         break;
 
@@ -8920,10 +8916,8 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         if(position==Constant.ITEM_POS_FAMILIER&&this.player.isOnMount())
           this.player.toogleOnMount();
         //Verif pour les thisils de mé¿½tier
-        if(position==Constant.ITEM_POS_NO_EQUIPED&&this.player.getObjetByPos(Constant.ITEM_POS_ARME)==null)
-          SocketManager.GAME_SEND_OT_PACKET(this,-1);
-        if(position==Constant.ITEM_POS_ARME&&this.player.getObjetByPos(Constant.ITEM_POS_ARME)!=null)
-            this.player.getMetiers().entrySet().stream().filter(e -> e.getValue().getTemplate().isValidTool(this.player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())).forEach(e -> SocketManager.GAME_SEND_OT_PACKET(this,e.getValue().getTemplate().getId()));
+        if(position==Constant.ITEM_POS_NO_EQUIPED||position==Constant.ITEM_POS_ARME)
+          this.player.refreshJobToolPackets();
           //Si objet de panoplie
         if(object.getTemplate().getPanoId()>0)
           SocketManager.GAME_SEND_OS_PACKET(this.player,object.getTemplate().getPanoId());
