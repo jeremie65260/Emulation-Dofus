@@ -301,12 +301,35 @@ public class Challenge
     return null;
   }
 
+  private boolean hasOtherLivingMonsters(int excludedId)
+  {
+    for(Fighter fighter : fight.getTeam1().values())
+    {
+      if(fighter==null||fighter.isInvocation()||fighter.isDouble())
+        continue;
+      if(fighter.isDead()||fighter.hasLeft())
+        continue;
+      if(fighter.getId()!=excludedId)
+        return true;
+    }
+    return false;
+  }
+
   public void fightEnd()
   {//Vérifie la validité des challenges en fin de combat (si nécessaire)
     if(!challengeAlive)
       return;
     switch(Type)
     {
+      case 4://Sursis
+        if(target==null)
+          break;
+        if(lastKilledMonsterId!=target.getId())
+        {
+          challengeLoose(fight.getFighterByOrdreJeu());
+          return;
+        }
+        break;
       case 44://Partage
       case 46://Chacun son monstre
         for(Fighter fighter : fight.getFighters(1))
@@ -607,10 +630,13 @@ public class Challenge
         break;
 
       case 4: // Sursis
+        if(mob.isInvocation()||mob.isDouble())
+          return;
+        lastKilledMonsterId=mob.getId();
         if(target==null)
           return;
 
-        if(target.getId()==mob.getId()&&!fight.verifIfTeamIsDead())
+        if(target.getId()==mob.getId()&&hasOtherLivingMonsters(mob.getId()))
         {
           challengeLoose(fight.getFighterByOrdreJeu());
         }
