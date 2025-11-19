@@ -4498,6 +4498,16 @@ public void setTotal_reculte() {
       return;
     }
 
+    if(weapon.getTemplate().getId()==20053)
+    {
+      for(JobStat jobStat : this._metiers.values())
+      {
+        if(jobStat.getTemplate()!=null&&jobStat.getTemplate().getId()!=JobConstant.JOB_PECHEUR)
+          SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
+      }
+      return;
+    }
+
     for(JobStat jobStat : this._metiers.values())
     {
       if(jobStat.getTemplate()!=null&&jobStat.getTemplate().isValidTool(weapon.getTemplate().getId()))
