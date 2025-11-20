@@ -1014,6 +1014,28 @@ public class Constant
     return spells==null ? Collections.emptySet() : Collections.unmodifiableSet(spells);
   }
 
+  public static int getClassSpellUnlockLevel(int classId,int spellId)
+  {
+    List<Integer> startSpells=CLASS_START_SPELLS.get(classId);
+    if(startSpells!=null&&startSpells.contains(spellId))
+      return 1;
+
+    Map<Integer, List<Integer>> levelUpSpells=CLASS_LEVEL_UP_SPELLS.get(classId);
+    if(levelUpSpells==null)
+      return -1;
+
+    int unlockLevel=-1;
+    for(Entry<Integer, List<Integer>> entry : levelUpSpells.entrySet())
+    {
+      if(entry.getValue()!=null&&entry.getValue().contains(spellId))
+      {
+        unlockLevel=entry.getKey();
+        break;
+      }
+    }
+    return unlockLevel;
+  }
+
   public static boolean isClassSpell(int classId, int spellId)
   {
     return getClassSpellIds(classId).contains(spellId);
