@@ -1,4 +1,6 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
+# Game-Rpg-rampage 0.9.7:
+    - Ajout de la logique pour les 6 empalcements des Dofus + setrapido 
 # Game-Rpg-rampage 0.9.6:
     - correction des challenges id 10 et 25 ( ordonné et cruel) + tentative résoudre challenge id 4 : sursis
     - * la potion de changement de classe ne vous fais plus conserver le sort spécial d'une classe antérieure et les sorts sont automatiquement mis en barre de sorts (le restant ira en barre de raccourci)
