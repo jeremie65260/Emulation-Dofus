@@ -120,6 +120,12 @@ public class Constant
   public static final int ITEM_POS_DOFUS4=12;
   public static final int ITEM_POS_DOFUS5=13;
   public static final int ITEM_POS_DOFUS6=14;
+  public static final int ITEM_POS_DOFUS7=90;
+  public static final int ITEM_POS_DOFUS8=17;
+  public static final int ITEM_POS_DOFUS9=18;
+  public static final int ITEM_POS_DOFUS10=19;
+  public static final int ITEM_POS_DOFUS11=20;
+  public static final int ITEM_POS_DOFUS12=21;
   public static final int ITEM_POS_BOUCLIER=15;
   public static final int ITEM_POS_DRAGODINDE=16;
   //Objets dons, mutations, malédiction, ..
@@ -2521,7 +2527,7 @@ public class Constant
 			break;
 
       case ITEM_TYPE_DOFUS:
-        if(place==ITEM_POS_DOFUS1||place==ITEM_POS_DOFUS2||place==ITEM_POS_DOFUS3||place==ITEM_POS_DOFUS4||place==ITEM_POS_DOFUS5||place==ITEM_POS_DOFUS6)
+        if(place==ITEM_POS_DOFUS1||place==ITEM_POS_DOFUS2||place==ITEM_POS_DOFUS3||place==ITEM_POS_DOFUS4||place==ITEM_POS_DOFUS5||place==ITEM_POS_DOFUS6||place==ITEM_POS_DOFUS7||place==ITEM_POS_DOFUS8||place==ITEM_POS_DOFUS9||place==ITEM_POS_DOFUS10||place==ITEM_POS_DOFUS11||place==ITEM_POS_DOFUS12)
           return true;
         break;
 
