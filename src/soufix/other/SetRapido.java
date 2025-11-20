@@ -3,8 +3,8 @@ package soufix.other;
 import soufix.main.Constant;
 
 public class SetRapido {
-	private int _id, _icono;
-	private int[] _objetos = new int[18];
+        private int _id, _icono;
+        private int[] _objetos = new int[208];
 	private String _nombre;
 	
 	public SetRapido(int id, String nombre, int icono, String data) {
