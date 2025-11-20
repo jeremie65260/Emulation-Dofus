@@ -129,8 +129,8 @@ public class Constant
   public static final int ITEM_POS_BOUCLIER=15;
   public static final int ITEM_POS_DRAGODINDE=16;
   //Objets dons, mutations, malédiction, ..
-  public static final int ITEM_POS_MUTATION=20;
-  public static final int ITEM_POS_ROLEPLAY_BUFF=21;
+  public static final int ITEM_POS_MUTATION=96;
+  public static final int ITEM_POS_ROLEPLAY_BUFF=97;
   public static final int ITEM_POS_PNJ_SUIVEUR=24;
   public static final int ITEM_POS_BENEDICTION=23;
   public static final int ITEM_POS_MALEDICTION=22;
