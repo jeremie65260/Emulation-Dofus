@@ -2319,10 +2319,6 @@ public class CommandAdmin extends AdminUser
       if(expLevel!=null)
         target.setExp(expLevel.perso);
 
-      int refundedSpellPoints=resetSpellsAboveLevel(target,targetLevel);
-      if(refundedSpellPoints>0)
-        target.addSpellPoint(refundedSpellPoints);
-
       target.refreshStats();
       target.setPdv(target.getMaxPdv());
       if(target.isOnline())
