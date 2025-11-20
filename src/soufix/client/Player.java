@@ -5396,6 +5396,12 @@ public void setTotal_reculte() {
     boolean isFirstDd=true;
     boolean isFirstDe=true;
     boolean isFirstDf=true;
+    boolean isFirstDg=true;
+    boolean isFirstDh=true;
+    boolean isFirstDi=true;
+    boolean isFirstDj=true;
+    boolean isFirstDk=true;
+    boolean isFirstDl=true;
     boolean isFirstFA=true;
 
     for(GameObject obj : objects.values())
@@ -5561,6 +5567,72 @@ public void setTotal_reculte() {
         if(isFirstDf)
         {
           isFirstDf=false;
+        }
+        else
+        {
+          obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+        }
+      }
+      else if(obj.getPosition()==Constant.ITEM_POS_DOFUS7)
+      {
+        if(isFirstDg)
+        {
+          isFirstDg=false;
+        }
+        else
+        {
+          obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+        }
+      }
+      else if(obj.getPosition()==Constant.ITEM_POS_DOFUS8)
+      {
+        if(isFirstDh)
+        {
+          isFirstDh=false;
+        }
+        else
+        {
+          obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+        }
+      }
+      else if(obj.getPosition()==Constant.ITEM_POS_DOFUS9)
+      {
+        if(isFirstDi)
+        {
+          isFirstDi=false;
+        }
+        else
+        {
+          obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+        }
+      }
+      else if(obj.getPosition()==Constant.ITEM_POS_DOFUS10)
+      {
+        if(isFirstDj)
+        {
+          isFirstDj=false;
+        }
+        else
+        {
+          obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+        }
+      }
+      else if(obj.getPosition()==Constant.ITEM_POS_DOFUS11)
+      {
+        if(isFirstDk)
+        {
+          isFirstDk=false;
+        }
+        else
+        {
+          obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
+        }
+      }
+      else if(obj.getPosition()==Constant.ITEM_POS_DOFUS12)
+      {
+        if(isFirstDl)
+        {
+          isFirstDl=false;
         }
         else
         {
@@ -7368,12 +7440,18 @@ public void setOne_windows(boolean one_windows) {
 		this.chekhackitem(Constant.ITEM_POS_FAMILIER);
 		this.chekhackitem(Constant.ITEM_POS_DOFUS1);
 		this.chekhackitem(Constant.ITEM_POS_DOFUS2);
-		this.chekhackitem(Constant.ITEM_POS_DOFUS3);
-		this.chekhackitem(Constant.ITEM_POS_DOFUS4);
-		this.chekhackitem(Constant.ITEM_POS_DOFUS5);
-		this.chekhackitem(Constant.ITEM_POS_DOFUS6);
-		this.chekhackitem(Constant.ITEM_POS_BOUCLIER);	
-	}
+                this.chekhackitem(Constant.ITEM_POS_DOFUS3);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS4);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS5);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS6);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS7);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS8);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS9);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS10);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS11);
+                this.chekhackitem(Constant.ITEM_POS_DOFUS12);
+                this.chekhackitem(Constant.ITEM_POS_BOUCLIER);
+        }
   
 	public void addSetRapido(int id, String nombre, int icono, String data) {
 		SetRapido set = new SetRapido(id, nombre, icono, data);

@@ -887,11 +887,13 @@ private void crearPacketKey() {
 					return 0;
 				}
 			}
-			byte[] orden = {Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
-					Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
-					Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_BOUCLIER,
-			Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
-			Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_ARME};
+                        byte[] orden = {Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+                                        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+                                        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+                                        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+                                        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+                        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+                        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_ARME};
 			int time=0;
 			for (byte i : orden) {
 				GameObject obj = this.player.getObjetByPos(i);
@@ -923,11 +925,13 @@ private void crearPacketKey() {
 					return r;
 				}
 			}
-			byte[] orden = {Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
-					Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
-					Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
-			Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
-			Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_ARME};
+                        byte[] orden = {Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+                                        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+                                        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+                                        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+                                        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+                        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+                        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_ARME};
 			int time = 100;
 			for (byte i : orden) {
 				int idObjeto = set.getObjetos()[i];
@@ -950,11 +954,13 @@ private void crearPacketKey() {
 	private String objeto_String_Set_Equipado() {
 		StringBuilder str = new StringBuilder();
 		StringBuilder cond = new StringBuilder();
-		byte[] orden = {Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
-				Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
-				Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
-		Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
-		Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_ARME};
+                byte[] orden = {Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+                                Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+                                Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+                                Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+                                Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+                Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+                Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE, Constant.ITEM_POS_ARME};
 		for (byte i : orden) {
 			GameObject obj = this.player.getObjetByPos(i);
 			if (obj == null) {
