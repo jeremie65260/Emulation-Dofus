@@ -2319,10 +2319,6 @@ public class CommandAdmin extends AdminUser
       if(expLevel!=null)
         target.setExp(expLevel.perso);
 
-      int refundedSpellPoints=resetSpellsAboveLevel(target,targetLevel);
-      if(refundedSpellPoints>0)
-        target.addSpellPoint(refundedSpellPoints);
-
       target.refreshStats();
       target.setPdv(target.getMaxPdv());
       if(target.isOnline())
@@ -4533,22 +4529,6 @@ public class CommandAdmin extends AdminUser
       if(spell==null)
         continue;
 
-      int classUnlockLevel=Constant.getClassSpellUnlockLevel(target.getClasse(),spell.getSpellID());
-      if(classUnlockLevel>0&&classUnlockLevel>targetLevel)
-      {
-        if(target.unlearnSpell(spell.getSpellID()))
-          refundedSpellPoints+=Formulas.spellCost(currentStats.getLevel());
-        continue;
-      }
-
-      int lowestRequiredLevel=findLowestRequiredSpellLevel(spell);
-      if(lowestRequiredLevel>targetLevel)
-      {
-        if(target.unlearnSpell(spell.getSpellID()))
-          refundedSpellPoints+=Formulas.spellCost(currentStats.getLevel());
-        continue;
-      }
-
       int allowedLevel=findHighestAccessibleSpellLevel(spell,targetLevel,currentStats.getLevel());
       if(allowedLevel==0)
       {
@@ -4576,20 +4556,6 @@ public class CommandAdmin extends AdminUser
         return level;
     }
     return 0;
-  }
-
-  private int findLowestRequiredSpellLevel(Spell spell)
-  {
-    int lowestRequiredLevel=Integer.MAX_VALUE;
-    for(int level=1;level<=6;level++)
-    {
-      Spell.SortStats stats=spell.getStatsByLevel(level);
-      if(stats==null)
-        continue;
-      if(stats.getReqLevel()<lowestRequiredLevel)
-        lowestRequiredLevel=stats.getReqLevel();
-    }
-    return lowestRequiredLevel==Integer.MAX_VALUE?0:lowestRequiredLevel;
   }
 
   private static int getCellJail()
