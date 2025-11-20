@@ -61,25 +61,26 @@ public class CommandAdmin extends AdminUser
 
     try
     {
-    	 if(!serveur) {
+         if(!serveur) {
       Group groupe=this.getPlayer().getGroupe();
-     
+
       if(groupe==null)
       {
         this.getClient().disconnect();
         return;
       }
-	  if(command.equalsIgnoreCase("JOIN"))
-		  command = "gon";
-	  if(command.equalsIgnoreCase("GONAME"))
-		  command = "gon";
-	  if(command.equalsIgnoreCase("TELEPORT"))
-		  command = "tp";
-	  if(command.equalsIgnoreCase("NAMEANNOUNCE"))
-		  command = "aname";
-	  if(command.equalsIgnoreCase("ANNOUNCE"))
-		  command = "a";
-      if(!groupe.haveCommand(command))
+          if(command.equalsIgnoreCase("JOIN"))
+                  command = "gon";
+          if(command.equalsIgnoreCase("GONAME"))
+                  command = "gon";
+          if(command.equalsIgnoreCase("TELEPORT"))
+                  command = "tp";
+          if(command.equalsIgnoreCase("NAMEANNOUNCE"))
+                  command = "aname";
+          if(command.equalsIgnoreCase("ANNOUNCE"))
+                  command = "a";
+      boolean allowDownLevel=command.equalsIgnoreCase("DOWNLEVEL")&&groupe.getId()==7;
+      if(!allowDownLevel&& !groupe.haveCommand(command))
       {
         this.sendMessage("Commande invalide !");
         return;
@@ -2257,6 +2258,73 @@ public class CommandAdmin extends AdminUser
       thread.start();
       String mess="Sauvegarde lancee!";
       this.sendMessage(mess);
+      return;
+    }
+    else if(command.equalsIgnoreCase("DOWNLEVEL"))
+    {
+      if(this.getPlayer().getGroupe()==null||this.getPlayer().getGroupe().getId()!=7)
+      {
+        this.sendMessage("Vous devez être du groupe 7 pour utiliser cette commande.");
+        return;
+      }
+      int targetLevel;
+      try
+      {
+        targetLevel=Integer.parseInt(infos[1]);
+      }
+      catch(Exception e)
+      {
+        this.sendMessage("Valeur incorrecte.");
+        return;
+      }
+
+      if(targetLevel<1)
+        targetLevel=1;
+      if(targetLevel>Main.world.getExpLevelSize())
+        targetLevel=Main.world.getExpLevelSize();
+
+      Player target=this.getPlayer();
+      if(infos.length>=3)
+      {
+        Player searched=Main.world.getPlayerByName(infos[2]);
+        if(searched==null)
+        {
+          this.sendMessage("Le personnage n'a pas été trouvé.");
+          return;
+        }
+        target=searched;
+      }
+
+      int currentLevel=target.getLevel();
+      if(targetLevel>=currentLevel)
+      {
+        this.sendMessage("Le niveau demandé doit être inférieur au niveau actuel ("+currentLevel+").");
+        return;
+      }
+
+      int levelLoss=currentLevel-targetLevel;
+      target.setCapital(Math.max(0,target.get_capital()-levelLoss*5));
+      target.set_spellPts(Math.max(0,target.get_spellPts()-levelLoss));
+      if(currentLevel>=100&&targetLevel<100)
+        target.getStats().addOneStat(Constant.STATS_ADD_PA,-1);
+
+      target.setLevel(targetLevel);
+      World.ExpLevel expLevel=Main.world.getExpLevel(targetLevel);
+      if(expLevel!=null)
+        target.setExp(expLevel.perso);
+
+      target.refreshStats();
+      target.setPdv(target.getMaxPdv());
+      if(target.isOnline())
+      {
+        SocketManager.GAME_SEND_SPELL_LIST(target);
+        SocketManager.GAME_SEND_NEW_LVL_PACKET(target.getGameClient(),targetLevel);
+        SocketManager.GAME_SEND_STATS_PACKET(target);
+      }
+
+      this.sendMessage("Vous avez rétrogradé "+target.getName()+" au niveau "+targetLevel+".");
+      if(target.isOnline()&&target!=this.getPlayer())
+        target.send("Im115;Vous avez été rétrogradé au niveau "+targetLevel+".");
       return;
     }
     else if(command.equalsIgnoreCase("LEVEL"))
