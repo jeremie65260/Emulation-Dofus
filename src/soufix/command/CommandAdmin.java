@@ -21,9 +21,11 @@ import soufix.entity.npc.NpcTemplate;
 import soufix.entity.pet.PetEntry;
 import soufix.fight.Challenge;
 import soufix.fight.Fight;
+import soufix.fight.spells.Spell;
 import soufix.game.GameClient;
 import soufix.game.World;
 import soufix.game.action.ExchangeAction;
+import soufix.common.Formulas;
 import soufix.game.scheduler.entity.WorldSave;
 import soufix.job.JobStat;
 import soufix.main.Config;
@@ -115,18 +117,20 @@ public class CommandAdmin extends AdminUser
       }
       if(cmd.equalsIgnoreCase(""))
       {
-        this.sendMessage("\nVous avez actuellement le groupe GM "+this.getPlayer().getGroupe().getName()+".\nCommandes disponibles :\n");
+        this.sendMessage("\nVous avez actuellement le groupe GM "+this.getPlayer().getGroupe().getName()+".\nCommandes disponibles :\n\n");
         for(Command commande : this.getPlayer().getGroupe().getCommands())
         {
           String args=(commande.getArguments()[1]!=null&&!commande.getArguments()[1].equalsIgnoreCase("")) ? (" + "+commande.getArguments()[1]) : ("");
           String desc=(commande.getArguments()[2]!=null&&!commande.getArguments()[2].equalsIgnoreCase("")) ? (commande.getArguments()[2]) : ("");
           this.sendMessage("<u>"+commande.getArguments()[0]+args+"</u> - "+desc);
         }
+        if(this.getPlayer().getGroupe()!=null&&this.getPlayer().getGroupe().getId()==7&&!this.getPlayer().getGroupe().haveCommand("DOWNLEVEL"))
+          this.sendMessage("<u>DOWNLEVEL + niveau [ + pseudo ]</u> - Rétrograde un personnage au niveau souhaité (réservé au groupe 7).");
         return;
       }
       else
       {
-        this.sendMessage("\nVous avez actuellement le groupe GM "+this.getPlayer().getGroupe().getName()+".\nCommandes recherches :\n");
+        this.sendMessage("\nVous avez actuellement le groupe GM "+this.getPlayer().getGroupe().getName()+".\nCommandes recherches :\n\n");
         for(Command commande : this.getPlayer().getGroupe().getCommands())
         {
           if(commande.getArguments()[0].contains(cmd.toUpperCase()))
@@ -136,6 +140,8 @@ public class CommandAdmin extends AdminUser
             this.sendMessage("<u>"+commande.getArguments()[0]+args+"</u> - "+desc);
           }
         }
+        if(this.getPlayer().getGroupe()!=null&&this.getPlayer().getGroupe().getId()==7&&"DOWNLEVEL".contains(cmd.toUpperCase()))
+          this.sendMessage("<u>DOWNLEVEL + niveau [ + pseudo ]</u> - Rétrograde un personnage au niveau souhaité (réservé au groupe 7).");
         return;
       }
     }
@@ -3912,6 +3918,8 @@ public class CommandAdmin extends AdminUser
           String desc=(co.getArguments()[2]!=null&&!co.getArguments()[2].equalsIgnoreCase("")) ? (co.getArguments()[2]) : ("");
           this.sendMessage("<u>"+co.getArguments()[0]+args+"</u> - "+desc);
         }
+        if(this.getPlayer().getGroupe()!=null&&this.getPlayer().getGroupe().getId()==7&&g.getId()==7&&!g.haveCommand("DOWNLEVEL"))
+          this.sendMessage("<u>DOWNLEVEL + niveau [ + pseudo ]</u> - Rétrograde un personnage au niveau souhaité (réservé au groupe 7).");
       }
       else
       {
@@ -3925,6 +3933,8 @@ public class CommandAdmin extends AdminUser
             this.sendMessage("<u>"+co.getArguments()[0]+args+"</u> - "+desc);
           }
         }
+        if(this.getPlayer().getGroupe()!=null&&this.getPlayer().getGroupe().getId()==7&&g.getId()==7&&"DOWNLEVEL".contains(cmd.toUpperCase()))
+          this.sendMessage("<u>DOWNLEVEL + niveau [ + pseudo ]</u> - Rétrograde un personnage au niveau souhaité (réservé au groupe 7).");
       }
       return;
     }
@@ -4505,6 +4515,47 @@ public class CommandAdmin extends AdminUser
     {
       this.sendMessage("Commande invalide !");
     }
+  }
+
+  private int resetSpellsAboveLevel(Player target,int targetLevel)
+  {
+    int refundedSpellPoints=0;
+    for(Entry<Integer, Spell.SortStats> spellEntry : new ArrayList<>(target.getSorts().entrySet()))
+    {
+      Spell.SortStats currentStats=spellEntry.getValue();
+      if(currentStats==null)
+        continue;
+      Spell spell=currentStats.getSpell();
+      if(spell==null)
+        continue;
+
+      int allowedLevel=findHighestAccessibleSpellLevel(spell,targetLevel,currentStats.getLevel());
+      if(allowedLevel==0)
+      {
+        if(target.unlearnSpell(spell.getSpellID()))
+          refundedSpellPoints+=Formulas.spellCost(currentStats.getLevel());
+        continue;
+      }
+
+      if(allowedLevel<currentStats.getLevel())
+      {
+        int refund=Math.max(0,Formulas.spellCost(currentStats.getLevel())-Formulas.spellCost(allowedLevel));
+        if(target.learnSpell(spell.getSpellID(),allowedLevel,true,false,false))
+          refundedSpellPoints+=refund;
+      }
+    }
+    return refundedSpellPoints;
+  }
+
+  private int findHighestAccessibleSpellLevel(Spell spell,int targetLevel,int currentLevel)
+  {
+    for(int level=Math.min(currentLevel,6);level>=1;level--)
+    {
+      Spell.SortStats candidate=spell.getStatsByLevel(level);
+      if(candidate!=null&&candidate.getReqLevel()<=targetLevel)
+        return level;
+    }
+    return 0;
   }
 
   private static int getCellJail()
