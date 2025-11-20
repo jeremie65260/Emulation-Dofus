@@ -2319,10 +2319,6 @@ public class CommandAdmin extends AdminUser
       if(expLevel!=null)
         target.setExp(expLevel.perso);
 
-      int refundedSpellPoints=resetSpellsAboveLevel(target,targetLevel);
-      if(refundedSpellPoints>0)
-        target.addSpellPoint(refundedSpellPoints);
-
       target.refreshStats();
       target.setPdv(target.getMaxPdv());
       if(target.isOnline())
@@ -4532,14 +4528,6 @@ public class CommandAdmin extends AdminUser
       Spell spell=currentStats.getSpell();
       if(spell==null)
         continue;
-
-      Spell.SortStats firstLevelStats=spell.getStatsByLevel(1);
-      if(firstLevelStats!=null&&firstLevelStats.getReqLevel()>targetLevel)
-      {
-        if(target.unlearnSpell(spell.getSpellID()))
-          refundedSpellPoints+=Formulas.spellCost(currentStats.getLevel());
-        continue;
-      }
 
       int allowedLevel=findHighestAccessibleSpellLevel(spell,targetLevel,currentStats.getLevel());
       if(allowedLevel==0)
