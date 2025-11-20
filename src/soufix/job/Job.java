@@ -85,7 +85,7 @@ public class Job
     if(id1==20053 && this.id!=JobConstant.JOB_PECHEUR)
       return true;
 
-    if(this.id!=JobConstant.JOB_PECHEUR)
+    if(this.tools.isEmpty())
       return true;
 
     for(int id : this.tools)
