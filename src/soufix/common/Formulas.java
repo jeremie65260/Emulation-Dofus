@@ -1604,7 +1604,7 @@ public class Formulas
     if(mobCount<=2)
       return 1.0;
     if(mobCount==3)
-      return 1.5;
+      return 1.25;
 
     switch(Math.min(mobCount,8))
     {
