@@ -3,10 +3,12 @@ package soufix.object;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import soufix.area.Area;
 import soufix.area.SubArea;
@@ -805,13 +807,18 @@ public class ObjectAction
                         player0.setClasse(classe);
                         player0.setGfxId(classe*10 + player0.getSexe());
                         Map<Integer, Integer> preservedSpells=new HashMap<Integer, Integer>();
+                        Set<Integer> classSpells=new HashSet<Integer>();
+                        for(int classId=1;classId<=12;classId++)
+                        {
+                                        classSpells.addAll(Constant.getClassSpellIds(classId));
+                        }
                         for(Entry<Integer, SortStats> entry : player0.getSorts().entrySet())
                         {
                                         SortStats spellStats=entry.getValue();
-                                        if(!Constant.isClassSpell(previousClass,spellStats.getSpellID()))
+                                        if(!classSpells.contains(spellStats.getSpellID()))
                                                 preservedSpells.put(spellStats.getSpellID(),spellStats.getLevel());
                         }
-				int parcho_sort = 0;
+                                int parcho_sort = 0;
 				for (final Entry<Integer, SortStats> i : player0.getSorts().entrySet()) {
 					if(i.getValue().getLevel() == 1)continue;
 					if(i.getValue().getLevel() == 2)parcho_sort +=1;
