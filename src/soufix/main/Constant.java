@@ -126,7 +126,7 @@ public class Constant
   public static final int ITEM_POS_DOFUS9=92;
   public static final int ITEM_POS_DOFUS10=93;
   public static final int ITEM_POS_DOFUS11=94;
-  public static final int ITEM_POS_DOFUS12=95;
+  public static final int ITEM_POS_DOFUS12=96;
   public static final int ITEM_POS_BOUCLIER=15;
   public static final int ITEM_POS_DRAGODINDE=16;
   //Objets dons, mutations, malédiction, ..
