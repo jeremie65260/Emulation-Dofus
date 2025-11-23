@@ -44,7 +44,8 @@ public class CommandPlayerpvm {
 
 	// Pour jetMax
 	private static final byte[] dofusEmplacements = new byte[] { Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2,
-			Constant.ITEM_POS_DOFUS3, Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6 };
+			Constant.ITEM_POS_DOFUS3, Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9, Constant.ITEM_POS_DOFUS10,
+			Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12};
 
 	private static boolean jetMaxAItem(final Player player, final String emplacementName, final byte emplacmentID,
 			final boolean sendMessage) {

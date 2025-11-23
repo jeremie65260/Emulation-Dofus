@@ -122,16 +122,16 @@ public class Constant
   public static final int ITEM_POS_DOFUS5=13;
   public static final int ITEM_POS_DOFUS6=14;
   public static final int ITEM_POS_DOFUS7=90;
-  public static final int ITEM_POS_DOFUS8=17;
-  public static final int ITEM_POS_DOFUS9=18;
-  public static final int ITEM_POS_DOFUS10=19;
-  public static final int ITEM_POS_DOFUS11=20;
-  public static final int ITEM_POS_DOFUS12=21;
+  public static final int ITEM_POS_DOFUS8=91;
+  public static final int ITEM_POS_DOFUS9=92;
+  public static final int ITEM_POS_DOFUS10=93;
+  public static final int ITEM_POS_DOFUS11=94;
+  public static final int ITEM_POS_DOFUS12=95;
   public static final int ITEM_POS_BOUCLIER=15;
   public static final int ITEM_POS_DRAGODINDE=16;
   //Objets dons, mutations, malédiction, ..
-  public static final int ITEM_POS_MUTATION=96;
-  public static final int ITEM_POS_ROLEPLAY_BUFF=97;
+  public static final int ITEM_POS_MUTATION=20;
+  public static final int ITEM_POS_ROLEPLAY_BUFF=21;
   public static final int ITEM_POS_PNJ_SUIVEUR=24;
   public static final int ITEM_POS_BENEDICTION=23;
   public static final int ITEM_POS_MALEDICTION=22;
