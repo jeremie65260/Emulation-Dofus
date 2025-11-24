@@ -207,6 +207,8 @@ public class Fight
     setInit0(new Fighter(this,perso));
     setStartGuid(perso.getId());
     getTeam0().put(perso.getId(),getInit0());
+    if(perso.isModu() && getTeam0().size()==1)
+      limitMobGroupForModu(group);
     for(Entry<Integer, MobGrade> entry : group.getMobs().entrySet())
     {
       entry.getValue().setInFightID(entry.getKey());
@@ -1078,6 +1080,37 @@ public class Fight
     if(p!=null)
       if(!p.getMorphMode()&&p.isMorph()&&(p.getGroupe()==null)&&(p.getMorphId()!=8006&&p.getMorphId()!=8007&&p.getMorphId()!=8009))
         p.unsetMorph();
+  }
+
+  private void limitMobGroupForModu(MobGroup group)
+  {
+    if(group==null)
+      return;
+    Map<Integer, MobGrade> mobs=group.getMobs();
+    if(mobs==null||mobs.size()<=4)
+      return;
+
+    boolean isDynamicFixedGroup=group.isFix()&&group.getIsDynamic();
+    if(isDynamicFixedGroup)
+    {
+      MobGrade boss=mobs.values().stream().max(Comparator.comparingInt(MobGrade::getLevel)).orElse(null);
+      if(boss==null)
+        return;
+
+      List<Integer> mobIds=new ArrayList<>(mobs.keySet());
+      mobIds.removeIf(id -> mobs.get(id)==boss);
+      Collections.shuffle(mobIds);
+      int toRemove=mobs.size()-4;
+      for(int i=0;i<toRemove;i++)
+        mobs.remove(mobIds.get(i));
+      return;
+    }
+
+    List<Integer> mobIds=new ArrayList<>(mobs.keySet());
+    Collections.shuffle(mobIds);
+    int toRemove=mobs.size()-4;
+    for(int i=0;i<toRemove;i++)
+      mobs.remove(mobIds.get(i));
   }
 
   //v2.8 - oldMap now in joinFight

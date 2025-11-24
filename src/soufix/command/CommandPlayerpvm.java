@@ -515,16 +515,26 @@ public class CommandPlayerpvm {
 				SocketManager.GAME_SEND_MESSAGE(perso, message);
 				return true;
 			}
-			if (msg.length() > 4 && msg.substring(1, 5).equalsIgnoreCase("pass")) {
-				if(perso.getAutoSkip()== true){
-					perso.setAutoSkip(false);
-				SocketManager.GAME_SEND_MESSAGE(perso,"Auto pass Off,","008000");
-				}else{
-					perso.setAutoSkip(true);
-					SocketManager.GAME_SEND_MESSAGE(perso,"Auto pass On", "008000");
-				}
-				return true;
-			}
+                        if (msg.length() > 4 && msg.substring(1, 5).equalsIgnoreCase("pass")) {
+                                if(perso.getAutoSkip()== true){
+                                        perso.setAutoSkip(false);
+                                SocketManager.GAME_SEND_MESSAGE(perso,"Auto pass Off,","008000");
+                                }else{
+                                        perso.setAutoSkip(true);
+                                        SocketManager.GAME_SEND_MESSAGE(perso,"Auto pass On", "008000");
+                                }
+                                return true;
+                        }
+                        if (msg.length() > 4 && msg.substring(1, 5).equalsIgnoreCase("modu")) {
+                                final boolean enabled = !perso.isModu();
+                                perso.setModu(enabled);
+                                if (enabled) {
+                                        perso.sendMessage("Mode modulaire activé : les groupes de monstres seront limités à 4 lorsque vous combattez seul.");
+                                } else {
+                                        perso.sendMessage("Mode modulaire désactivé : les groupes complets seront affrontés.");
+                                }
+                                return true;
+                        }
 			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("krala")) {
 				 SocketManager.GAME_SEND_MESSAGE(perso,"La relique du jour est <b>["+Main.relique_donjon+"]</b> pour <b>Antre du kralamour </b>.","257C38");
 				return true;
@@ -1346,11 +1356,12 @@ public class CommandPlayerpvm {
                                                 + "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
                                                 + "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
                                                 + "\n<b>.tp</b> - Permet de téléporter tes personnages sur ta map actuelle."
-						+ "\n<b>.tpgroupe</b> - Permets de téléporter ton groupe sur ta map actuelle."
-						+ "\n<b>.pass</b> - Permet au joueur de passer automatiquement ses tours."
-						+ "\n<b>.nodrop</b> - Vous empéche de recevoir des items de monstres."
-						+ "\n<b>.joindelay</b> - Permet de définir le delai d'attente avant de rejoindre le combat pour vos mules en groupe."
-						+ "\n<b>.debug</b> - permet de debug le personnage lors d'un freeze."
+                                                + "\n<b>.tpgroupe</b> - Permets de téléporter ton groupe sur ta map actuelle."
+                                                + "\n<b>.pass</b> - Permet au joueur de passer automatiquement ses tours."
+                                                + "\n<b>.modu</b> - Limite les groupes de monstres à 4 lorsque vous êtes seul."
+                                                + "\n<b>.nodrop</b> - Vous empéche de recevoir des items de monstres."
+                                                + "\n<b>.joindelay</b> - Permet de définir le delai d'attente avant de rejoindre le combat pour vos mules en groupe."
+                                                + "\n<b>.debug</b> - permet de debug le personnage lors d'un freeze."
 						+ "\n<b>.hdv</b> - Permet d'accéder au HDV."
 						+ "\n<b>.exopa</b> - Permet d' exo pa un item."
 						+ "\n<b>.exopm</b> - Permet de exo pm un item."
@@ -1377,11 +1388,12 @@ public class CommandPlayerpvm {
                                                         + "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
                                                         + "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
                                                         + "\n<b>.tp</b> - Permet de téléporter tes personnages sur ta map actuelle."
-							+ "\n<b>.tpgroupe</b> - Permets de téléporter ton groupe sur ta map actuelle."
-							+ "\n<b>.pass</b> - Permet au joueur de passer automatiquement ses tours."
-							+ "\n<b>.nodrop</b> - Vous empéche de recevoir des items de monstres."
-							+ "\n<b>.debug</b> - permet de debug le personnage lors d'un freeze."
-							+ "\n<b>.hdv</b> - Permet d'accéder au HDV."
+                                                        + "\n<b>.tpgroupe</b> - Permets de téléporter ton groupe sur ta map actuelle."
+                                                        + "\n<b>.pass</b> - Permet au joueur de passer automatiquement ses tours."
+                                                        + "\n<b>.modu</b> - Limite les groupes de monstres à 4 lorsque vous êtes seul."
+                                                        + "\n<b>.nodrop</b> - Vous empéche de recevoir des items de monstres."
+                                                        + "\n<b>.debug</b> - permet de debug le personnage lors d'un freeze."
+                                                        + "\n<b>.hdv</b> - Permet d'accéder au HDV."
 							+ "\n<b>.exopa</b> - Permet d' exo pa un item."
 							+ "\n<b>.exopm</b> - Permet de exo pm un item."
 							+ "\n<b>.fmcac</b> - Permet de fm votre cac."
