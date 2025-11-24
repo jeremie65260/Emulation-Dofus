@@ -239,6 +239,7 @@ private String _savePos;
   private boolean canDrop_items=true;
   private boolean canDrop_ressources=true;
   private boolean autoSkip=false;
+  private boolean modu=false;
   private Long time_last_connecte;
   private Player Spioned_by;
   private final Map<Integer, SetRapido> _setsRapidos = new ConcurrentHashMap<Integer, SetRapido>();
@@ -7332,6 +7333,11 @@ public void setTotal_reculte() {
     return autoSkip;
   }
 
+  public boolean isModu()
+  {
+    return modu;
+  }
+
 public boolean isOne_windows() {
         return One_windows;
 }
@@ -7386,6 +7392,11 @@ public void setOne_windows(boolean one_windows) {
   public void setAutoSkip(boolean autoSkip)
   {
     this.autoSkip=autoSkip;
+  }
+
+  public void setModu(boolean modu)
+  {
+    this.modu=modu;
   }
   public void setClasse(int classe) {
 	this.classe = classe;
