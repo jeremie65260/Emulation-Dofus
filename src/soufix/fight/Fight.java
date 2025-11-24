@@ -1089,23 +1089,6 @@ public class Fight
     Map<Integer, MobGrade> mobs=group.getMobs();
     if(mobs==null||mobs.size()<=4)
       return;
-
-    boolean isDynamicFixedGroup=this.mapOld!=null&&Main.world.maps_dj.contains(String.valueOf(this.mapOld.getId()));
-    if(isDynamicFixedGroup)
-    {
-      MobGrade boss=mobs.values().stream().max(Comparator.comparingInt(MobGrade::getLevel)).orElse(null);
-      if(boss==null)
-        return;
-
-      List<Integer> mobIds=new ArrayList<>(mobs.keySet());
-      mobIds.removeIf(id -> mobs.get(id)==boss);
-      Collections.shuffle(mobIds);
-      int toRemove=mobs.size()-4;
-      for(int i=0;i<toRemove;i++)
-        mobs.remove(mobIds.get(i));
-      return;
-    }
-
     List<Integer> mobIds=new ArrayList<>(mobs.keySet());
     Collections.shuffle(mobIds);
     int toRemove=mobs.size()-4;
