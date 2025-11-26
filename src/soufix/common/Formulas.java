@@ -1603,24 +1603,9 @@ public class Formulas
   {
     if(mobCount<=2)
       return 1.0;
-    if(mobCount==3)
-      return 1.25;
-
-    switch(Math.min(mobCount,8))
-    {
-      case 4:
-        return 2.0;
-      case 5:
-        return 2.5;
-      case 6:
-        return 3.0;
-      case 7:
-        return 3.5;
-      case 8:
-        return 4.0;
-      default:
-        return 1.0;
-    }
+    double[] bonuses={1.0,1.0,1.5,2.5,3.5,4.5,5.5,6.5};
+    int index=Math.min(Math.max(mobCount,3),8)-1;
+    return bonuses[index];
   }
 
   //v2.0 - Redid xp formula
