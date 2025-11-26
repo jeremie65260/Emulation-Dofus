@@ -1709,7 +1709,7 @@ public class Formulas
         }
 
         if(sizeGroupe==1 && mobCount>=4 && mobCount<=8)
-          xpResult=Math.round(xpResult*1.5);
+          xpResult*=2;
 
 
         return xpResult;
