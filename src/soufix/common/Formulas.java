@@ -1701,14 +1701,17 @@ public class Formulas
         long xpResult=(long)(((1+((sagesse+challenge+star+conquestBonus)/100))*(bonus+rapport)*(nvGrpMonster)*mobCountBonus*(groupXp/sizeGroupe))*taux_xp);
         if(challenge >= 100)
         {
-       xpResult = xpResult + (xpResult * 1);	
+       xpResult = xpResult + (xpResult * 1);
         }
         if(challenge >= 200)
         {
-       xpResult = xpResult + (xpResult * 2);	
+       xpResult = xpResult + (xpResult * 2);
         }
-    
-        
+
+        if(sizeGroupe==1 && mobCount>=4 && mobCount<=8)
+          xpResult*=2;
+
+
         return xpResult;
       }
     }
