@@ -2,6 +2,7 @@ package soufix.database.active.data;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import soufix.area.Area;
 import soufix.area.SubArea;
 import soufix.database.active.AbstractDAO;
 import soufix.main.Main;
@@ -55,7 +56,15 @@ public class SubAreaData extends AbstractDAO<SubArea>
       ResultSet RS=result.resultSet;
       while(RS.next())
       {
-        SubArea SA=new SubArea(RS.getInt("id"),RS.getInt("area"),RS.getString("name"));
+        final int areaId=RS.getInt("area");
+        if(Main.world.getArea(areaId)==null)
+        {
+          final Area area=new Area(areaId,0);
+          Main.world.addArea(area);
+          Main.world.logger.warn("Zone manquante détectée: création de l'area {} pour la sous-zone {}",areaId,RS.getInt("id"));
+        }
+
+        SubArea SA=new SubArea(RS.getInt("id"),areaId,RS.getString("name"));
         Main.world.addSubArea(SA);
         int alignement=RS.getInt("alignement");
         int conquistable=RS.getInt("conquistable");
