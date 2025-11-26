@@ -4631,7 +4631,7 @@ public void Anti_bug () {
       boolean finish=true;
       for(Entry<Integer, Fighter> entry : getTeam1().entrySet())
       {
-        if(entry.getValue().isInvocation())
+        if(entry.getValue().isInvocation()||entry.getValue().isDouble())
           continue;
         if(!entry.getValue().isDead())
         {
@@ -4646,7 +4646,7 @@ public void Anti_bug () {
       boolean finish=true;
       for(Entry<Integer, Fighter> entry : getTeam0().entrySet())
       {
-        if(entry.getValue().isInvocation())
+        if(entry.getValue().isInvocation()||entry.getValue().isDouble())
           continue;
         if(!entry.getValue().isDead())
         {
@@ -4663,7 +4663,7 @@ public void Anti_bug () {
     boolean finish=true;
     for(Entry<Integer, Fighter> entry : getTeam1().entrySet())
     {
-      if(entry.getValue().isInvocation())
+      if(entry.getValue().isInvocation()||entry.getValue().isDouble())
         continue;
       if(!entry.getValue().isDead())
       {
@@ -4685,7 +4685,7 @@ public void Anti_bug () {
 
     for(Fighter fighter : getTeam0().values())
     {
-      if(fighter.isInvocation())
+      if(fighter.isInvocation()||fighter.isDouble())
         continue;
       if(!fighter.isDead())
       {
@@ -4696,7 +4696,7 @@ public void Anti_bug () {
 
     for(Fighter fighter : getTeam1().values())
     {
-      if(fighter.isInvocation())
+      if(fighter.isInvocation()||fighter.isDouble())
         continue;
       if(!fighter.isDead())
       {
