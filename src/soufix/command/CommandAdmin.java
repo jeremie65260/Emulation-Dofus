@@ -10,6 +10,7 @@ import soufix.command.administration.AdminUser;
 import soufix.command.administration.Command;
 import soufix.command.administration.Group;
 import soufix.common.SocketManager;
+import soufix.common.PathFinding;
 import soufix.database.Database;
 import soufix.entity.Collector;
 import soufix.entity.Npc;
