@@ -5665,7 +5665,7 @@ public class SpellEffect
     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,180,caster.getId()+"",fighter.getGmPacket('+',true).substring(3));
     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,999,caster.getId()+"",fight.getGTL());
 
-    verifyTraps(fight,fighter);
+    triggerTrapsOnSummon(fight,fighter);
   }
 
   private void applyEffect_181(Fight fight) //invocation
@@ -5761,7 +5761,7 @@ public class SpellEffect
       if(dist<=p.getSize())
         p.onTraped(F);
     }*/
-    verifyTraps(fight,F);
+    triggerTrapsOnSummon(fight,F);
   }
 
   private void applyEffect_182(Fight fight, ArrayList<Fighter> cibles)
@@ -5850,6 +5850,7 @@ public class SpellEffect
     fight.getMap().getCase(this.cell.getId()).addFighter(fighter);
     fighter.setCell(fight.getMap().getCase(this.cell.getId()));
     fight.addFighterInTeam(fighter,this.caster.getTeam());
+    triggerTrapsOnSummon(fight,fighter);
     SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,185,this.caster.getId()+"",fighter.getGmPacket('+',true).substring(3));
   }
 
@@ -8052,13 +8053,20 @@ public class SpellEffect
     });
   }*/
 
+  private static void triggerTrapsOnSummon(Fight fight, Fighter fighter)
+  {
+    if(fighter==null||fighter.getCell()==null)
+      return;
+    verifyTraps(fight,fighter);
+  }
+
   public static void verifyTraps(Fight fight, Fighter fighter)
   {
-	  ArrayList<Trap> objet2 = new ArrayList<>();
-	    objet2.addAll(fight.getAllTraps());
-	    Collections.sort(objet2, new order_trap());  
+          ArrayList<Trap> objet2 = new ArrayList<>();
+            objet2.addAll(fight.getAllTraps());
+            Collections.sort(objet2, new order_trap());
     new ArrayList<>(objet2).stream().filter(trap -> PathFinding.getDistanceBetween(fight.getMap(),trap.getCell().getId(),fighter.getCell().getId())<=trap.getSize()).forEach(trap -> {
-    	trap.onTraped(fighter);
+        trap.onTraped(fighter);
     });
   }
   private static class order_trap implements Comparator<Trap> {
@@ -8117,7 +8125,7 @@ public static void cartaDeInvocación(Fight fight,Fighter lanzador, int celda, i
 		SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight, 7, 999, lanzador.getId() + "", gtl);
 		SocketManager.GAME_SEND_Im_PACKET_TO_FIGHT(fight, 7, "01000;<b>[Carta de Invocación]</b> lanza <b>"+ MG.getTemplate().getNombre()+"</b>");
 		lanzador.invocado++;
-		verifyTraps(fight, F);
+                triggerTrapsOnSummon(fight, F);
 		}else {
 			SocketManager.send(lanzador.getPersonnage(), "BN");
 		}
