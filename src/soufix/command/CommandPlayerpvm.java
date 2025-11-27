@@ -374,48 +374,47 @@ public class CommandPlayerpvm {
 							+ " n'existe pas ! (dispo : air, feu, terre, eau)");
 					return true;
 				}
-				for (int i = 0; i < obj.getEffects().size(); i++) {
-					if (obj.getEffects().get(i).getEffectID() == 100) {
-						if (answer.equalsIgnoreCase("air")) {
-							obj.getEffects().get(i).setEffectID(98);
-						}
-						if (answer.equalsIgnoreCase("feu")) {
-							obj.getEffects().get(i).setEffectID(99);
-						}
-						if (answer.equalsIgnoreCase("terre")) {
-							obj.getEffects().get(i).setEffectID(97);
-						}
-						if (answer.equalsIgnoreCase("eau")) {
-							obj.getEffects().get(i).setEffectID(96);
-						}
-					}
-					
-					
-					if (obj.getEffects().get(i).getEffectID() == 95) {
-						if (answer.equalsIgnoreCase("air")) {
-							obj.getEffects().get(i).setEffectID(93);
-						}
-						if (answer.equalsIgnoreCase("feu")) {
-							obj.getEffects().get(i).setEffectID(94);
-						}
-						if (answer.equalsIgnoreCase("terre")) {
-							obj.getEffects().get(i).setEffectID(92);
-						}
-						if (answer.equalsIgnoreCase("eau")) {
-							obj.getEffects().get(i).setEffectID(91);
-						}
-					}
-					
-				
-				}
-				 SocketManager.GAME_SEND_STATS_PACKET(perso);
-				 SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(perso, obj.getGuid());
-				 SocketManager.GAME_SEND_OAKO_PACKET(perso, obj);
-				 SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(perso, obj);
-				 SocketManager.GAME_SEND_OBJET_MOVE_PACKET(perso, obj);
-				 perso.sendMessage("Votre objet : " + obj.getTemplate().getName() + " a été FM avec succés en " + answer);
-				return true;
-		}
+                                for (int i = 0; i < obj.getEffects().size(); i++) {
+                                        if (obj.getEffects().get(i).getEffectID() == 100) {
+                                                if (answer.equalsIgnoreCase("air")) {
+                                                        obj.getEffects().get(i).setEffectID(98);
+                                                }
+                                                if (answer.equalsIgnoreCase("feu")) {
+                                                        obj.getEffects().get(i).setEffectID(99);
+                                                }
+                                                if (answer.equalsIgnoreCase("terre")) {
+                                                        obj.getEffects().get(i).setEffectID(97);
+                                                }
+                                                if (answer.equalsIgnoreCase("eau")) {
+                                                        obj.getEffects().get(i).setEffectID(96);
+                                                }
+                                        }
+
+
+                                        if (obj.getEffects().get(i).getEffectID() == 95) {
+                                                if (answer.equalsIgnoreCase("air")) {
+                                                        obj.getEffects().get(i).setEffectID(93);
+                                                }
+                                                if (answer.equalsIgnoreCase("feu")) {
+                                                        obj.getEffects().get(i).setEffectID(94);
+                                                }
+                                                if (answer.equalsIgnoreCase("terre")) {
+                                                        obj.getEffects().get(i).setEffectID(92);
+                                                }
+                                                if (answer.equalsIgnoreCase("eau")) {
+                                                        obj.getEffects().get(i).setEffectID(91);
+                                                }
+                                        }
+
+
+                                }
+                                 obj.setModification();
+                                 SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(perso, obj);
+                                 SocketManager.GAME_SEND_ON_EQUIP_ITEM(perso.getCurMap(), perso);
+                                 SocketManager.GAME_SEND_STATS_PACKET(perso);
+                                 perso.sendMessage("Votre objet : " + obj.getTemplate().getName() + " a été FM avec succés en " + answer);
+                                return true;
+                }
 		else {
 			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("noall")) {
 				if (perso.noall) {
