@@ -1873,7 +1873,7 @@ public void Anti_bug () {
       }
     }
     }
-    if(this.launchTime>1)
+    if(this.launchTime>1 && !admin)
         return;
     if(b)
     {
