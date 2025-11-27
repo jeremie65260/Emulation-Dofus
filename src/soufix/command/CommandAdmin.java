@@ -10,6 +10,7 @@ import soufix.command.administration.AdminUser;
 import soufix.command.administration.Command;
 import soufix.command.administration.Group;
 import soufix.common.SocketManager;
+import soufix.common.PathFinding;
 import soufix.database.Database;
 import soufix.entity.Collector;
 import soufix.entity.Npc;
@@ -39,10 +40,14 @@ import soufix.quest.QuestPlayer;
 import soufix.quest.QuestStep;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CommandAdmin extends AdminUser
 {
@@ -4188,6 +4193,26 @@ public class CommandAdmin extends AdminUser
       this.sendMessage("Vous avez reeu tous les items necessaire e la quete.");
       return;
     }
+    else if(command.equalsIgnoreCase("APPLYALEASF"))
+    {
+      int applied=0;
+      int ignored=0;
+      for(GameMap map : Main.world.getMaps())
+      {
+        if(map.getPlaces()!=null&&!map.getPlaces().isEmpty()&&!map.getPlaces().equals("|"))
+          continue;
+        if(map.getMobPossibles()==null||map.getMobPossibles().isEmpty())
+        {
+          ignored++;
+          continue;
+        }
+        if(applyRandomFightSchema(map))
+          applied++;
+        else
+          ignored++;
+      }
+      this.sendMessage(applied+" maps ont reçu des cellules de combat aléatoires. "+ignored+" maps ignorées ou inchangées.");
+    }
     else if(command.equalsIgnoreCase("SHOWFIGHTPOS"))
     {
       String mess="Liste des StartCell [teamID][cellID]:";
@@ -4515,6 +4540,87 @@ public class CommandAdmin extends AdminUser
     {
       this.sendMessage("Commande invalide !");
     }
+  }
+
+  private boolean applyRandomFightSchema(GameMap map)
+  {
+    List<GameCase> candidates=getValidFightCells(map);
+    int cellsPerTeam=Math.min(8,candidates.size()/2);
+    if(cellsPerTeam<2)
+      return false;
+
+    int minimumDistance=Math.max(4,(map.getW()+map.getH())/6);
+    GameCase anchorA=candidates.get(Formulas.getRandomValue(0,candidates.size()-1));
+    GameCase anchorB=null;
+    for(int i=0;i<50;i++)
+    {
+      GameCase attempt=candidates.get(Formulas.getRandomValue(0,candidates.size()-1));
+      if(PathFinding.getDistanceBetween(map,anchorA.getId(),attempt.getId())>=minimumDistance)
+      {
+        anchorB=attempt;
+        break;
+      }
+    }
+    if(anchorB==null)
+      return false;
+
+    Set<Integer> reserved=new HashSet<>();
+    List<GameCase> team0=selectClosestFightCells(map,candidates,anchorA,cellsPerTeam,reserved);
+    reserved.addAll(team0.stream().map(GameCase::getId).collect(Collectors.toSet()));
+    List<GameCase> team1=selectClosestFightCells(map,candidates,anchorB,cellsPerTeam,reserved);
+    if(team1.size()<cellsPerTeam)
+      return false;
+
+    String places=encodeFightPlaces(team0,team1);
+    map.setPlaces(places);
+    return Database.getDynamics().getMapData().update(map);
+  }
+
+  private List<GameCase> selectClosestFightCells(GameMap map, List<GameCase> candidates, GameCase anchor, int limit, Set<Integer> reserved)
+  {
+    return candidates.stream().filter(cell -> !reserved.contains(cell.getId())).sorted(Comparator.comparingInt(cell ->
+    {
+      int distance=PathFinding.getDistanceBetween(map,anchor.getId(),cell.getId());
+      return distance<0 ? Integer.MAX_VALUE : distance;
+    })).limit(limit).collect(Collectors.toList());
+  }
+
+  private String encodeFightPlaces(List<GameCase> team0, List<GameCase> team1)
+  {
+    StringBuilder builder=new StringBuilder();
+    team0.forEach(cell -> builder.append(Main.world.getCryptManager().cellID_To_Code(cell.getId())));
+    builder.append('|');
+    team1.forEach(cell -> builder.append(Main.world.getCryptManager().cellID_To_Code(cell.getId())));
+    return builder.toString();
+  }
+
+  private List<GameCase> getValidFightCells(GameMap map)
+  {
+    List<GameCase> result=new ArrayList<>();
+    for(GameCase cell : map.getCases())
+    {
+      if(isValidFightCell(map,cell))
+        result.add(cell);
+    }
+    Collections.shuffle(result);
+    return result;
+  }
+
+  private boolean isValidFightCell(GameMap map, GameCase cell)
+  {
+    if(cell==null||!cell.isWalkable(true)||cell.getObject()!=null)
+      return false;
+    if(map.getMountPark()!=null&&map.getMountPark().getCellOfObject().contains((int)cell.getId()))
+      return false;
+    if(map.getMobGroups()!=null)
+      for(MobGroup mg : map.getMobGroups().values())
+        if(mg!=null&&mg.getCellId()==cell.getId())
+          return false;
+    if(map.getNpcs()!=null)
+      for(Npc npc : map.getNpcs().values())
+        if(npc!=null&&npc.getCellid()==cell.getId())
+          return false;
+    return cell.getPlayers().isEmpty();
   }
 
   private int resetSpellsAboveLevel(Player target,int targetLevel)
