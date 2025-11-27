@@ -1,4 +1,7 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
+# Game-Rpg-rampage 0.9.8:
+    - Correction de la commande applyaleasf pour qu'elle prenne en compte les maps qui ne font pas 15x17
+    - Correction de la commande fmcac en cours ( pour déséquiper/ré équiper cac)
 # Game-Rpg-rampage 0.9.7:
     - Correction affichage Dofus en bénédiction (résolu)
     - Ajout de la logique pour les 6 empalcements des Dofus + setrapido 
