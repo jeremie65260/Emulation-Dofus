@@ -82,7 +82,7 @@ public class Job
 
   public boolean isValidTool(int id1)
   {
-    if(id1==20053 && this.id!=JobConstant.JOB_PECHEUR)
+    if(id1==JobConstant.UNIVERSAL_TOOL_ID)
       return true;
 
     if(this.tools.isEmpty())

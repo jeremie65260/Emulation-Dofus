@@ -4501,11 +4501,11 @@ public void setTotal_reculte() {
       return;
     }
 
-    if(weapon.getTemplate().getId()==20053)
+    if(weapon.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
     {
       for(JobStat jobStat : this._metiers.values())
       {
-        if(jobStat.getTemplate()!=null&&jobStat.getTemplate().getId()!=JobConstant.JOB_PECHEUR)
+        if(jobStat.getTemplate()!=null)
           SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
       }
       return;
