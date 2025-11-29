@@ -88,6 +88,7 @@ public class Fight
   private boolean MONO=false;
   private boolean DUO=false;
   private boolean bLock_join=false;
+  private final Map<Integer, MobGrade> removedMobGradesForModu=new HashMap<>();
   private String curAction="";
   private MobGroup mobGroup;
   private int initialMobGroupSize=0;
