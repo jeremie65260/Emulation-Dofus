@@ -3653,10 +3653,9 @@ public void setTotal_reculte() {
       //Packet JO (Job Option)
       SocketManager.GAME_SEND_JO_PACKET(this,list);
 
-      GameObject obj=getObjetByPos(Constant.ITEM_POS_ARME);
-      if(obj!=null)
-        if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-          SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),m.getId());
+      GameObject obj=getJobTool();
+      if(obj!=null&&sm.getTemplate().isValidTool(obj.getTemplate().getId()))
+        SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),m.getId());
     }
     return pos;
   }
@@ -4488,12 +4487,43 @@ public void setTotal_reculte() {
     return _metiers;
   }
 
+  public GameObject getJobTool()
+  {
+    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+
+    if(weapon!=null&&isUsableJobTool(weapon.getTemplate().getId()))
+      return weapon;
+
+    for(GameObject object : objects.values())
+    {
+      if(object!=null&&object.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
+        return object;
+    }
+
+    return null;
+  }
+
+  private boolean isUsableJobTool(int templateId)
+  {
+    if(templateId==JobConstant.UNIVERSAL_TOOL_ID)
+      return true;
+
+    for(JobStat jobStat : _metiers.values())
+    {
+      Job job=jobStat.getTemplate();
+      if(job!=null&&job.isValidTool(templateId))
+        return true;
+    }
+
+    return false;
+  }
+
   public void refreshJobToolPackets()
   {
     if(this.account==null||this.account.getGameClient()==null)
       return;
 
-    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+    GameObject weapon=getJobTool();
 
     if(weapon==null)
     {
@@ -4526,7 +4556,7 @@ public void setTotal_reculte() {
     if(this.curMap==null)
       return;
 
-    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+    GameObject weapon=getJobTool();
     if(weapon==null)
       return;
 
