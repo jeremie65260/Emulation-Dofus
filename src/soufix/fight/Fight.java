@@ -91,7 +91,6 @@ public class Fight
   private String curAction="";
   private MobGroup mobGroup;
   private int initialMobGroupSize=0;
-  private final Map<Integer, MobGrade> removedMobGradesForModu=new HashMap<>();
   private Collector collector;
   private Prism prism;
   private GameMap map, mapOld;
@@ -964,43 +963,6 @@ public class Fight
         player.sendMessage("Mode modulaire désactivé : vous combattez à plusieurs.");
       }
     }
-    restoreMobGroupAfterModu();
-  }
-
-  private void restoreMobGroupAfterModu()
-  {
-    if(mobGroup==null||removedMobGradesForModu.isEmpty())
-      return;
-
-    Map<Integer, MobGrade> mobs=mobGroup.getMobs();
-    List<Fighter> addedFighters=new ArrayList<>();
-
-    for(Entry<Integer, MobGrade> entry : removedMobGradesForModu.entrySet())
-    {
-      Integer mobId=entry.getKey();
-      MobGrade mobGrade=entry.getValue();
-      if(mobs.containsKey(mobId))
-        continue;
-
-      mobs.put(mobId,mobGrade);
-
-      GameCase cell=getRandomCell(getStart1());
-      if(cell==null)
-        continue;
-
-      Fighter mob=new Fighter(this,mobGrade);
-      mobGrade.setInFightID(mobId);
-      mob.setTeam(1);
-      mob.setCell(cell);
-      mob.getCell().addFighter(mob);
-      mob.fullPdv();
-      getTeam1().put(mobId,mob);
-      addedFighters.add(mob);
-    }
-
-    if(!addedFighters.isEmpty())
-      SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this,7,getMap());
-    removedMobGradesForModu.clear();
   }
 
   Collector getCollector()
