@@ -930,10 +930,7 @@ public class World
       return 0;
     if(player.get_align()==0)
       return 0;
-    final double factor=getBalanceWorld(player.get_align())*Math.rint((player.getGrade()/2.5)+1);
-    if(factor<0)
-      return 0;
-    return factor;
+    return 0;
   }
   public static soufix.other.Titre gettitre(final int id) {
 		return World.Titre.get(id);
