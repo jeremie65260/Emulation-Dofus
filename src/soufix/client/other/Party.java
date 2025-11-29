@@ -47,6 +47,18 @@ private final  ArrayList<Player> players=new ArrayList<>();
     this.master=master;
   }
 
+  public void disableModuForGroup()
+  {
+    for(Player player : this.players)
+    {
+      if(player!=null&&player.isModu())
+      {
+        player.setModu(false);
+        player.sendMessage("Mode modulaire désactivé : vous combattez à plusieurs.");
+      }
+    }
+  }
+
   public void addPlayer(Player player)
   {
     this.players.add(player);
