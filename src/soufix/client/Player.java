@@ -4490,32 +4490,19 @@ public void setTotal_reculte() {
   public GameObject getJobTool()
   {
     GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
-
-    if(weapon!=null&&isUsableJobTool(weapon.getTemplate().getId()))
+    if(weapon!=null&&weapon.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
       return weapon;
 
-    for(GameObject object : objects.values())
+    if(weapon==null)
     {
-      if(object!=null&&object.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
-        return object;
+      for(GameObject object : objects.values())
+      {
+        if(object!=null&&object.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
+          return object;
+      }
     }
 
-    return null;
-  }
-
-  private boolean isUsableJobTool(int templateId)
-  {
-    if(templateId==JobConstant.UNIVERSAL_TOOL_ID)
-      return true;
-
-    for(JobStat jobStat : _metiers.values())
-    {
-      Job job=jobStat.getTemplate();
-      if(job!=null&&job.isValidTool(templateId))
-        return true;
-    }
-
-    return false;
+    return weapon;
   }
 
   public void refreshJobToolPackets()
