@@ -1834,24 +1834,12 @@ public class Action
         int mapId2=Integer.parseInt(args.split(",")[1]);
         if(player.get_align()>0)
           return true;
-        if(type2==1&&player.getCurMap().getId()==mapId2)
-        {
-          if(player.hasItemTemplate(42,10))
-          {
-            player.removeByTemplateID(42,10);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+10+"~"+42);
-            player.modifAlignement((byte)1);
-          }
-        }
-        if(type2==2&&player.getCurMap().getId()==mapId2)
-        {
-          if(player.hasItemTemplate(95,10))
-          {
-            player.removeByTemplateID(95,10);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+10+"~"+95);
-            player.modifAlignement((byte)2);
-          }
-        }
+        if(player.getCurMap().getId()!=mapId2)
+          return true;
+        if(type2==Constant.ALIGNEMENT_BONTARIEN)
+          player.modifAlignement((byte)Constant.ALIGNEMENT_BONTARIEN);
+        if(type2==Constant.ALIGNEMENT_BRAKMARIEN)
+          player.modifAlignement((byte)Constant.ALIGNEMENT_BRAKMARIEN);
         break;
 
       case 172: //Bricoleur avec condition
