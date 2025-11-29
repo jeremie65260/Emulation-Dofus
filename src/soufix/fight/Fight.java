@@ -90,6 +90,7 @@ public class Fight
   private boolean bLock_join=false;
   private String curAction="";
   private MobGroup mobGroup;
+  private int initialMobGroupSize=0;
   private Collector collector;
   private Prism prism;
   private GameMap map, mapOld;
@@ -190,8 +191,8 @@ public class Fight
 
   public Fight(int id, GameMap map, Player perso, MobGroup group)
   {
-	  if(perso == null)
-		return;  
+          if(perso == null)
+                return;
     launchTime=System.currentTimeMillis();
     setCheckTimer(true);
     setMobGroup(group);
@@ -207,6 +208,7 @@ public class Fight
     setInit0(new Fighter(this,perso));
     setStartGuid(perso.getId());
     getTeam0().put(perso.getId(),getInit0());
+    this.initialMobGroupSize=group!=null ? group.getMobs().size() : 0;
     if(perso.isModu() && getTeam0().size()==1)
       limitMobGroupForModu(group);
     for(Entry<Integer, MobGrade> entry : group.getMobs().entrySet())
@@ -941,6 +943,26 @@ public class Fight
   {
     mobGroup.setFight(this);
     this.mobGroup=mobGroup;
+  }
+
+  private void disableModuForGroupFightIfNeeded()
+  {
+    if(getType()!=Constant.FIGHT_TYPE_PVM)
+      return;
+    if(initialMobGroupSize<=4)
+      return;
+    if(getTeam0().size()<2)
+      return;
+
+    for(Fighter fighter : getTeam0().values())
+    {
+      Player player=fighter.getPersonnage();
+      if(player!=null&&player.isModu())
+      {
+        player.setModu(false);
+        player.sendMessage("Mode modulaire désactivé : vous combattez à plusieurs.");
+      }
+    }
   }
 
   Collector getCollector()
@@ -2538,6 +2560,7 @@ public void Anti_bug () {
       perso.setFight(this);
       f.setCell(cell);
       f.getCell().addFighter(f);
+      disableModuForGroupFightIfNeeded();
     }
     else if(getTeam1().containsKey(guid))
     {
