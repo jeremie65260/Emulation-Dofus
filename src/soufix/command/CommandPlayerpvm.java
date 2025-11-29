@@ -636,13 +636,14 @@ public class CommandPlayerpvm {
 				    if(nbr == 0 || perso.getParty() == null) {
 				    	SocketManager.GAME_SEND_MESSAGE(perso,"Aucune mule n'est sur la map");	
 				    	return true;
-				    }
-				    final Party party=perso.getParty();
-				    party.setMaster(perso);
-				    party.moveAllPlayersToMaster(null);
-				    SocketManager.GAME_SEND_MESSAGE(perso,"Vous étes désormais le maitre de votre groupe");
-				    return true;
-			}
+                                    }
+                                    final Party party=perso.getParty();
+                                    party.setMaster(perso);
+                                    party.disableModuForGroup();
+                                    party.moveAllPlayersToMaster(null);
+                                    SocketManager.GAME_SEND_MESSAGE(perso,"Vous étes désormais le maitre de votre groupe");
+                                    return true;
+                        }
 			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("banque")) {
 				if (perso.getFight() != null) {
 					return true;
