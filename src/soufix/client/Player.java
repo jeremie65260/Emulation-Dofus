@@ -4106,7 +4106,9 @@ public void setTotal_reculte() {
     {
       SocketManager.send(this,"ILS"+2000);
       this.regenRate=2000;
+      this.setBlockMovement(false);
       this.curMap.addPlayer(this);
+      SocketManager.GAME_SEND_GV_PACKET(this);
       SocketManager.GAME_SEND_STATS_PACKET(this);
       this.fight=null;
       this.away=false;
