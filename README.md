@@ -1,4 +1,7 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
+# Game-Rpg-rampage 0.9.9:
+    -Quand on est en .maitre et qu'un player abandonne, il ne spawn plus au point sauvegardé mais bien sur la même map que son coéquipier et n'est plus figé sur la map.
+    - Quand on à la commande .modu active et qu'on passe en .maitre .modu est désactivée
 # Game-Rpg-rampage 0.9.8:
     - Correction de la commande applyaleasf pour qu'elle prenne en compte les maps qui ne font pas 15x17
     - Correction de la commande fmcac en cours ( pour déséquiper/ré équiper cac)
