@@ -1455,6 +1455,7 @@ try {
             player.setReady(false);
             player.setFight(null);
             player.setAway(false);
+            player.setBlockMovement(false);
             this.verifIfTeamAllDead();
 
             if(!this.finish)
