@@ -4508,6 +4508,7 @@ public void setTotal_reculte() {
         if(jobStat.getTemplate()!=null)
           SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
       }
+      sendAvailableJobSkills();
       return;
     }
 
@@ -4515,6 +4516,61 @@ public void setTotal_reculte() {
     {
       if(jobStat.getTemplate()!=null&&jobStat.getTemplate().isValidTool(weapon.getTemplate().getId()))
         SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
+    }
+
+    sendAvailableJobSkills();
+  }
+
+  private void sendAvailableJobSkills()
+  {
+    if(this.curMap==null)
+      return;
+
+    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+    if(weapon==null)
+      return;
+
+    String packet="EW+"+this.getId()+"|";
+    StringBuilder data=new StringBuilder();
+
+    for(Job job : this.getJobs())
+    {
+      if(job.getSkills().isEmpty())
+        continue;
+      if(job.isMaging())
+        continue;
+      if(!job.isValidTool(weapon.getTemplate().getId()))
+        continue;
+
+      for(GameCase cell : this.curMap.getCases())
+      {
+        if(cell.getObject()==null||cell.getObject().getTemplate()==null)
+          continue;
+
+        ArrayList<Integer> skills=job.getSkills().get(cell.getObject().getTemplate().getId());
+        if(skills==null)
+          continue;
+
+        for(int skill : skills)
+        {
+          if(data.toString().contains(String.valueOf(skill)))
+            continue;
+
+          data.append(data.length()==0 ? skill : ";"+skill);
+        }
+      }
+
+      if(data.length()>0)
+        break;
+    }
+
+    if(!data.toString().isEmpty())
+    {
+      for(Player player : this.curMap.getPlayers())
+      {
+        if(player!=null)
+          player.send(packet+data.toString());
+      }
     }
   }
 
