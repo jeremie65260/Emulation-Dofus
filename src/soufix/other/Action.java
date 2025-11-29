@@ -1834,24 +1834,12 @@ public class Action
         int mapId2=Integer.parseInt(args.split(",")[1]);
         if(player.get_align()>0)
           return true;
-        if(type2==1&&player.getCurMap().getId()==mapId2)
-        {
-          if(player.hasItemTemplate(42,10))
-          {
-            player.removeByTemplateID(42,10);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+10+"~"+42);
-            player.modifAlignement((byte)1);
-          }
-        }
-        if(type2==2&&player.getCurMap().getId()==mapId2)
-        {
-          if(player.hasItemTemplate(95,10))
-          {
-            player.removeByTemplateID(95,10);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+10+"~"+95);
-            player.modifAlignement((byte)2);
-          }
-        }
+        if(player.getCurMap().getId()!=mapId2)
+          return true;
+        if(type2==Constant.ALIGNEMENT_BONTARIEN)
+          player.modifAlignement((byte)Constant.ALIGNEMENT_BONTARIEN);
+        if(type2==Constant.ALIGNEMENT_BRAKMARIEN)
+          player.modifAlignement((byte)Constant.ALIGNEMENT_BRAKMARIEN);
         break;
 
       case 172: //Bricoleur avec condition
@@ -3310,57 +3298,7 @@ public class Action
       case 964://Signer le registre
         if(client==null)
           return true;
-        if(player.getCurMap().getId()!=10255)
-          return true;
-        if(player.get_align()!=1&&player.get_align()!=2)
-          return true;
-        if(player.hasItemTemplate(9487,1) && Config.getInstance().HEROIC)
-        {
-          String date=player.getItemTemplate(9487,1).getTxtStat().get(Constant.STATS_DATE);
-          long timeStamp=Long.parseLong(date);
-          if(System.currentTimeMillis()-timeStamp<=1209600000) // 14 jours
-          {
-            return true;
-          }
-          else
-          {
-            player.removeByTemplateID(9487,1);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+1+"~"+9487);
-          }
-        }
-
-        if(player.hasItemTemplate(9811,1)) // Formulaire de neutralitï¿½
-        {
-          player.removeByTemplateID(9811,1);
-          SocketManager.GAME_SEND_Im_PACKET(player,"022;"+1+"~"+9811);
-          player.modifAlignement(0);
-        }
-        else if(player.hasItemTemplate(9812,1)) // Formulaire de dï¿½sertion
-        {
-          if(player.hasItemTemplate(9488,1))
-          {
-            player.removeByTemplateID(9488,1);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+1+"~"+9488);
-            player.modifAlignement(1);
-          }
-          else if(player.hasItemTemplate(9489,1))
-          {
-            player.removeByTemplateID(9489,1);
-            SocketManager.GAME_SEND_Im_PACKET(player,"022;"+1+"~"+9489);
-            player.modifAlignement(2);
-          }
-          player.removeByTemplateID(9812,1);
-          SocketManager.GAME_SEND_Im_PACKET(player,"022;"+1+"~"+9812);
-        }
-
-        ObjectTemplate t2=Main.world.getObjTemplate(9487);
-        GameObject obj2=t2.createNewItem(1,false);
-        obj2.refreshStatsObjet("325#0#0#"+System.currentTimeMillis());
-        if(player.addObjet(obj2,false))
-        {
-          SocketManager.GAME_SEND_Im_PACKET(player,"021;"+1+"~"+obj2.getTemplate().getId());
-          World.addGameObject(obj2,true);
-        }
+        player.modifAlignement(0);
 
         quest=Main.world.getNPCQuestion(Integer.parseInt(this.args));
         if(quest==null)
@@ -3459,8 +3397,8 @@ public class Action
           }
         }
 
-        t2=Main.world.getObjTemplate(9812);
-        obj2=t2.createNewItem(1,false);
+        ObjectTemplate t2=Main.world.getObjTemplate(9812);
+        GameObject obj2=t2.createNewItem(1,false);
         obj2.refreshStatsObjet("325#0#0#"+System.currentTimeMillis());
         if(player.addObjet(obj2,false))
         {
