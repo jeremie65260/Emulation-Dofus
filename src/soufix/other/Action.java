@@ -3397,8 +3397,8 @@ public class Action
           }
         }
 
-        t2=Main.world.getObjTemplate(9812);
-        obj2=t2.createNewItem(1,false);
+        ObjectTemplate t2=Main.world.getObjTemplate(9812);
+        GameObject obj2=t2.createNewItem(1,false);
         obj2.refreshStatsObjet("325#0#0#"+System.currentTimeMillis());
         if(player.addObjet(obj2,false))
         {
