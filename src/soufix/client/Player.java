@@ -4488,12 +4488,30 @@ public void setTotal_reculte() {
     return _metiers;
   }
 
+  public GameObject getJobTool()
+  {
+    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+    if(weapon!=null&&weapon.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
+      return weapon;
+
+    if(weapon==null)
+    {
+      for(GameObject object : objects.values())
+      {
+        if(object!=null&&object.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
+          return object;
+      }
+    }
+
+    return weapon;
+  }
+
   public void refreshJobToolPackets()
   {
     if(this.account==null||this.account.getGameClient()==null)
       return;
 
-    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+    GameObject weapon=getJobTool();
 
     if(weapon==null)
     {
@@ -4526,7 +4544,7 @@ public void setTotal_reculte() {
     if(this.curMap==null)
       return;
 
-    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
+    GameObject weapon=getJobTool();
     if(weapon==null)
       return;
 

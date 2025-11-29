@@ -661,6 +661,7 @@ public class JobConstant
         return 8;
       case 2366://1 to 9
         return 9;
+      case JobConstant.UNIVERSAL_TOOL_ID:
       case 1860:
           return 100;
     }
