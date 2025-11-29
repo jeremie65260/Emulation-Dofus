@@ -6,6 +6,7 @@ import soufix.common.Formulas;
 
 public class JobConstant
 {
+  public static final int UNIVERSAL_TOOL_ID=20053;
   public static final int JOB_BUCHERON=2;
   public static final int JOB_F_EPEE=11;
   public static final int JOB_S_ARC=13;
