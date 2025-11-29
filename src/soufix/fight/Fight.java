@@ -1113,7 +1113,20 @@ public class Fight
     if(mobs==null||mobs.size()<=4)
       return;
     removedMobGradesForModu.clear();
+    Integer highestMobId=null;
+    int highestLevel=Integer.MIN_VALUE;
+    for(Entry<Integer, MobGrade> entry : mobs.entrySet())
+    {
+      MobGrade mob=entry.getValue();
+      if(mob!=null&&mob.getLevel()>highestLevel)
+      {
+        highestLevel=mob.getLevel();
+        highestMobId=entry.getKey();
+      }
+    }
+
     List<Integer> mobIds=new ArrayList<>(mobs.keySet());
+    mobIds.remove(highestMobId);
     Collections.shuffle(mobIds);
     int toRemove=mobs.size()-4;
     for(int i=0;i<toRemove;i++)
