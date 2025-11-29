@@ -1469,6 +1469,7 @@ try {
             player.setFight(null);
             player.setAway(false);
             player.setBlockMovement(false);
+            player.refreshMapAfterFight();
             this.verifIfTeamAllDead();
 
             if(!this.finish)
