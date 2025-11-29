@@ -8753,7 +8753,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
             }
             SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,exObj);
           }
-          if(this.player.getObjetByPos(Constant.ITEM_POS_ARME)==null)
+          if(this.player.getJobTool()==null)
             SocketManager.GAME_SEND_OT_PACKET(this,-1);
 
           //Si objet de panoplie

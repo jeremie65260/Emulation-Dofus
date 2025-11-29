@@ -3653,10 +3653,9 @@ public void setTotal_reculte() {
       //Packet JO (Job Option)
       SocketManager.GAME_SEND_JO_PACKET(this,list);
 
-      GameObject obj=getObjetByPos(Constant.ITEM_POS_ARME);
-      if(obj!=null)
-        if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-          SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),m.getId());
+      GameObject obj=getJobTool();
+      if(obj!=null&&sm.getTemplate().isValidTool(obj.getTemplate().getId()))
+        SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),m.getId());
     }
     return pos;
   }
