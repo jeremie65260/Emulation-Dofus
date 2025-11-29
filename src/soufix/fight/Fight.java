@@ -1608,14 +1608,21 @@ try {
                         }
                         else
                         {
+                          final String endFightPos=player.getOldMap()+","+player.getOldCell();
                           if(player.isOnline())
                           {
-                            String[] split=player.getSavePosition().split(",");
-                            TimerWaiterPlus.addNext(() ->  player.teleport(Short.parseShort(split[0]),Integer.parseInt(split[1])),1500);
+                            final GameMap oldMap=Main.world.getMap(player.getOldMap());
+                            TimerWaiterPlus.addNext(() ->  {
+                              player.setBlockMovement(false);
+                              player.setCurMap(oldMap==null ? getMapOld() : oldMap);
+                              player.teleport(player.getCurMap(),player.getOldCell());
+                              player.refreshMapAfterFight();
+                            },1500);
                           }
                           else
                           {
-                            player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
+                            player.setBlockMovement(false);
+                            player.setNeededEndFightAction(new Action(1001,endFightPos,"",null));
                           }
                         }
                         player.fullPDV();
@@ -1757,10 +1764,12 @@ try {
                     }
                     else
                     {
+                      final String endFightPos=player.getOldMap()+","+player.getOldCell();
+                      player.setBlockMovement(false);
                       if(getType()!=Constant.FIGHT_TYPE_PVT)
-                        player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
+                        player.setNeededEndFightAction(new Action(1001,endFightPos,"",null));
                       else if(!player.getCurMap().hasEndFightAction(0))
-                        player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
+                        player.setNeededEndFightAction(new Action(1001,endFightPos,"",null));
                     }
                     player.fullPDV();
                   }
@@ -5340,10 +5349,11 @@ public void Anti_bug () {
           }
           else
           {
- 
-              player.setNeededEndFightAction(new Action(1001,player.getSavePosition(),"",null));
+
+              player.setBlockMovement(false);
+              player.setNeededEndFightAction(new Action(1001,player.getOldMap()+","+player.getOldCell(),"",null));
               player.fullPDV();
-            
+
           }
         }
       }
