@@ -1455,6 +1455,7 @@ try {
             player.setReady(false);
             player.setFight(null);
             player.setAway(false);
+            player.setBlockMovement(false);
             this.verifIfTeamAllDead();
 
             if(!this.finish)
@@ -1488,6 +1489,7 @@ try {
                 player.setReady(false);
                 player.setFight(null);
                 player.setAway(false);
+                player.setBlockMovement(false);
 
                 if(player.isOnline())
                   SocketManager.GAME_SEND_GV_PACKET(player);
@@ -1525,6 +1527,7 @@ try {
                   player.setReady(false);
                   player.setFight(null);
                   player.setAway(false);
+                  player.setBlockMovement(false);
                   fighter.setLeft(true);
 
                   if(caster.getPersonnage().getId()!=fighter.getPersonnage().getId())
@@ -4828,6 +4831,7 @@ public void Anti_bug () {
             if(player.getInvocationControlled()!=null)
               player.clearInvocationControlled(player.getInvocationControlled());
             player.setFight(null);
+            player.setBlockMovement(false);
             SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(this.getMap(),fighter.getId());
           }
         }
