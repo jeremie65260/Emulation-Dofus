@@ -1111,11 +1111,17 @@ public class Fight
     Map<Integer, MobGrade> mobs=group.getMobs();
     if(mobs==null||mobs.size()<=4)
       return;
+    removedMobGradesForModu.clear();
     List<Integer> mobIds=new ArrayList<>(mobs.keySet());
     Collections.shuffle(mobIds);
     int toRemove=mobs.size()-4;
     for(int i=0;i<toRemove;i++)
-      mobs.remove(mobIds.get(i));
+    {
+      Integer mobId=mobIds.get(i);
+      MobGrade removedMob=mobs.remove(mobId);
+      if(removedMob!=null)
+        removedMobGradesForModu.put(mobId,removedMob);
+    }
   }
 
   //v2.8 - oldMap now in joinFight
