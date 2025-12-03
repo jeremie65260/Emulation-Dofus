@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 
 public class Fight
 {
-  private static final String BASE_DUNGEON_BOSS_IDS=".58.85.86.107.113.121.147.173.180.225.226.230.232.251.252.257.289.295.374.375.377.382.404.423.430.457.478.568.605.612.669.670.673.675.677.681.780.792.797.799.800.827.854.926.939.940.943.1015.1027.1045.1051.1071.1072.1085.1086.1087.1159.1184.1185.1186.1187.1188.519.";
   private int id, state=0, guildId=-1, type=-1;
   private int st1, st2;
   private int curPlayer, captWinner=-1;
@@ -211,13 +210,7 @@ public class Fight
     setStartGuid(perso.getId());
     getTeam0().put(perso.getId(),getInit0());
     this.initialMobGroupSize=group!=null ? group.getMobs().size() : 0;
-    this.donjon=isDungeonGroup(group);
-    if(this.donjon&&perso.isModu())
-    {
-      perso.setModu(false);
-      perso.sendMessage("Mode modulaire désactivé : vous combattez en donjon.");
-    }
-    if(perso.isModu() && getTeam0().size()==1 && !this.donjon)
+    if(perso.isModu() && getTeam0().size()==1)
       limitMobGroupForModu(group);
     for(Entry<Integer, MobGrade> entry : group.getMobs().entrySet())
     {
@@ -1079,33 +1072,20 @@ public class Fight
     return -1;
   }
 
-    public int getOtherTeamId(int guid)
-    {
-      if(getTeam0().containsKey(guid))
-        return 2;
-      if(getTeam1().containsKey(guid))
-        return 1;
-      return -1;
-    }
+  public int getOtherTeamId(int guid)
+  {
+    if(getTeam0().containsKey(guid))
+      return 2;
+    if(getTeam1().containsKey(guid))
+      return 1;
+    return -1;
+  }
 
-    private String getDungeonBossIds()
-    {
-      String extra=Config.getInstance().customDungeonBossIds;
-      if(extra==null||extra.isEmpty())
-        return BASE_DUNGEON_BOSS_IDS;
-      String normalized=extra;
-      if(!normalized.startsWith("."))
-        normalized="."+normalized;
-      if(!normalized.endsWith("."))
-        normalized=normalized+".";
-      return BASE_DUNGEON_BOSS_IDS+normalized;
-    }
-
-    void scheduleTimer(int time)
-    {
-            TimerWaiterPlus.addNext(() -> {
-        if(!this.isBegin)
-        {
+  void scheduleTimer(int time)
+  {
+	  TimerWaiterPlus.addNext(() -> {
+      if(!this.isBegin)
+      {
         if(this.collector!=null&&!this.collectorProtect)
           this.collector.removeTimeTurn(1000);
 
@@ -1124,18 +1104,6 @@ public class Fight
       if(!p.getMorphMode()&&p.isMorph()&&(p.getGroupe()==null)&&(p.getMorphId()!=8006&&p.getMorphId()!=8007&&p.getMorphId()!=8009))
         p.unsetMorph();
   }
-
-  private boolean isDungeonGroup(MobGroup group)
-  {
-      if(group==null||group.getMobs()==null)
-        return false;
-      for(MobGrade mob : group.getMobs().values())
-      {
-        if(mob!=null&&mob.getTemplate()!=null&&getDungeonBossIds().contains("."+mob.getTemplate().getId()+"."))
-          return true;
-      }
-      return false;
-    }
 
   private void limitMobGroupForModu(MobGroup group)
   {
@@ -1295,15 +1263,16 @@ public class Fight
         }
       }
 
+      String boss=".58.85.86.107.113.121.147.173.180.225.226.230.232.251.252.257.289.295.374.375.377.382.404.423.430.457.478.568.605.612.669.670.673.675.677.681.780.792.797.799.800.827.854.926.939.940.943.1015.1027.1045.1051.1071.1072.1085.1086.1087.1159.1184.1185.1186.1187.1188.519.";
 try {
       for(Fighter fighter : getTeam1().values())
       {
-          if(fighter.getMob()!=null)
+        if(fighter.getMob()!=null)
+        {
+          if(fighter.getMob().getTemplate()!=null)
           {
-            if(fighter.getMob().getTemplate()!=null)
-            {
-              if(getDungeonBossIds().contains("."+fighter.getMob().getTemplate().getId()+"."))
-                hasBoss=fighter.getMob().getTemplate().getId();
+            if(boss.contains("."+fighter.getMob().getTemplate().getId()+"."))
+              hasBoss=fighter.getMob().getTemplate().getId();
             
             if(Main.world.archi.contains("."+fighter.getMob().getTemplate().getId()+"."))
         		this.archi = true;

@@ -78,7 +78,6 @@ public class Config
   public int AIDelay=50, AIMovementCellDelay=50, AIMovementFlatDelay=50, craftDelay=10, gameActionDelay=5; //delay in ms
   public int weaponBonusBase=80, primaryWeaponBonus=30, secondaryWeaponBonus=20, daggerSwordNerf=5; //class weapon bonus
   public String lessDurationSpells=",16,20,95,98,148,149,577,612,741,760,811,813,962,1004,1092,1122,1129,1143,2079,2081,53,170,1164,1169,1172,2118,"; //spells with one turn less duration when selfcast, e.g. amplification, mutilation, clock
-  public String customDungeonBossIds=""; // dot-separated list, example: 999.1001.
   public int erosion=10;
   public int basePods=5000;
   public int idleTime=1000*60*30; //20 minutes
@@ -146,7 +145,7 @@ public int parchoMax = 101;
 
 	public void set() {
 		Main.isRunning = true;
-      try {
+		try {
 			 exchangePort = Config.configFile.getInt("network.exchangePort");
 	    		exchangeIp = Config.configFile.getString("network.exchangeIp");
 	    		Ip = Config.configFile.getString("network.loginIp");
@@ -174,14 +173,12 @@ public int parchoMax = 101;
     		Config.getInstance().rateKamas = Config.configFile.getInt("game.rate_kamas");
     		Config.getInstance().rateXp = Config.configFile.getInt("game.rate_xp");
 
-              Config.getInstance().startMap = Config.configFile.getInt("game.start_map");
-              Config.getInstance().startCell = Config.configFile.getInt("game.start_cell");
-              if(Config.configFile.hasPath("game.custom_dungeon_boss_ids"))
-                Config.getInstance().customDungeonBossIds = Config.configFile.getString("game.custom_dungeon_boss_ids");
-      }
-      catch (Exception e) {
-          System.out.println(" <> Config illisible ou champs manquants: " + e.getMessage());
-          System.exit(1);
-      }
+    		Config.getInstance().startMap = Config.configFile.getInt("game.start_map");
+    		Config.getInstance().startCell = Config.configFile.getInt("game.start_cell");
+        }
+        catch (Exception e) {
+            System.out.println(" <> Config illisible ou champs manquants: " + e.getMessage());
+            System.exit(1);
+        }
 	}
 }
