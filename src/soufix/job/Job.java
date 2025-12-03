@@ -34,6 +34,10 @@ public class Job
         }
       }
     }
+    if(!this.tools.contains(JobConstant.UNIVERSAL_TOOL_ID))
+    {
+      this.tools.add(JobConstant.UNIVERSAL_TOOL_ID);
+    }
     if(!crafts.equals(""))
     {
       for(String str : crafts.split("\\|"))
@@ -80,6 +84,9 @@ public class Job
 
   public boolean isValidTool(int id1)
   {
+    if(this.tools.isEmpty())
+      return true;
+
     return this.tools.contains(id1);
   }
 

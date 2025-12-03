@@ -4501,6 +4501,19 @@ public void setTotal_reculte() {
       return;
     }
 
+    if(weapon.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
+    {
+      SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),JobConstant.UNIVERSAL_TOOL_ID);
+
+      for(JobStat jobStat : this._metiers.values())
+      {
+        if(jobStat.getTemplate()!=null)
+          SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
+      }
+      sendAvailableJobSkills();
+      return;
+    }
+
     for(JobStat jobStat : this._metiers.values())
     {
       if(jobStat.getTemplate()!=null&&jobStat.getTemplate().isValidTool(weapon.getTemplate().getId()))
