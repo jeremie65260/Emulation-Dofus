@@ -4815,7 +4815,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         if(jobs==null)
           return;
 
-        GameObject object=player.getJobTool();
+        GameObject object=player.getObjetByPos(Constant.ITEM_POS_ARME);
 
         if(object==null)
         {
@@ -4914,7 +4914,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         if(jobs==null)
           return;
 
-        GameObject object=this.player.getJobTool();
+        GameObject object=this.player.getObjetByPos(Constant.ITEM_POS_ARME);
         if(object==null)
           return;
 
@@ -6830,7 +6830,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
 
         if(jobs!=null)
         {
-          GameObject object=player.getJobTool();
+          GameObject object=player.getObjetByPos(Constant.ITEM_POS_ARME);
 
           if(object==null)
             continue;
@@ -8753,7 +8753,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
             }
             SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,exObj);
           }
-          if(this.player.getJobTool()==null)
+          if(this.player.getObjetByPos(Constant.ITEM_POS_ARME)==null)
             SocketManager.GAME_SEND_OT_PACKET(this,-1);
 
           //Si objet de panoplie
@@ -8938,7 +8938,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
 
         if(jobs!=null)
         {
-          object=this.player.getJobTool();
+          object=this.player.getObjetByPos(Constant.ITEM_POS_ARME);
 
           if(object!=null)
           {
@@ -10217,11 +10217,8 @@ public void disconnect()
         return false;
       if(SM.getTemplate().getId()!=36)
         return false;
-      GameObject tool=this.player.getJobTool();
-      if(tool==null)
-        return false;
       int dis=PathFinding.getDistanceBetween(this.player.getCurMap(),Integer.parseInt(packet.split(";")[0]),this.player.getCurCell().getId());
-      int dist=JobConstant.getDistCanne(tool.getTemplate().getId());
+      int dist=JobConstant.getDistCanne(this.player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId());
       if(dis<=dist)
         return true;
     }
