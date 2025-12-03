@@ -5105,7 +5105,7 @@ public void Anti_bug () {
    SocketManager.GAME_SEND_JX_PACKET(player,list);
    //Packet JO (Job Option)
    SocketManager.GAME_SEND_JO_PACKET(player,list);
-   GameObject obj=player.getJobTool();
+   GameObject obj=player.getObjetByPos(Constant.ITEM_POS_ARME);
    if(obj!=null)
      for(JobStat sm : list)
        if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
@@ -5249,12 +5249,12 @@ public void Anti_bug () {
     	   SocketManager.GAME_SEND_JX_PACKET(player,list);
     	   //Packet JO (Job Option)
     	   SocketManager.GAME_SEND_JO_PACKET(player,list);
-           GameObject obj=player.getJobTool();
-           if(obj!=null)
-             for(JobStat sm : list)
-               if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-                   SocketManager.GAME_SEND_OT_PACKET(player.getGameClient(),sm.getTemplate().getId());
-               }
+    	   GameObject obj=player.getObjetByPos(Constant.ITEM_POS_ARME);
+    	   if(obj!=null)
+    	     for(JobStat sm : list)
+    	       if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
+    	           SocketManager.GAME_SEND_OT_PACKET(player.getGameClient(),sm.getTemplate().getId());
+    	       }
     	 
     	player.send("kI"+player.getId());
     }

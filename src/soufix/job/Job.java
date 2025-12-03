@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import soufix.client.Player;
 import soufix.job.fm.Rune;
 import soufix.object.GameObject;
-import soufix.job.JobConstant;
 
 public class Job
 {
@@ -82,16 +80,7 @@ public class Job
 
   public boolean isValidTool(int id1)
   {
-    if(id1==JobConstant.UNIVERSAL_TOOL_ID)
-      return true;
-
-    if(this.tools.isEmpty())
-      return true;
-
-    for(int id : this.tools)
-      if(id==id1)
-        return true;
-    return false;
+    return this.tools.contains(id1);
   }
 
   public ArrayList<Integer> getListBySkill(int skill)
