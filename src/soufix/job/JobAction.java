@@ -137,11 +137,10 @@ public class JobAction
       this.SM = SM;
       this.player = P;
 
-      GameObject jobTool=P.getJobTool();
-      if (jobTool != null && SM.getTemplate().getId() == 36) {
-          if (Main.world.getMetier(36).isValidTool(jobTool.getTemplate().getId())) {
+      if (P.getObjetByPos(Constant.ITEM_POS_ARME) != null && SM.getTemplate().getId() == 36) {
+          if (Main.world.getMetier(36).isValidTool(P.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId())) {
               int dist = PathFinding.getDistanceBetween(P.getCurMap(), P.getCurCell().getId(), cell.getId());
-              int distItem = JobConstant.getDistCanne(jobTool.getTemplate().getId());
+              int distItem = JobConstant.getDistCanne(P.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId());
               if (distItem < dist) {
                   SocketManager.GAME_SEND_MESSAGE(P, "Vous étes trop loin pour pouvoir pécher ce poisson !");
                   SocketManager.GAME_SEND_GA_PACKET(P.getGameClient(), "", "0", "", "");
