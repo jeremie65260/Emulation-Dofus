@@ -3653,9 +3653,10 @@ public void setTotal_reculte() {
       //Packet JO (Job Option)
       SocketManager.GAME_SEND_JO_PACKET(this,list);
 
-      GameObject obj=getJobTool();
-      if(obj!=null&&sm.getTemplate().isValidTool(obj.getTemplate().getId()))
-        SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),m.getId());
+      GameObject obj=getObjetByPos(Constant.ITEM_POS_ARME);
+      if(obj!=null)
+        if(sm.getTemplate().isValidTool(obj.getTemplate().getId()))
+          SocketManager.GAME_SEND_OT_PACKET(account.getGameClient(),m.getId());
     }
     return pos;
   }
@@ -4487,45 +4488,16 @@ public void setTotal_reculte() {
     return _metiers;
   }
 
-  public GameObject getJobTool()
-  {
-    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
-    if(weapon!=null&&weapon.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
-      return weapon;
-
-    if(weapon==null)
-    {
-      for(GameObject object : objects.values())
-      {
-        if(object!=null&&object.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
-          return object;
-      }
-    }
-
-    return weapon;
-  }
-
   public void refreshJobToolPackets()
   {
     if(this.account==null||this.account.getGameClient()==null)
       return;
 
-    GameObject weapon=getJobTool();
+    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
 
     if(weapon==null)
     {
       SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),-1);
-      return;
-    }
-
-    if(weapon.getTemplate().getId()==JobConstant.UNIVERSAL_TOOL_ID)
-    {
-      for(JobStat jobStat : this._metiers.values())
-      {
-        if(jobStat.getTemplate()!=null)
-          SocketManager.GAME_SEND_OT_PACKET(this.account.getGameClient(),jobStat.getTemplate().getId());
-      }
-      sendAvailableJobSkills();
       return;
     }
 
@@ -4543,7 +4515,7 @@ public void setTotal_reculte() {
     if(this.curMap==null)
       return;
 
-    GameObject weapon=getJobTool();
+    GameObject weapon=getObjetByPos(Constant.ITEM_POS_ARME);
     if(weapon==null)
       return;
 
