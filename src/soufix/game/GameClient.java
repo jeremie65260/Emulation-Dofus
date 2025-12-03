@@ -10218,7 +10218,10 @@ public void disconnect()
       if(SM.getTemplate().getId()!=36)
         return false;
       int dis=PathFinding.getDistanceBetween(this.player.getCurMap(),Integer.parseInt(packet.split(";")[0]),this.player.getCurCell().getId());
-      int dist=JobConstant.getDistCanne(this.player.getObjetByPos(Constant.ITEM_POS_ARME).getTemplate().getId());
+      GameObject weapon=this.player.getObjetByPos(Constant.ITEM_POS_ARME);
+      if(weapon==null||weapon.getTemplate()==null)
+        return false;
+      int dist=JobConstant.getDistCanne(weapon.getTemplate().getId());
       if(dis<=dist)
         return true;
     }
