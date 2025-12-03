@@ -6157,6 +6157,15 @@ public void Anti_bug () {
             if(player.getAccount().getSubscribeRemaining() != 0L)xpPlayer = (long) (xpPlayer+(xpPlayer*0.25));
             if(MONO || DUO)xpPlayer = (long) (xpPlayer+(xpPlayer*0.15));
             }
+            final int areaId=player.getCurMap().getSubArea().getArea().getId();
+            final int subAreaId=player.getCurMap().getSubArea().getId();
+            final int playerLevel=player.getLevel();
+            if((playerLevel>=21&&areaId==45)
+                ||(playerLevel>=40&&areaId==49)
+                ||(playerLevel>=60&&areaId==42)
+                ||(playerLevel>=80&&(subAreaId==451||areaId==2))
+                ||(playerLevel>=100&&areaId==1))
+              xpPlayer/=10;
             XP.set(xpPlayer);
             World.get_Succes(player.getId()).chall_add(player, challwine);
             if(this.getType()==Constant.FIGHT_TYPE_PVT&&win==1)
