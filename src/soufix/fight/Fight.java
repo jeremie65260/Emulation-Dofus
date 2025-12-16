@@ -2458,8 +2458,8 @@ public void Anti_bug () {
   //v2.8 - Save old map and cell
   public void joinFight(Player perso, int guid)
   {
-	  if(perso.getFight()!= null)
-		  return;
+          if(perso.getFight()!= null)
+                  return;
     long timeRestant=Constant.TIME_START_FIGHT-(System.currentTimeMillis()-launchTime);
     Fighter currentJoin=null;
     if(this.bLock_join || this.getType() == Constant.FIGHT_TYPE_KOLI)
@@ -2467,11 +2467,26 @@ public void Anti_bug () {
       SocketManager.GAME_SEND_MESSAGE(perso,"You can not join this fight as it is forbidden.");
       return;
     }
+    if(getMapOld()!=null&&Constant.isInGladiatorDonjon(getMapOld().getId()))
+    {
+      int playerCount=0;
+      for(Fighter fighter : getTeam0().values())
+        if(fighter!=null&&fighter.getPersonnage()!=null)
+          playerCount++;
+      for(Fighter fighter : getTeam1().values())
+        if(fighter!=null&&fighter.getPersonnage()!=null)
+          playerCount++;
+      if(playerCount>=2)
+      {
+        SocketManager.GAME_SEND_MESSAGE(perso,"Le Gladiatrool est limité à 2 joueurs");
+        return;
+      }
+    }
     if( this.getType() == Constant.FIGHT_TYPE_PVM)
     if(perso.getGroupe() != null)
-	        if(perso.getGroupe().getId() >= 1 && perso.getGroupe().getId() < 6) {
-	        
-	        	SocketManager.GAME_SEND_MESSAGE(perso,"You can not join this fight as it is forbidden.");
+                if(perso.getGroupe().getId() >= 1 && perso.getGroupe().getId() < 6) {
+
+                        SocketManager.GAME_SEND_MESSAGE(perso,"You can not join this fight as it is forbidden.");
 	            return;
 	        	}
     if(Config.singleton.serverId == 6)
