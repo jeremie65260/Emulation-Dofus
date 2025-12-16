@@ -3865,6 +3865,13 @@ public class Constant
     return false;
   }
 
+  public static boolean isInGladiatorDonjon(int id)
+  {
+    if(id<15000||id>15072)
+      return false;
+    return (id-15000)%8==0;
+  }
+
   public static int[] getOppositeStats(int statsId)
   {
     if(statsId==217)
