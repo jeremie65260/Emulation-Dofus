@@ -1119,14 +1119,14 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
 
   public void spawnNewGroup(boolean timer, int cellID, String groupData, String condition, int guid,String ip)
   {
-	  if(this.id == 7411)
-		  return;
+          if(this.id == 7411)
+                  return;
     while(this.mobGroups.get(this.nextObjectId)!=null)
       this.nextObjectId--;
     while(this.containsForbiddenCellSpawn(cellID))
       cellID=this.getRandomFreeCellId();
 
-    MobGroup group=new MobGroup(this.nextObjectId,cellID,groupData);
+    MobGroup group=Constant.isInGladiatorDonjon(this.id) ? new MobGroup(this.nextObjectId,this,cellID,groupData) : new MobGroup(this.nextObjectId,cellID,groupData);
     if(group.getMobs().isEmpty())
       return;
     this.mobGroups.put(this.nextObjectId,group);
@@ -1144,7 +1144,7 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
   {
     while(this.mobGroups.get(this.nextObjectId)!=null)
       this.nextObjectId--;
-    MobGroup group=new MobGroup(this.nextObjectId,cellID,groupData);
+    MobGroup group=Constant.isInGladiatorDonjon(this.id) ? new MobGroup(this.nextObjectId,this,cellID,groupData) : new MobGroup(this.nextObjectId,cellID,groupData);
     if(group.getMobs().isEmpty())
       return;
     this.mobGroups.put(this.nextObjectId,group);
@@ -1158,7 +1158,7 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
   {
     while(this.mobGroups.get(this.nextObjectId)!=null)
       this.nextObjectId--;
-    MobGroup group=new MobGroup(this.nextObjectId,cellID,groupData);
+    MobGroup group=Constant.isInGladiatorDonjon(this.id) ? new MobGroup(this.nextObjectId,this,cellID,groupData) : new MobGroup(this.nextObjectId,cellID,groupData);
     if(group.getMobs().isEmpty())
       return;
     this.mobGroups.put(this.nextObjectId,group);
