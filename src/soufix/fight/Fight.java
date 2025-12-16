@@ -109,11 +109,18 @@ public class Fight
   public ArrayList<Pair<Fighter, ArrayList<SpellEffect>>> buffsToAdd=new ArrayList<>();
   private boolean invocationAlreadySummoned=false;
   private int mobCountForBonus=0;
+  private static final Set<Integer> MAPS_WITHOUT_DROPS=new HashSet<>(Arrays.asList(
+      15080,15072,15064,15056,15048,15040,15032,15024,15016,15008,15000));
+
+  private boolean isDropDisabledOnMap()
+  {
+    return MAPS_WITHOUT_DROPS.contains((int)getMap().getId());
+  }
 
   public Fight(int type, int id, GameMap map, Player perso, Player init2)
   {
-	  if(perso == null || init2 == null)
-		  return;
+          if(perso == null || init2 == null)
+                  return;
     launchTime=System.currentTimeMillis();
     setType(type); // 0: Dï¿½fie (4: Pvm) 1:PVP (5:Perco)
     setId(id);
@@ -6200,7 +6207,7 @@ public void Anti_bug () {
           /**       Drop       **/
           /**********************/
           Map<Integer, Integer> objectsWon=new HashMap<>(),itemWon2=new HashMap<>();
-          if (!this.STAFF) {
+          if (!this.STAFF && !isDropDisabledOnMap()) {
           if(this.getType()==Constant.FIGHT_TYPE_PVT&&win==1&&dropsCollector!=null)
           {
             int objectPerPlayer=(int)Math.floor(dropsCollector.size()/winners.size()),counter=0;
@@ -7223,10 +7230,11 @@ public void Anti_bug () {
         }
       }
       /** End Looser **/
-      if(!this.STAFF)
-      if(Collector.getCollectorByMapId(getMap().getId())!=null&&getType()==Constant.FIGHT_TYPE_PVM)
+      if(!this.STAFF && !isDropDisabledOnMap())
       {
-        Collector collector=Collector.getCollectorByMapId(getMap().getId());
+        if(Collector.getCollectorByMapId(getMap().getId())!=null&&getType()==Constant.FIGHT_TYPE_PVM)
+        {
+          Collector collector=Collector.getCollectorByMapId(getMap().getId());
 
         long winxp=Formulas.getXp(collector,winners,totalXP,nbbonus,(getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0),challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,0,mobCount)/15;
         long winkamas=(int)Math.floor(Formulas.getKamasWinPerco(kamas.getLeft(),kamas.getRight()));
@@ -7367,7 +7375,8 @@ public void Anti_bug () {
         packet.append(drops).append(";");// Drop
         packet.append(winkamas).append("|");
 
-        Database.getDynamics().getCollectorData().update(collector);
+          Database.getDynamics().getCollectorData().update(collector);
+        }
       }
       return packet.toString();
     }
