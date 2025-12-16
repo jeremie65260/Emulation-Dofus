@@ -1169,6 +1169,14 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
     this.nextObjectId--;
   }
 
+  public void spawnGroupGladiatrool(String groupData)
+  {
+    int cellId=this.getRandomFreeCellId();
+    if(cellId==-1)
+      return;
+    spawnGroupOnCommand(cellId,groupData,true);
+  }
+
   //v2.8 - fixed fixmobgroup restart, fixed bug where they didnt get set to 0 stars
   public void addStaticGroupv2(int cellID, String groupData, boolean b, Long time)
   {

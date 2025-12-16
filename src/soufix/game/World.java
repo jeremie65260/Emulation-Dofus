@@ -8,6 +8,7 @@ import soufix.Hdv.HdvEntry;
 import soufix.area.Area;
 import soufix.area.SubArea;
 import soufix.area.map.GameMap;
+import soufix.area.map.labyrinth.Gladiatrool;
 import soufix.area.map.entity.Animation;
 import soufix.area.map.entity.House;
 import soufix.area.map.entity.MountPark;
@@ -545,6 +546,9 @@ public class World
 
     Database.getDynamics().getMapData().load();
     logger.debug("The maps were loaded successfully.");
+
+    Gladiatrool.initialize();
+    logger.debug("The gladiatrool groups were initialized.");
 
     Database.getDynamics().getScriptedCellData().load();
     logger.debug("The scripted cells were loaded successfully.");
