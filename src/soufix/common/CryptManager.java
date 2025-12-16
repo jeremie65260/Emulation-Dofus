@@ -5,6 +5,7 @@ import java.util.List;
 
 import soufix.area.map.GameCase;
 import soufix.area.map.GameMap;
+import soufix.main.Constant;
 
 public class CryptManager
 {
@@ -121,7 +122,9 @@ public class CryptManager
       int layerObject2=((cellInfos.get(0)&2)<<12)+((cellInfos.get(7)&1)<<12)+(cellInfos.get(8)<<6)+cellInfos.get(9);
       boolean layerObject2Interactive=((cellInfos.get(7)&2)>>1)!=0;
       int object=(layerObject2Interactive&&sniffed==0 ? layerObject2 : -1);
-      cells.add(new GameCase(map,(short)(f/10),activo,caminable,level,slope,(walkable!=0&&!mapData.equalsIgnoreCase("bhGaeaaaaa")&&!mapData.equalsIgnoreCase("Hhaaeaaaaa")),los,object));
+      boolean blockedPattern=mapData.equalsIgnoreCase("bhGaeaaaaa")||mapData.equalsIgnoreCase("Hhaaeaaaaa");
+      boolean walkableCell=walkable!=0&&(!blockedPattern||Constant.isInGladiatorDonjon(map.getId()));
+      cells.add(new GameCase(map,(short)(f/10),activo,caminable,level,slope,walkableCell,los,object));
     }
     return cells;
   }
