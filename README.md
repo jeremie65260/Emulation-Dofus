@@ -1,4 +1,7 @@
 Emulateur Game de Rpg-rampage, basé sur casper.
+# Game-Rpg-rampage 1.0.0:
+    - Implantation de la logique de génération gladiatrool basé sur starloco
+    - Bridage gladia à 2 joueurs + Désactivation des monstres alignés au gladia
 # Game-Rpg-rampage 0.9.9:
     - Désactivation des bonus d'alignements + correction du modulaire pour qu'il prenne le haut gradé en compte
     -Quand on est en .maitre et qu'un player abandonne, il ne spawn plus au point sauvegardé mais bien sur la même map que son coéquipier et n'est plus figé sur la map.
