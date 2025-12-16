@@ -109,12 +109,17 @@ public class Fight
   public ArrayList<Pair<Fighter, ArrayList<SpellEffect>>> buffsToAdd=new ArrayList<>();
   private boolean invocationAlreadySummoned=false;
   private int mobCountForBonus=0;
-  private static final Set<Integer> MAPS_WITHOUT_DROPS=new HashSet<>(Arrays.asList(
+  private static final Set<Integer> GLADIATROOL_MAPS=new HashSet<>(Arrays.asList(
       15080,15072,15064,15056,15048,15040,15032,15024,15016,15008,15000));
 
   private boolean isDropDisabledOnMap()
   {
-    return MAPS_WITHOUT_DROPS.contains((int)getMap().getId());
+    return GLADIATROOL_MAPS.contains((int)getMap().getId());
+  }
+
+  private boolean isXpDisabledOnMap()
+  {
+    return GLADIATROOL_MAPS.contains((int)getMap().getId());
   }
 
   public Fight(int type, int id, GameMap map, Player perso, Player init2)
@@ -6173,47 +6178,55 @@ public void Anti_bug () {
           /** Xp,kamas **/
           if(player!=null)
           {
-            xpPlayer=Formulas.getXp(i,winners,totalXP,nbbonus,this.getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0,challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,Main.world.getConquestBonus(player),mobCount);
-            if(this.type == Constant.FIGHT_TYPE_PVM)
+            boolean disableXp=isXpDisabledOnMap();
+            if(disableXp)
             {
-            if(player.getAccount().getSubscribeRemaining() != 0L)xpPlayer = (long) (xpPlayer+(xpPlayer*0.25));
-            if(MONO || DUO)xpPlayer = (long) (xpPlayer+(xpPlayer*0.15));
-            }
-            final int areaId=player.getCurMap().getSubArea().getArea().getId();
-            final int subAreaId=player.getCurMap().getSubArea().getId();
-            final int playerLevel=player.getLevel();
-            if((playerLevel>=21&&areaId==45)
-                ||(playerLevel>=40&&areaId==49)
-                ||(playerLevel>=60&&areaId==42)
-                ||(playerLevel>=80&&(subAreaId==451||areaId==2))
-                ||(playerLevel>=100&&areaId==1))
-              xpPlayer/=10;
-            XP.set(xpPlayer);
-            World.get_Succes(player.getId()).chall_add(player, challwine);
-            if(this.getType()==Constant.FIGHT_TYPE_PVT&&win==1)
-            {
-              if(memberGuild!=0)
-                if(player.getGuildMember()!=null)
-                  xpGuild=(int)Math.floor(this.getCollector().getXp()/memberGuild);
-              xpGuild =  xpGuild/2;
-             // if(Main.world.getGuild(this.getCollector().getGuildId()).getLvl()>=20)
-             //   if(this.getCollector().getPodsTotal()>=100)
-              //    player.setNeededEndFightAction(new Action(475,"20","",null)); //20 token reward
+              XP.set(0L);
             }
             else
-              xpGuild=(Formulas.getGuildXpWin(i,XP)/2);
-
-            if(player.isOnMount())
             {
-              xpMount=Formulas.getMountXpWin(i,XP);
-              player.getMount().addXp(xpMount*10);
-              SocketManager.GAME_SEND_Re_PACKET(player,"+",player.getMount());
+              xpPlayer=Formulas.getXp(i,winners,totalXP,nbbonus,this.getMobGroup()!=null ? getMobGroup().getStarBonus(getMobGroup().getInternalStarBonus()) : 0,challXp,lvlMax,lvlMin,lvlLoosers,lvlWinners,Main.world.getConquestBonus(player),mobCount);
+              if(this.type == Constant.FIGHT_TYPE_PVM)
+              {
+              if(player.getAccount().getSubscribeRemaining() != 0L)xpPlayer = (long) (xpPlayer+(xpPlayer*0.25));
+              if(MONO || DUO)xpPlayer = (long) (xpPlayer+(xpPlayer*0.15));
+              }
+              final int areaId=player.getCurMap().getSubArea().getArea().getId();
+              final int subAreaId=player.getCurMap().getSubArea().getId();
+              final int playerLevel=player.getLevel();
+              if((playerLevel>=21&&areaId==45)
+                  ||(playerLevel>=40&&areaId==49)
+                  ||(playerLevel>=60&&areaId==42)
+                  ||(playerLevel>=80&&(subAreaId==451||areaId==2))
+                  ||(playerLevel>=100&&areaId==1))
+                xpPlayer/=10;
+              XP.set(xpPlayer);
+              World.get_Succes(player.getId()).chall_add(player, challwine);
+              if(this.getType()==Constant.FIGHT_TYPE_PVT&&win==1)
+              {
+                if(memberGuild!=0)
+                  if(player.getGuildMember()!=null)
+                    xpGuild=(int)Math.floor(this.getCollector().getXp()/memberGuild);
+                xpGuild =  xpGuild/2;
+               // if(Main.world.getGuild(this.getCollector().getGuildId()).getLvl()>=20)
+               //   if(this.getCollector().getPodsTotal()>=100)
+                //    player.setNeededEndFightAction(new Action(475,"20","",null)); //20 token reward
+              }
+              else
+                xpGuild=(Formulas.getGuildXpWin(i,XP)/2);
+
+              if(player.isOnMount())
+              {
+                xpMount=Formulas.getMountXpWin(i,XP);
+                player.getMount().addXp(xpMount*10);
+                SocketManager.GAME_SEND_Re_PACKET(player,"+",player.getMount());
+              }
             }
           }
-        	   
+
            }else
            {
-        	   XP.set((long)0); 
+                   XP.set((long)0);
            }
           winKamas=(int)((this.getType()==Constant.FIGHT_TYPE_PVT&&win==1) ? Math.floor(kamas.getLeft()/winners.size()) : Formulas.getKamasWin(i,winners,kamas.getLeft(),kamas.getRight()));
           if (this.STAFF)winKamas = 0;
