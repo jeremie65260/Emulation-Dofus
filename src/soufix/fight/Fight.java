@@ -3,6 +3,7 @@ package soufix.fight;
 import soufix.area.SubArea;
 import soufix.area.map.GameCase;
 import soufix.area.map.GameMap;
+import soufix.area.map.labyrinth.Gladiatrool;
 import soufix.client.Player;
 import soufix.client.other.Party;
 import soufix.client.other.Stalk;
@@ -6080,7 +6081,12 @@ public void Anti_bug () {
                  GameMap map=this.getMapOld();
                 if(map.getId()!=8338&&map.getId()!=8340&&map.getId()!=8342&&map.getId()!=8344&&map.getId()!=8345&&map.getId()!=8347) //firefoux
                   if(!group.isFix())
-                    this.getMapOld().spawnAfterTimeGroup(this.getMapOld().getMinRespawnTime(),this.getMapOld().getMaxRespawnTime()); 
+                  {
+                    if(Constant.isInGladiatorDonjon(map.getId()))
+                      Gladiatrool.respawn((short)map.getId());
+                    else
+                      this.getMapOld().spawnAfterTimeGroup(this.getMapOld().getMinRespawnTime(),this.getMapOld().getMaxRespawnTime());
+                  }
               }
             }
             catch(Exception e)
@@ -6110,7 +6116,12 @@ public void Anti_bug () {
               //else 
               if(!group.isFix()) {
             	  if(map.getId()!=8338&&map.getId()!=8340&&map.getId()!=8342&&map.getId()!=8344&&map.getId()!=8345&&map.getId()!=8347) //firefoux
-                this.getMapOld().spawnAfterTimeGroup(this.getMapOld().getMinRespawnTime(),this.getMapOld().getMaxRespawnTime());
+                {
+                  if(Constant.isInGladiatorDonjon(map.getId()))
+                    Gladiatrool.respawn((short)map.getId());
+                  else
+                    this.getMapOld().spawnAfterTimeGroup(this.getMapOld().getMinRespawnTime(),this.getMapOld().getMaxRespawnTime());
+                }
               }
             }
           }
