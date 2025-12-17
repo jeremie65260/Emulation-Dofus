@@ -1173,7 +1173,10 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
   {
     int cellId=this.getRandomFreeCellId();
     if(cellId==-1)
+    {
+      Main.world.logger.warn("Gladiatrool spawn skipped on map {}: no free cell found.",this.id);
       return;
+    }
     spawnGroupOnCommand(cellId,groupData,true);
   }
 
