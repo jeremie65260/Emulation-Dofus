@@ -48,6 +48,9 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
   {
     id=Aid;
     align=Aalign;
+    boolean forceNeutral=Map!=null&&Constant.isInGladiatorDonjon(Map.getId());
+    if(forceNeutral)
+      align=Constant.ALIGNEMENT_NEUTRE;
     //Détermination du nombre de mob du groupe
     int rand=0;
     int nbr=0;
@@ -401,10 +404,10 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
     }
     for (MobGrade mob : possibles)
     {
-    	if (mob.getTemplate().getAlign() == this.align)
-    	{
-    		haveSameAlign = true;	
-    	}
+        if(forceNeutral || mob.getTemplate().getAlign() == this.align)
+        {
+                haveSameAlign = true;
+        }
     }
 
     if (!haveSameAlign)
@@ -417,7 +420,7 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
         int random=Formulas.getRandomValue(0,possibles.size()-1); //on prend un mob au hasard dans le tableau
         Mob=possibles.get(random).getCopy();
 
-      } while(Mob.getTemplate().getAlign()!=this.align);
+      } while(!forceNeutral&&Mob.getTemplate().getAlign()!=this.align);
 
       this.mobs.put(guid,Mob);
       if(Mob.getTemplate().getAggroDistance()>this.aggroDistance)
@@ -444,6 +447,7 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
   {
     this.id=id;
     this.align=Constant.ALIGNEMENT_NEUTRE;
+    boolean forceNeutral=Constant.isInGladiatorDonjon(mapId);
     this.cellId=cellId;
     this.spawnCellId=this.getCellId();
     this.isFix=false;
@@ -474,7 +478,7 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
         if(mgs.isEmpty())
           continue;
         MobGrade chosen = mgs.get(Formulas.getRandomValue(0,mgs.size()-1));
-        if(this.align==Constant.ALIGNEMENT_NEUTRE&&chosen.getTemplate().getAlign()!=Constant.ALIGNEMENT_NEUTRE)
+        if(!forceNeutral&&this.align==Constant.ALIGNEMENT_NEUTRE&&chosen.getTemplate().getAlign()!=Constant.ALIGNEMENT_NEUTRE)
         {
           if(chosen.getTemplate().getId()==372||chosen.getTemplate().getId()==415)
             this.align=Constant.ALIGNEMENT_BRAKMARIEN;
@@ -499,6 +503,8 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
     for(Entry<Integer, MobGrade> mob : this.mobs.entrySet())// kralamour
       if(mob.getValue().getTemplate().getId()==423)
         this.orientation=3;
+    if(forceNeutral)
+      this.align=Constant.ALIGNEMENT_NEUTRE;
     if(this.aggroDistance<=0&&this.align!=Constant.ALIGNEMENT_NEUTRE)
       this.aggroDistance=3;
     if(Config.getInstance().HEROIC)
@@ -570,6 +576,13 @@ public MobGroup(int Aid, int Aalign, ArrayList<MobGrade> possibles, GameMap Map,
       this.aggroDistance=3;
 
     this.orientation=(Formulas.getRandomValue(0,3)*2)+1;
+  }
+
+  public MobGroup(int id, GameMap map, int cellId, String groupData)
+  {
+    this(id,cellId,groupData);
+    if(map!=null&&Constant.isInGladiatorDonjon(map.getId()))
+      this.align=Constant.ALIGNEMENT_NEUTRE;
   }
 
   public void setSubArea(int sa)

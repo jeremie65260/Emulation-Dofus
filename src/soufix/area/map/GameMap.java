@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 public class GameMap
 {
+  private static final String GLADIATROOL_MAPDATA_15040="HhaaeaaaaaHhaaeaaay_HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaey_HhaaeaaaaaHhaaeaaay_HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaey_Hhaaeaaay_HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaA_HhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaey_HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaBeaaeA-HhaaeaaaaaHhaaeaaaaaHhaaeoIazlHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaBeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaAOHhaaeaaaAOHhaaeaaaaaHhaaeaaaaaHhaaeaaaA-HhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaBeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaawLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeoIaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaeA-HhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeoIaaaHhIjem1aaaHhIjeaaaaaGhcjeaaaBCHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaewLHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcjeaaaBRHhIjeaaaaaGhcjeaaeBCHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaA-HhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaGhaGeaaap9HhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcjeaaaBRHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGem1aaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcjeaaaBRHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhGGeaaaaaHhcjeaaap6HhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcjeaaaBRHhIjeaaaaaHhIjeoIaaaHhcjeaaap6HhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaGhcjeaaaBCHhIjeoIaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaaaHhaaeaaaBRHhIjeaaaaaGhcjeaaeBCHhIjeaaaaaGhaGeaaap9HhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaaeaaeBRHhaaeaaaaaHhaaeaaaAOHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaGeaaap6HhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhaaeaaaAOHhaaeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaGhcjeaaap9HhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeoJaaaHhaaeaaaaaHhcoeaaaaaHhIjeoJaaaHhIjem1aaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaGhcjeaaap-HhIjeaaaaaHhcjeaaap6HhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjem1aaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhcjeaaap6HhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjeaaaaaHhcjebNap6HhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjem1aaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhcjeaaap6HhIjeaaaaaGhcjeaaap9HhGGeaaaaaHhIjeaaaaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhGGeaaaaaHhGGeaaaaaHhIjeaaaaaHhcjeaaap6HhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjem1aaaHhGGeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaGhcjeaaap-HhIjeaaaaaGhcjeaaap9HhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjem2aaaHhIjeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjem0aaaHhIjem1aaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhIjeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhcoeaaaaaHhcpeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaaHhaaeaaaaa";
   public int nextObjectId=-1;
   public boolean noMarchand=false, noCollector=false, noPrism=false, noTP=false, noDefie=false, noAgro=false, noCanal=false;
   private short id;
@@ -62,6 +63,13 @@ public class GameMap
   private String Ddata;
   private long time_pose_perco;
 
+  private static String resolveMapData(short id, String dData)
+  {
+    if(id==15040)
+      return GLADIATROOL_MAPDATA_15040;
+    return dData;
+  }
+
 
 public GameMap(short id, String date, byte w, byte h, String key, String places, String dData, String monsters, String mapPos, byte maxGroup, byte fixSize, byte minSize, byte maxSize, String forbidden, byte sniffed, int minRespawnTime, int maxRespawnTime, int song)
   {
@@ -75,9 +83,10 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
     this.maxSize=maxSize;
     this.minSize=minSize;
     this.fixSize=fixSize;
-    this.Ddata=dData;
+    String resolvedData=resolveMapData(id,dData);
+    this.Ddata=resolvedData;
     this.Song=song;
-    this.cases=Main.world.getCryptManager().decompileMapData(this,dData,sniffed);
+    this.cases=Main.world.getCryptManager().decompileMapData(this,resolvedData,sniffed);
     this.setMinRespawnTime(minRespawnTime);
     this.setMaxRespawnTime(maxRespawnTime);
 
@@ -1119,14 +1128,14 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
 
   public void spawnNewGroup(boolean timer, int cellID, String groupData, String condition, int guid,String ip)
   {
-	  if(this.id == 7411)
-		  return;
+          if(this.id == 7411)
+                  return;
     while(this.mobGroups.get(this.nextObjectId)!=null)
       this.nextObjectId--;
     while(this.containsForbiddenCellSpawn(cellID))
       cellID=this.getRandomFreeCellId();
 
-    MobGroup group=new MobGroup(this.nextObjectId,cellID,groupData);
+    MobGroup group=Constant.isInGladiatorDonjon(this.id) ? new MobGroup(this.nextObjectId,this,cellID,groupData) : new MobGroup(this.nextObjectId,cellID,groupData);
     if(group.getMobs().isEmpty())
       return;
     this.mobGroups.put(this.nextObjectId,group);
@@ -1144,7 +1153,7 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
   {
     while(this.mobGroups.get(this.nextObjectId)!=null)
       this.nextObjectId--;
-    MobGroup group=new MobGroup(this.nextObjectId,cellID,groupData);
+    MobGroup group=Constant.isInGladiatorDonjon(this.id) ? new MobGroup(this.nextObjectId,this,cellID,groupData) : new MobGroup(this.nextObjectId,cellID,groupData);
     if(group.getMobs().isEmpty())
       return;
     this.mobGroups.put(this.nextObjectId,group);
@@ -1158,7 +1167,7 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
   {
     while(this.mobGroups.get(this.nextObjectId)!=null)
       this.nextObjectId--;
-    MobGroup group=new MobGroup(this.nextObjectId,cellID,groupData);
+    MobGroup group=Constant.isInGladiatorDonjon(this.id) ? new MobGroup(this.nextObjectId,this,cellID,groupData) : new MobGroup(this.nextObjectId,cellID,groupData);
     if(group.getMobs().isEmpty())
       return;
     this.mobGroups.put(this.nextObjectId,group);
@@ -1173,7 +1182,10 @@ public GameMap(short id, String date, byte w, byte h, String key, String places,
   {
     int cellId=this.getRandomFreeCellId();
     if(cellId==-1)
+    {
+      Main.world.logger.warn("Gladiatrool spawn skipped on map {}: no free cell found.",this.id);
       return;
+    }
     spawnGroupOnCommand(cellId,groupData,true);
   }
 
