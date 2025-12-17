@@ -3874,6 +3874,12 @@ public void setTotal_reculte() {
     this.curMap.getCase(cellID).finishAction(this,GA);
   }
 
+  private void recordGladiatroolProgress()
+  {
+    if(curMap!=null&&curCell!=null&&Constant.isInGladiatorDonjon(curMap.getId()))
+      saveGladiatroolCheckpoint(curMap.getId(),curCell.getId());
+  }
+
   public void teleportD(short newMapID, int newCellID)
   {
     if(this.getFight()!=null)
