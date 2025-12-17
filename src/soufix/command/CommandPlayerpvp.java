@@ -68,13 +68,18 @@ public class CommandPlayerpvp {
                                         SocketManager.GAME_SEND_MESSAGE(perso, "Commande indisponible en combat.", "C35617");
                                         return true;
                                 }
+                                if (perso.getCurMap() == null) {
+                                        return true;
+                                }
+                                if (Constant.isInGladiatorDonjon(perso.getCurMap().getId())
+                                                && (perso.getGroupe() == null || perso.getGroupe().getId() != 7)) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso, "Commande indisponible sur cette carte.", "C35617");
+                                        return true;
+                                }
                                 if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
                                         perso.sendMessage("Tu dois attendre encore "
                                                 + (perso.getGameClient().timeLasttpcommande - System.currentTimeMillis()) / 1000
                                                 + " seconde(s)");
-                                        return true;
-                                }
-                                if (perso.getCurMap() == null) {
                                         return true;
                                 }
                                 perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 3000;
