@@ -108,6 +108,8 @@ public class Player
   private Account account;
   private short oldMap;
   private int oldCell;
+  private short gladiatroolCheckpointMap=0;
+  private int gladiatroolCheckpointCell=0;
   //PDV
   private int _accID;
   private boolean canAggro=true;
@@ -1289,6 +1291,36 @@ public void setTotal_reculte() {
     oldCell=i;
   }
 
+  public void saveGladiatroolCheckpoint(short mapId, int cellId)
+  {
+    if(mapId<=0||cellId<0)
+      return;
+    gladiatroolCheckpointMap=mapId;
+    gladiatroolCheckpointCell=cellId;
+  }
+
+  public void clearGladiatroolCheckpoint()
+  {
+    gladiatroolCheckpointMap=0;
+    gladiatroolCheckpointCell=0;
+  }
+
+  public short getGladiatroolCheckpointMap()
+  {
+    return gladiatroolCheckpointMap;
+  }
+
+  public int getGladiatroolCheckpointCell()
+  {
+    return gladiatroolCheckpointCell;
+  }
+
+  private void recordGladiatroolProgress()
+  {
+    if(curMap!=null&&curCell!=null&&Constant.isInGladiatorDonjon(curMap.getId()))
+      saveGladiatroolCheckpoint(curMap.getId(),curCell.getId());
+  }
+
   public void setOnline(boolean isOnline)
   {
     this.isOnline=isOnline;
@@ -1974,6 +2006,18 @@ public void setTotal_reculte() {
 
   public void setFullMorph(int morphid, boolean isLoad, boolean join)
   {
+    if(Constant.isRestrictedFullMorph(morphid)&&!Constant.isFullMorphArenaMap(this.getCurMap().getId()))
+    {
+      if(_morphMode&&!join)
+        unsetFullMorph();
+      else
+      {
+        _morphMode=false;
+        _morphId=0;
+      }
+      return;
+    }
+
     if(this.isOnMount())
       this.toogleOnMount();
     if(_morphMode&&!join)
@@ -2376,7 +2420,17 @@ public void setTotal_reculte() {
     if(!Config.getInstance().startMessage.equals("")) //Si le motd est notifié
       SocketManager.GAME_SEND_MESSAGE(this,Config.getInstance().startMessage);
     if(_morphMode)
-      setFullMorph(_morphId,true,true);
+    {
+      if(shouldDisableRestrictedFullMorph(this.curMap.getId()))
+      {
+        _morphMode=false;
+        _morphId=0;
+      }
+      else
+      {
+        setFullMorph(_morphId,true,true);
+      }
+    }
 
     if(Config.getInstance().fightAsBlocked)
       this.sendServerMessage("Vous ne pouvez démarrer aucun combat tant que le serveur n'a pas redémarré.");
@@ -3847,6 +3901,7 @@ public void setTotal_reculte() {
     if(client==null)
       return;
     GameClient.leaveExchange(this);
+    recordGladiatroolProgress();
     GameMap map=Main.world.getMap(newMapID);
     if(map==null)
     {
@@ -3866,6 +3921,7 @@ public void setTotal_reculte() {
       this.curCell=curMap.getCase(newCellID);
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
+      disableRestrictedFullMorphIfNeeded(newMapID);
       return;
     }
     if(this.getSpioned_by() != null)
@@ -3924,6 +3980,7 @@ public void setTotal_reculte() {
     this.curMap.addPlayer(this);
     if(fullmorph)
       this.unsetFullMorph();
+    disableRestrictedFullMorphIfNeeded(newMapID);
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -3960,6 +4017,7 @@ public void setTotal_reculte() {
     {
       PW=account.getGameClient();
     }
+    recordGladiatroolProgress();
     if(map==null)
     {
       return;
@@ -4002,6 +4060,7 @@ public void setTotal_reculte() {
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(curMap,this);
       if(fullmorph)
         this.unsetFullMorph();
+      disableRestrictedFullMorphIfNeeded(map.getId());
       return;
     }
     if(PW!=null)
@@ -4047,6 +4106,11 @@ public void setTotal_reculte() {
       curMap.addPlayer(this);
       if(fullmorph)
         this.unsetFullMorph();
+      disableRestrictedFullMorphIfNeeded(map.getId());
+    }
+    else
+    {
+      disableRestrictedFullMorphIfNeeded(map.getId());
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
@@ -4060,6 +4124,18 @@ public void setTotal_reculte() {
       }
     }
   }
+
+  private boolean shouldDisableRestrictedFullMorph(int destinationMapId)
+  {
+    return _morphMode&&Constant.isRestrictedFullMorph(_morphId)&&!Constant.isFullMorphArenaMap(destinationMapId);
+  }
+
+  private void disableRestrictedFullMorphIfNeeded(int destinationMapId)
+  {
+    if(shouldDisableRestrictedFullMorph(destinationMapId))
+      unsetFullMorph();
+  }
+
   public String getStringTitle(int title) { 
 	  if(World.gettitre(title) != null) {
 		return ""+World.gettitre(title).Content+"*"+World.gettitre(title).Color+"";
