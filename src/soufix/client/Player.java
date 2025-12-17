@@ -4135,7 +4135,6 @@ public void setTotal_reculte() {
     if(shouldDisableRestrictedFullMorph(destinationMapId))
       unsetFullMorph();
   }
-
   public String getStringTitle(int title) { 
 	  if(World.gettitre(title) != null) {
 		return ""+World.gettitre(title).Content+"*"+World.gettitre(title).Color+"";
