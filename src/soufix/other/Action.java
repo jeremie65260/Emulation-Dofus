@@ -3123,6 +3123,27 @@ public class Action
         player.teleport((short)mapId,cellId);
         break;
 
+      case 2001://Fullmorph restreinte pour les scripted_cells
+        try
+        {
+          int morphId=Integer.parseInt(args);
+          if(!Constant.isRestrictedFullMorph(morphId))
+            break;
+
+          if(!Constant.isFullMorphArenaMap(player.getCurMap().getId()))
+          {
+            player.unsetFullMorph();
+            break;
+          }
+
+          player.setFullMorph(morphId,false,false);
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+        }
+        break;
+
       case 519://Donjon Grotte Hesque, Arche, Rasboul, Tynril
         mapId=Integer.parseInt(args.split(";")[0].split(",")[0]);
         cellId=Integer.parseInt(args.split(";")[0].split(",")[1]);
