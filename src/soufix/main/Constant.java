@@ -3867,7 +3867,7 @@ public class Constant
 
   public static boolean isInGladiatorDonjon(int id)
   {
-    if(id<15000||id>15072)
+    if(id<15000||id>15080)
       return false;
     return (id-15000)%8==0;
   }

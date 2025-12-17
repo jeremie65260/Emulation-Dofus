@@ -39,7 +39,7 @@ public class Gladiatrool
 
   private static void spawnGroups()
   {
-    for(short i=15000;i<15080;i=(short)(i+8))
+    for(short i=15000;Constant.isInGladiatorDonjon(i);i=(short)(i+8))
     {
       if(Constant.isInGladiatorDonjon(i))
         spawnGroupGladiatrool(i);
@@ -132,6 +132,16 @@ public class Gladiatrool
         max=210;
         break;
       case 15072: // 1250 jeton
+        hasArchi=true;
+        hasBoss=true;
+        minArchi=140;
+        maxArchi=200;
+        minBoss=440;
+        maxBoss=1000;
+        min=170;
+        max=250;
+        break;
+      case 15080: // palier final
         hasArchi=true;
         hasBoss=true;
         minArchi=140;
