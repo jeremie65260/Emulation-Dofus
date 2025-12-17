@@ -1315,12 +1315,6 @@ public void setTotal_reculte() {
     return gladiatroolCheckpointCell;
   }
 
-  private void recordGladiatroolProgress()
-  {
-    if(curMap!=null&&curCell!=null&&Constant.isInGladiatorDonjon(curMap.getId()))
-      saveGladiatroolCheckpoint(curMap.getId(),curCell.getId());
-  }
-
   public void setOnline(boolean isOnline)
   {
     this.isOnline=isOnline;
@@ -4135,7 +4129,6 @@ public void setTotal_reculte() {
     if(shouldDisableRestrictedFullMorph(destinationMapId))
       unsetFullMorph();
   }
-
   public String getStringTitle(int title) { 
 	  if(World.gettitre(title) != null) {
 		return ""+World.gettitre(title).Content+"*"+World.gettitre(title).Color+"";
