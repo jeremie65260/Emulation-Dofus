@@ -40,6 +40,7 @@ import soufix.quest.QuestPlayer;
 import soufix.quest.QuestStep;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -51,6 +52,13 @@ import java.util.stream.Collectors;
 
 public class CommandAdmin extends AdminUser
 {
+
+  private static final Set<Integer> AUTHORIZED_FULLMORPH_IDS=new HashSet<>(Arrays.asList(
+    1,2,3,4,5,6,7,8,9,10,
+    11,12,13,14,15,16,17,18,19,20,
+    21,22,23,24,25,
+    112,111,110,109,108,107,106,105,104,103,102,101,113
+  ));
 
   public CommandAdmin(Player player)
   {
@@ -3777,8 +3785,34 @@ public class CommandAdmin extends AdminUser
     }
     else if(command.equalsIgnoreCase("FULLMORPH"))
     {
-      this.getPlayer().setFullMorph(10,false,false);
-      this.sendMessage("Vous avez ete transforme en crocoburio.");
+      int morphId;
+      try
+      {
+        morphId=Integer.parseInt(infos[1]);
+      }
+      catch(Exception e)
+      {
+        this.sendMessage("Identifiant de morph invalide.");
+        return;
+      }
+
+      if(!AUTHORIZED_FULLMORPH_IDS.contains(morphId))
+      {
+        this.sendMessage("Identifiant de morph non autorise.");
+        return;
+      }
+
+      if(Main.world.getFullMorph(morphId)==null)
+      {
+        this.sendMessage("Aucun full morph trouve pour l'identifiant "+morphId+".");
+        return;
+      }
+
+      this.getPlayer().setFullMorph(morphId,false,false);
+      String name=Main.world.getFullMorph(morphId).get("name");
+      if(name==null||name.isEmpty())
+        name="morph "+morphId;
+      this.sendMessage("Vous avez ete transforme en "+name+".");
       return;
     }
     else if(command.equalsIgnoreCase("UNFULLMORPH"))
