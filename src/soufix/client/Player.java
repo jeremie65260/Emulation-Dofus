@@ -108,6 +108,8 @@ public class Player
   private Account account;
   private short oldMap;
   private int oldCell;
+  private short gladiatroolCheckpointMap=0;
+  private int gladiatroolCheckpointCell=0;
   //PDV
   private int _accID;
   private boolean canAggro=true;
@@ -1287,6 +1289,30 @@ public void setTotal_reculte() {
   public void setOldCell(int i)
   {
     oldCell=i;
+  }
+
+  public void saveGladiatroolCheckpoint(short mapId, int cellId)
+  {
+    if(mapId<=0||cellId<0)
+      return;
+    gladiatroolCheckpointMap=mapId;
+    gladiatroolCheckpointCell=cellId;
+  }
+
+  public void clearGladiatroolCheckpoint()
+  {
+    gladiatroolCheckpointMap=0;
+    gladiatroolCheckpointCell=0;
+  }
+
+  public short getGladiatroolCheckpointMap()
+  {
+    return gladiatroolCheckpointMap;
+  }
+
+  public int getGladiatroolCheckpointCell()
+  {
+    return gladiatroolCheckpointCell;
   }
 
   public void setOnline(boolean isOnline)
@@ -3869,6 +3895,7 @@ public void setTotal_reculte() {
     if(client==null)
       return;
     GameClient.leaveExchange(this);
+    recordGladiatroolProgress();
     GameMap map=Main.world.getMap(newMapID);
     if(map==null)
     {
@@ -3984,6 +4011,7 @@ public void setTotal_reculte() {
     {
       PW=account.getGameClient();
     }
+    recordGladiatroolProgress();
     if(map==null)
     {
       return;
