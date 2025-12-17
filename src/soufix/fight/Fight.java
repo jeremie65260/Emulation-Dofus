@@ -89,6 +89,7 @@ public class Fight
   private boolean MONO=false;
   private boolean DUO=false;
   private boolean bLock_join=false;
+  private boolean gladiatroolRespawnScheduled=false;
   private final Map<Integer, MobGrade> removedMobGradesForModu=new HashMap<>();
   private String curAction="";
   private MobGroup mobGroup;
@@ -121,6 +122,17 @@ public class Fight
   private boolean isXpDisabledOnMap()
   {
     return GLADIATROOL_MAPS.contains((int)getMap().getId());
+  }
+
+  private void scheduleGladiatroolRespawnOnStart()
+  {
+    if(gladiatroolRespawnScheduled)
+      return;
+    if(getMapOld()!=null&&GLADIATROOL_MAPS.contains((int)getMapOld().getId()))
+    {
+      gladiatroolRespawnScheduled=true;
+      Gladiatrool.respawn((short)getMapOld().getId());
+    }
   }
 
   public Fight(int type, int id, GameMap map, Player perso, Player init2)
@@ -288,6 +300,7 @@ public class Fight
       SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getInit0().getPersonnage().getCurMap(),group.getId(),f);
     SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this,7,getMap());
     setState(Constant.FIGHT_STATE_PLACE);
+    scheduleGladiatroolRespawnOnStart();
     if(group.isFix()) //players won against fixed mobgroup
         this.getMapOld().spawnAfterTimeGroupFix(mobGroup.getSpawnCellId(),this.getMapOld().getMinRespawnTime(),this.getMapOld().getMaxRespawnTime());
       
@@ -370,6 +383,7 @@ public class Fight
       SocketManager.GAME_SEND_ADD_IN_TEAM_PACKET_TO_MAP(getInit0().getPersonnage().getCurMap(),group.getId(),f);
     SocketManager.GAME_SEND_MAP_FIGHT_GMS_PACKETS_TO_FIGHT(this,7,getMap());
     setState(Constant.FIGHT_STATE_PLACE);
+    scheduleGladiatroolRespawnOnStart();
   }
 
   public Fight(int id, GameMap map, Player perso, Collector perco)
