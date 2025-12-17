@@ -6,10 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import soufix.area.map.GameMap;
+import soufix.common.Formulas;
 import soufix.entity.monster.MobGrade;
 import soufix.entity.monster.Monster;
 import soufix.main.Constant;
@@ -29,7 +29,14 @@ public class Gladiatrool
 
   public static void respawn(short mapid)
   {
-    TimerWaiterPlus.addNext(() -> spawnGroupGladiatrool(mapid),10,TimeUnit.SECONDS);
+    GameMap map=Main.world.getMap(mapid);
+    if(map==null)
+    {
+      Main.world.logger.warn("Gladiatrool map {} not found, skipping respawn scheduling.",mapid);
+      return;
+    }
+    int delay=Formulas.getRandomValue(map.getMinRespawnTime(),map.getMaxRespawnTime());
+    TimerWaiterPlus.addNext(() -> spawnGroupGladiatrool(mapid),delay);
   }
 
   private static void initializeGladiatrool()
