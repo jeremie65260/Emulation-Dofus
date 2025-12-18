@@ -3144,6 +3144,50 @@ public class Action
         }
         break;
 
+      case 2002://Gladiatrool : reprendre la progression
+        try
+        {
+          short checkpointMapId=player.getGladiatroolCheckpointMap();
+          int checkpointCellId=player.getGladiatroolCheckpointCell();
+
+          if(checkpointMapId>0&&Constant.isInGladiatorDonjon(checkpointMapId))
+          {
+            GameMap checkpointMap=Main.world.getMap(checkpointMapId);
+            if(checkpointMap!=null&&checkpointMap.getCase(checkpointCellId)!=null)
+            {
+              player.teleport(checkpointMapId,checkpointCellId);
+              break;
+            }
+            player.clearGladiatroolCheckpoint();
+          }
+
+          SocketManager.GAME_SEND_MESSAGE(player,"Aucune progression du Gladiatrool n'a été trouvée.","009900");
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+        }
+        break;
+
+      case 2003://Gladiatrool : démarrer ou reprendre manuellement
+        try
+        {
+          String[] data=args.split(",");
+          if(data.length<2)
+            break;
+
+          mapId=Short.parseShort(data[0]);
+          cellId=Integer.parseInt(data[1]);
+
+          player.clearGladiatroolCheckpoint();
+          player.teleport(mapId,cellId);
+        }
+        catch(Exception e)
+        {
+          e.printStackTrace();
+        }
+        break;
+
       case 519://Donjon Grotte Hesque, Arche, Rasboul, Tynril
         mapId=Integer.parseInt(args.split(";")[0].split(",")[0]);
         cellId=Integer.parseInt(args.split(";")[0].split(",")[1]);
