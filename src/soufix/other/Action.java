@@ -3179,6 +3179,26 @@ public class Action
           mapId=Integer.parseInt(data[0]);
           cellId=Integer.parseInt(data[1]);
 
+          if(player.getLevel()<=99)
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"Vous devez au moins niveau 100 pour entrer");
+            break;
+          }
+
+          if(!player.getMorphMode())
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"Vous devez choisir une classe avant de pouvoir entrer");
+            break;
+          }
+
+          if(!player.hasItemTemplate(12804,1))
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"Vous devez possèder un jeton de gladiatrool pour entrer");
+            break;
+          }
+
+          player.removeByTemplateID(12804,1);
+          SocketManager.GAME_SEND_Ow_PACKET(player);
           player.clearGladiatroolCheckpoint();
           player.teleport((short)mapId,cellId);
         }
