@@ -1911,6 +1911,21 @@ public void Anti_bug () {
 }
   public void endFight(boolean b, boolean admin)
   {
+    if(getMapOld()!=null&&Constant.isInGladiatorDonjon(getMapOld().getId()))
+    {
+      for(Fighter fighter : this.getFighters(7))
+      {
+        if(fighter==null||fighter.getPersonnage()==null)
+          continue;
+        int cellId=-1;
+        if(fighter.getCell()!=null)
+          cellId=fighter.getCell().getId();
+        else if(fighter.getPersonnage().getCurCell()!=null)
+          cellId=fighter.getPersonnage().getCurCell().getId();
+        fighter.getPersonnage().saveGladiatroolCheckpoint(getMapOld().getId(),cellId);
+      }
+    }
+
     if(admin) {
     for(Fighter caster : getTeam1().values())
     {
