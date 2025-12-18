@@ -218,7 +218,12 @@ public class Gladiatrool
         if(grade==null)
           continue;
         if(grade.getLevel()>=min&&grade.getLevel()<=max)
+        {
+          // Filtre les mobs ultra faibles (10 PV, 1 PA, 1 PM) pour le Gladiatrool
+          if(grade.getPdvMax()==10&&grade.getPa()==1&&grade.getPm()==1)
+            continue;
           grades.add(grade);
+        }
       }
     }
     return grades;

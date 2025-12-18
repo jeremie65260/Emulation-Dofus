@@ -792,9 +792,14 @@ public class ObjectAction
 			}
 
           case 34: {
+           if(Constant.isFullMorphArenaMap(player0.getCurMap().getId()))
+           {
+             SocketManager.GAME_SEND_MESSAGE(player0,"Changement de classe interdit sur cette carte.");
+             return;
+           }
  			 int classe = 0;
  			 try
-  				{
+ 				{
   				classe = Integer.parseInt(args);
   			}catch(Exception e)
   			{
