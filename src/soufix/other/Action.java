@@ -3176,11 +3176,11 @@ public class Action
           if(data.length<2)
             break;
 
-          short mapId=Short.parseShort(data[0]);
-          int cellId=Integer.parseInt(data[1]);
+          mapId=Integer.parseInt(data[0]);
+          cellId=Integer.parseInt(data[1]);
 
           player.clearGladiatroolCheckpoint();
-          player.teleport(mapId,cellId);
+          player.teleport((short)mapId,cellId);
         }
         catch(Exception e)
         {
