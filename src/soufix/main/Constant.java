@@ -3865,6 +3865,49 @@ public class Constant
     return false;
   }
 
+  public static boolean isFullMorphArenaMap(int id)
+  {
+    switch(id)
+    {
+      case 15080:
+      case 15072:
+      case 15064:
+      case 15056:
+      case 15048:
+      case 15040:
+      case 15032:
+      case 15024:
+      case 15016:
+      case 15008:
+      case 15000:
+      case 12277:
+        return true;
+    }
+    return false;
+  }
+
+  public static boolean isRestrictedFullMorph(int id)
+  {
+    switch(id)
+    {
+      case 101:
+      case 102:
+      case 103:
+      case 104:
+      case 105:
+      case 106:
+      case 107:
+      case 108:
+      case 109:
+      case 110:
+      case 111:
+      case 112:
+      case 113:
+        return true;
+    }
+    return false;
+  }
+
   public static boolean isInGladiatorDonjon(int id)
   {
     if(id<15000||id>15080)
