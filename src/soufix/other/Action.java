@@ -3176,8 +3176,8 @@ public class Action
           if(data.length<2)
             break;
 
-          mapId=Short.parseShort(data[0]);
-          cellId=Integer.parseInt(data[1]);
+          short mapId=Short.parseShort(data[0]);
+          int cellId=Integer.parseInt(data[1]);
 
           player.clearGladiatroolCheckpoint();
           player.teleport(mapId,cellId);
