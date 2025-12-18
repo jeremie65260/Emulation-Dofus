@@ -1293,7 +1293,7 @@ public void setTotal_reculte() {
 
   public void saveGladiatroolCheckpoint(short mapId, int cellId)
   {
-    if(mapId<=0||cellId<0||!Constant.isInGladiatorDonjon(mapId))
+    if(mapId<=0||cellId<0)
       return;
     gladiatroolCheckpointMap=mapId;
     gladiatroolCheckpointCell=cellId;
@@ -4135,7 +4135,6 @@ public void setTotal_reculte() {
     if(shouldDisableRestrictedFullMorph(destinationMapId))
       unsetFullMorph();
   }
-
   public String getStringTitle(int title) { 
 	  if(World.gettitre(title) != null) {
 		return ""+World.gettitre(title).Content+"*"+World.gettitre(title).Color+"";
