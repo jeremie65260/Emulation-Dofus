@@ -2,6 +2,11 @@ Emulateur Game de Rpg-rampage, basé sur casper.
 # Game-Rpg-rampage 1.0.0:
     - Implantation de la logique de génération gladiatrool basé sur starloco
     - Bridage gladia à 2 joueurs + Désactivation des monstres alignés au gladia
+    -Ajout des listes de cartes autorisées et des identifiants de fullmorph restreintes.
+    - Désactivation automatique des fullmorphs restreintes en dehors des cartes autorisées lors des connexions et téléportations.
+    -Création d'une action scripted_cells (2001) pour appliquer ces fullmorphs uniquement sur les cartes autorisées.
+    Blocage de l'utilisation des potions de changement de classe sur les cartes gladiatrool.
+    Ajout d'un checkpoint Gladiatrool avec action de reprise (2002) et remise à zéro après victoire sur la carte 15080.
 # Game-Rpg-rampage 0.9.9:
     - Désactivation des bonus d'alignements + correction du modulaire pour qu'il prenne le haut gradé en compte
     -Quand on est en .maitre et qu'un player abandonne, il ne spawn plus au point sauvegardé mais bien sur la même map que son coéquipier et n'est plus figé sur la map.

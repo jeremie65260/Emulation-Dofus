@@ -3144,32 +3144,6 @@ public class Action
         }
         break;
 
-      case 2002://Reprendre progression Gladiatrool
-        try
-        {
-          short checkpointMap=player.getGladiatroolCheckpointMap();
-          int checkpointCell=player.getGladiatroolCheckpointCell();
-          if(checkpointMap<=0||checkpointCell<0||!Constant.isInGladiatorDonjon(checkpointMap))
-          {
-            SocketManager.GAME_SEND_MESSAGE(player,"Aucune progression Gladiatrool enregistrée.");
-            break;
-          }
-          GameMap checkpoint=Main.world.getMap(checkpointMap);
-          if(checkpoint==null)
-          {
-            SocketManager.GAME_SEND_MESSAGE(player,"Impossible de retrouver la carte de reprise Gladiatrool.");
-            break;
-          }
-          if(checkpoint.getCase(checkpointCell)==null)
-            checkpointCell=checkpoint.getRandomFreeCellId();
-          player.teleport(checkpoint,checkpointCell);
-        }
-        catch(Exception e)
-        {
-          e.printStackTrace();
-        }
-        break;
-
       case 519://Donjon Grotte Hesque, Arche, Rasboul, Tynril
         mapId=Integer.parseInt(args.split(";")[0].split(",")[0]);
         cellId=Integer.parseInt(args.split(";")[0].split(",")[1]);
