@@ -71,7 +71,6 @@ public class CommandPlayerpvm {
 		if (trimmedMsg.isEmpty() || trimmedMsg.charAt(0) != '.' || trimmedMsg.length() < 2 || trimmedMsg.charAt(1) == '.') {
 			return false;
 		}
-		String trimmedMsg = msg.trim();
 		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
 			return perso.showGladiatroolBonusPopup();
 		}

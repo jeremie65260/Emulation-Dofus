@@ -35,7 +35,6 @@ public class CommandPlayerheroic {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
 		} 
-		String trimmedMsg = msg.trim();
 		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
 			return perso.showGladiatroolBonusPopup();
 		}
