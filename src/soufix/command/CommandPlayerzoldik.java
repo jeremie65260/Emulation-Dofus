@@ -25,20 +25,21 @@ public class CommandPlayerzoldik {
 	}
 
 	public static boolean analyse(final Player perso, final String msg) {
-		String commandLower = msg.trim().toLowerCase();
-		if (commandLower.isEmpty() || commandLower.charAt(0) != '.' || commandLower.length() < 2 || commandLower.charAt(1) == '.') {
+		String trimmedMsg = msg.trim();
+		if (trimmedMsg.isEmpty() || trimmedMsg.charAt(0) != '.' || trimmedMsg.length() < 2 || trimmedMsg.charAt(1) == '.') {
 			return false;
 		}
-		if(commandLower.startsWith(".popup")) {
+		String trimmedMsg = msg.trim();
+		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
 			return perso.showGladiatroolBonusPopup();
 		}
-		if(commandLower.startsWith(".b1")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b1")) {
 			return perso.applyGladiatroolBonusChoice(0);
 		}
-		if(commandLower.startsWith(".b2")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b2")) {
 			return perso.applyGladiatroolBonusChoice(1);
 		}
-		if(commandLower.startsWith(".b3")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b3")) {
 			return perso.applyGladiatroolBonusChoice(2);
 		}
 		if(perso.getGameClient() == null)
