@@ -3071,14 +3071,7 @@ public void setTotal_reculte() {
   {
     if(this.useStats||isGladiatroolStatsSuppressed())
     {
-      Stats stats=new Stats(false,null);
-      for(GameObject gameObject : this.objects.values())
-      {
-        if(gameObject.getTemplate().getId()!=GLADIATROOL_QUEST_ITEM_ID)
-          continue;
-        stats=Stats.cumulStat(stats,gameObject.getStats(),this);
-      }
-      return stats;
+      return new Stats(false,null);
     }
 
     Stats stats=new Stats(false,null);
