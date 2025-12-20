@@ -3880,7 +3880,6 @@ public class Constant
       case 15016:
       case 15008:
       case 15000:
-      case 12277:
         return true;
     }
     return false;
@@ -3915,7 +3914,7 @@ public class Constant
 
   public static boolean isGladiatroolMap(int id)
   {
-    return id==12277||isInGladiatorDonjon(id);
+    return isInGladiatorDonjon(id);
   }
 
   public static int[] getOppositeStats(int statsId)
