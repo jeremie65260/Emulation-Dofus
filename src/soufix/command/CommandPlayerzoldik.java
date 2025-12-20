@@ -28,13 +28,17 @@ public class CommandPlayerzoldik {
 		if (msg.charAt(0) != '.' || msg.charAt(1) == '.') {
 			return false;
 		}
-		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b1")) {
+		String trimmedMsg = msg.trim();
+		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
+			return perso.showGladiatroolBonusPopup();
+		}
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b1")) {
 			return perso.applyGladiatroolBonusChoice(0);
 		}
-		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b2")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b2")) {
 			return perso.applyGladiatroolBonusChoice(1);
 		}
-		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b3")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b3")) {
 			return perso.applyGladiatroolBonusChoice(2);
 		}
 		if(perso.getGameClient() == null)
