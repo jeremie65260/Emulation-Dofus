@@ -5,6 +5,7 @@ import soufix.area.map.GameMap;
 import soufix.area.map.entity.House;
 import soufix.area.map.entity.InteractiveObject;
 import soufix.area.map.entity.MountPark;
+import soufix.area.map.labyrinth.Gladiatrool;
 import soufix.client.other.Party;
 import soufix.client.other.Shortcuts;
 import soufix.client.other.Stalk;
@@ -110,6 +111,9 @@ public class Player
   private int oldCell;
   private short gladiatroolCheckpointMap=0;
   private int gladiatroolCheckpointCell=0;
+  private static final int GLADIATROOL_QUEST_ITEM_ID=20142;
+  private final List<Gladiatrool.BonusOption> gladiatroolBonusChoices=new ArrayList<>();
+  private Stats gladiatroolBonusStats=new Stats();
   //PDV
   private int _accID;
   private boolean canAggro=true;
@@ -939,6 +943,121 @@ public void setTotal_reculte() {
   private boolean isGladiatroolStatsSuppressed()
   {
     return this.curMap!=null&&Constant.isGladiatroolMap(this.curMap.getId());
+  }
+
+  private void updateGladiatroolQuestItem(boolean shouldHaveItem)
+  {
+    if(shouldHaveItem)
+    {
+      ensureGladiatroolQuestItem();
+    }
+    else
+    {
+      removeGladiatroolQuestItem();
+      clearGladiatroolBonuses();
+    }
+  }
+
+  private void ensureGladiatroolQuestItem()
+  {
+    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
+    if(template==null)
+      return;
+    GameObject existingQuestItem=getGladiatroolQuestItem();
+    if(existingQuestItem!=null&&hasGladiatroolQuestItemStats(existingQuestItem))
+      return;
+    if(existingQuestItem!=null)
+      removeByTemplateID(GLADIATROOL_QUEST_ITEM_ID,1);
+    GameObject obj=template.createNewItem(1,true);
+    if(addObjet(obj,true))
+      World.addGameObject(obj,true);
+    SocketManager.GAME_SEND_Ow_PACKET(this);
+    SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+GLADIATROOL_QUEST_ITEM_ID);
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private GameObject getGladiatroolQuestItem()
+  {
+    for(GameObject obj : objects.values())
+    {
+      if(obj.getTemplate().getId()==GLADIATROOL_QUEST_ITEM_ID)
+        return obj;
+    }
+    return null;
+  }
+
+  private boolean hasGladiatroolQuestItemStats(GameObject item)
+  {
+    if(item==null||item.getStats()==null)
+      return false;
+    return !item.getStats().getMap().isEmpty();
+  }
+
+  private void removeGladiatroolQuestItem()
+  {
+    while(hasItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1))
+      removeByTemplateID(GLADIATROOL_QUEST_ITEM_ID,1);
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private void clearGladiatroolBonuses()
+  {
+    gladiatroolBonusStats=new Stats();
+    gladiatroolBonusChoices.clear();
+  }
+
+  public void offerGladiatroolBonusChoices()
+  {
+    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+      return;
+    gladiatroolBonusChoices.clear();
+    gladiatroolBonusChoices.addAll(Gladiatrool.rollToniqueBonuses(3));
+    showGladiatroolBonusPopup();
+  }
+
+  public boolean showGladiatroolBonusPopup()
+  {
+    if(gladiatroolBonusChoices.isEmpty())
+    {
+      SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
+      return true;
+    }
+    StringBuilder message=new StringBuilder();
+    message.append("Victoire ! Choisissez un bonus :");
+    for(int i=0;i<gladiatroolBonusChoices.size();i++)
+      message.append("\n").append(i+1).append(") ").append(gladiatroolBonusChoices.get(i).getLabel());
+    message.append("\nUtilisez .b1, .b2 ou .b3 pour sélectionner.");
+    message.append("\nSi tu veux revoir la fenêtre tape .popup");
+    SocketManager.PACKET_POPUP(this,message.toString());
+    return true;
+  }
+
+  public boolean applyGladiatroolBonusChoice(int choiceIndex)
+  {
+    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+    {
+      SocketManager.GAME_SEND_MESSAGE(this,"Ce bonus n'est disponible qu'en gladiatrool.");
+      return true;
+    }
+    if(gladiatroolBonusChoices.isEmpty())
+    {
+      SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
+      return true;
+    }
+    if(choiceIndex<0||choiceIndex>=gladiatroolBonusChoices.size())
+    {
+      SocketManager.GAME_SEND_MESSAGE(this,"Choix invalide.");
+      return true;
+    }
+    Gladiatrool.BonusOption option=gladiatroolBonusChoices.get(choiceIndex);
+    gladiatroolBonusStats.addOneStat(option.getStatId(),option.getValue());
+    gladiatroolBonusChoices.clear();
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+    SocketManager.GAME_SEND_MESSAGE(this,"Bonus obtenu : "+option.getLabel(),"008000");
+    return true;
   }
 
   private Stats getEffectiveBaseStats()
@@ -2989,7 +3108,16 @@ public void setTotal_reculte() {
   public Stats getStuffStats()
   {
     if(this.useStats||isGladiatroolStatsSuppressed())
-      return new Stats();
+    {
+      Stats stats=new Stats(false,null);
+      for(GameObject gameObject : this.objects.values())
+      {
+        if(gameObject.getTemplate().getId()!=GLADIATROOL_QUEST_ITEM_ID)
+          continue;
+        stats=Stats.cumulStat(stats,gameObject.getStats(),this);
+      }
+      return stats;
+    }
 
     Stats stats=new Stats(false,null);
     ArrayList<Integer> itemSetApplied=new ArrayList<>();
@@ -3102,6 +3230,7 @@ public void setTotal_reculte() {
   public Stats getDonsStats()
   {
     Stats stats=new Stats(false,null);
+    stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
     return stats;
   }
 
@@ -4008,6 +4137,7 @@ public void setTotal_reculte() {
       return;
     this.curMap=Main.world.getMap(newMapID);
     this.curCell=Main.world.getMap(newMapID).getCase(newCellID);
+    updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
     //Database.getStatics().getPlayerData().update(this);
   }
 
@@ -4047,6 +4177,7 @@ public void setTotal_reculte() {
       disableRestrictedFullMorphIfNeeded(newMapID);
       if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
         this.unequipAllExceptApparats();
+      updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4109,6 +4240,7 @@ public void setTotal_reculte() {
     if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
       this.unequipAllExceptApparats();
     refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(newMapID));
+    updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4192,6 +4324,7 @@ public void setTotal_reculte() {
       disableRestrictedFullMorphIfNeeded(map.getId());
       if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
         this.unequipAllExceptApparats();
+      updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
       return;
     }
     if(PW!=null)
@@ -4241,6 +4374,7 @@ public void setTotal_reculte() {
       if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
         this.unequipAllExceptApparats();
       refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
+      updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
     }
     else
     {
@@ -4248,6 +4382,7 @@ public void setTotal_reculte() {
       if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
         this.unequipAllExceptApparats();
       refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
+      updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
@@ -6953,6 +7088,7 @@ public void setTotal_reculte() {
       SocketManager.GAME_SEND_MAPDATA(PW,newMapID,curMap.getDate(),curMap.getKey());
       curMap.addPlayer(this);
     }
+    updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
 
     if(!follower.isEmpty())//On met a jour la Map des personnages qui nous suivent
     {
