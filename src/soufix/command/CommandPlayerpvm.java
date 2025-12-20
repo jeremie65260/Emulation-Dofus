@@ -71,16 +71,16 @@ public class CommandPlayerpvm {
 		if (trimmedMsg.isEmpty() || trimmedMsg.charAt(0) != '.' || trimmedMsg.length() < 2 || trimmedMsg.charAt(1) == '.') {
 			return false;
 		}
-		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
+		if(isSimpleCommand(trimmedMsg, ".popup")) {
 			return perso.showGladiatroolBonusPopup();
 		}
-		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b1")) {
+		if(isSimpleCommand(trimmedMsg, ".b1")) {
 			return perso.applyGladiatroolBonusChoice(0);
 		}
-		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b2")) {
+		if(isSimpleCommand(trimmedMsg, ".b2")) {
 			return perso.applyGladiatroolBonusChoice(1);
 		}
-		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b3")) {
+		if(isSimpleCommand(trimmedMsg, ".b3")) {
 			return perso.applyGladiatroolBonusChoice(2);
 		}
 		if(perso.getGameClient() == null)
@@ -140,8 +140,17 @@ public class CommandPlayerpvm {
 			else {
 	    		SocketManager.GAME_SEND_MESSAGE(perso,"Vous ne portez pas l'item neccéssaire.","222222");
 	    		return true;
-	    	}
-	    }
+	}
+
+	private static boolean isSimpleCommand(String trimmedMsg, String command) {
+		String lower = trimmedMsg.toLowerCase();
+		if (!lower.startsWith(command)) {
+			return false;
+		}
+		int commandLength = command.length();
+		return lower.length() == commandLength || Character.isWhitespace(lower.charAt(commandLength));
+	}
+}
 		else
 		if (choix.equalsIgnoreCase("Cac"))
 	    {

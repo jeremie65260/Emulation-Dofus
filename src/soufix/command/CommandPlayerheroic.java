@@ -35,16 +35,16 @@ public class CommandPlayerheroic {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
 		} 
-		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
+		if(isSimpleCommand(trimmedMsg, ".popup")) {
 			return perso.showGladiatroolBonusPopup();
 		}
-		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b1")) {
+		if(isSimpleCommand(trimmedMsg, ".b1")) {
 			return perso.applyGladiatroolBonusChoice(0);
 		}
-		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b2")) {
+		if(isSimpleCommand(trimmedMsg, ".b2")) {
 			return perso.applyGladiatroolBonusChoice(1);
 		}
-		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b3")) {
+		if(isSimpleCommand(trimmedMsg, ".b3")) {
 			return perso.applyGladiatroolBonusChoice(2);
 		}
 		if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("all") || msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("monde")) {
@@ -808,5 +808,14 @@ public class CommandPlayerheroic {
 				return true;
 			}
 		}
+	}
+
+	private static boolean isSimpleCommand(String trimmedMsg, String command) {
+		String lower = trimmedMsg.toLowerCase();
+		if (!lower.startsWith(command)) {
+			return false;
+		}
+		int commandLength = command.length();
+		return lower.length() == commandLength || Character.isWhitespace(lower.charAt(commandLength));
 	}
 }
