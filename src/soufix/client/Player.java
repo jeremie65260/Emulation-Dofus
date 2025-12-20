@@ -3746,6 +3746,30 @@ public void setTotal_reculte() {
     //Database.getStatics().getObjectData().update(o);
   }
 
+  public void unequipAllExceptQuestItems()
+  {
+    byte[] positions={
+        Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE,
+        Constant.ITEM_POS_ARME
+    };
+    for(byte pos : positions)
+    {
+      GameObject obj=getObjetByPos(pos);
+      if(obj==null||obj.getTemplate()==null)
+        continue;
+      int type=obj.getTemplate().getType();
+      if(type==Constant.ITEM_TYPE_QUETES||type==Constant.ITEM_TYPE_OBJET_MISSION)
+        continue;
+      unequipedObjet(obj);
+    }
+  }
+
   public void verifEquiped()
   {
     if(this.getMorphMode())
@@ -7594,10 +7618,12 @@ public void setOne_windows(boolean one_windows) {
 	public void addSetRapido(int id, String nombre, int icono, String data) {
 		SetRapido set = new SetRapido(id, nombre, icono, data);
 		_setsRapidos.put(set.getID(), set);
+		Database.getStatics().getPlayerData().update(this);
 	}
 	
 	public void borrarSetRapido(int id) {
 		_setsRapidos.remove(id);
+		Database.getStatics().getPlayerData().update(this);
 	}
 	
 	public SetRapido getSetRapido(int id) {
