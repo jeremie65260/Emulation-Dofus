@@ -660,6 +660,11 @@ public int chek;
         this.send("APK"+name);
         break;
       case 'p':
+        if(this.player.getCurMap()!=null&&Constant.isGladiatroolMap(this.player.getCurMap().getId()))
+        {
+          this.player.sendMessage("Vous ne pouvez pas réinitialiser vos caractéristiques sur cette carte.");
+          return;
+        }
     	    switch(packet.charAt(2)) {
     	    case 'c':
       		  
@@ -991,6 +996,11 @@ private void crearPacketKey() {
     try
     {
       int stat=-1;
+      if(this.player.getCurMap()!=null&&Constant.isGladiatroolMap(this.player.getCurMap().getId()))
+      {
+        this.player.sendMessage("Vous ne pouvez pas attribuer de points de caractéristiques sur cette carte.");
+        return;
+      }
       if(this.player.getMorphMode())
       {
         this.player.sendMessage("Vous étes incarné, vous ne pouvez pas utiliser vos points caractéristiques dans cet état.");
@@ -8165,6 +8175,11 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         {
           try
           {
+            if(this.player.getCurMap()!=null&&Constant.isGladiatroolMap(this.player.getCurMap().getId()))
+            {
+              this.player.sendMessage("Vous ne pouvez pas attribuer de points de caractéristiques sur cette carte.");
+              return;
+            }
             int code=0;
             code=Integer.parseInt(packet);
             if(code<0)
@@ -8622,9 +8637,9 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           }
           this.player.removeItemClasse(objTemplate.getId());
         }
-        if(this.player.getCurMap()!=null&&this.player.getCurMap().getId()==12277&&position!=Constant.ITEM_POS_NO_EQUIPED&&object.getTemplate().getType()!=Constant.ITEM_TYPE_OBJET_VIVANT)
+        if(this.player.getCurMap()!=null&&Constant.isGladiatroolMap(this.player.getCurMap().getId())&&position!=Constant.ITEM_POS_NO_EQUIPED)
         {
-          SocketManager.GAME_SEND_MESSAGE(this.player,"Vous ne pouvez équiper que des apparats sur cette carte.");
+          SocketManager.GAME_SEND_MESSAGE(this.player,"Vous ne pouvez équiper aucun objet sur cette carte.");
           return;
         }
         if(!Constant.isValidPlaceForItem(object.getTemplate(),position)&&position!=Constant.ITEM_POS_NO_EQUIPED&&object.getTemplate().getType()!=Constant.ITEM_TYPE_OBJET_VIVANT)

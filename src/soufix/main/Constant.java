@@ -3915,6 +3915,11 @@ public class Constant
     return (id-15000)%8==0;
   }
 
+  public static boolean isGladiatroolMap(int id)
+  {
+    return id==12277||isInGladiatorDonjon(id);
+  }
+
   public static int[] getOppositeStats(int statsId)
   {
     if(statsId==217)
