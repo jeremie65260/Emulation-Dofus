@@ -1510,6 +1510,14 @@ public void setTimeLastTaverne(long timeLastTaverne) {
     if(packet.length()<6)
       return;
 
+    String[] packetParts=packet.split("\\|",2);
+    if(packetParts.length>1)
+    {
+      msg=packetParts[1];
+      if(handleGladiatroolChatCommand(msg))
+        return;
+    }
+
     switch(packet.charAt(2))
     {
       case '*'://Defaut
@@ -1821,6 +1829,22 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           this.send("Im0168;"+target.getName()+"~"+target.getAccount().getMuteTime());
         break;
     }
+  }
+
+  private boolean handleGladiatroolChatCommand(String msg)
+  {
+    if(msg==null)
+      return false;
+    String trimmedMsg=msg.trim();
+    if(".popup".equalsIgnoreCase(trimmedMsg))
+      return this.player.showGladiatroolBonusPopup();
+    if(".b1".equalsIgnoreCase(trimmedMsg))
+      return this.player.applyGladiatroolBonusChoice(0);
+    if(".b2".equalsIgnoreCase(trimmedMsg))
+      return this.player.applyGladiatroolBonusChoice(1);
+    if(".b3".equalsIgnoreCase(trimmedMsg))
+      return this.player.applyGladiatroolBonusChoice(2);
+    return false;
   }
 
   private void whoIs(String packet)
