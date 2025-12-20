@@ -1063,7 +1063,6 @@ public void setTotal_reculte() {
     }
     Gladiatrool.BonusOption option=gladiatroolBonusChoices.get(choiceIndex);
     gladiatroolBonusStats.addOneStat(option.getStatId(),option.getValue());
-    applyGladiatroolBonusToQuestItem(option);
     gladiatroolBonusChoices.clear();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -3242,8 +3241,7 @@ public void setTotal_reculte() {
   public Stats getDonsStats()
   {
     Stats stats=new Stats(false,null);
-    if(!isGladiatroolStatsSuppressed())
-      stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
+    stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
     return stats;
   }
 
