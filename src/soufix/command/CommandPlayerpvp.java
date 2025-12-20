@@ -24,7 +24,8 @@ public class CommandPlayerpvp {
 	}
 
 	public static boolean analyse(final Player perso, final String msg) {
-		if (msg.charAt(0) != '.' || msg.charAt(1) == '.') {
+		String trimmedMsg = msg.trim();
+		if (trimmedMsg.isEmpty() || trimmedMsg.charAt(0) != '.' || trimmedMsg.length() < 2 || trimmedMsg.charAt(1) == '.') {
 			return false;
 		}
 		String trimmedMsg = msg.trim();
