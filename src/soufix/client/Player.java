@@ -2250,6 +2250,86 @@ public void setTotal_reculte() {
     Database.getStatics().getPlayerData().delete(this);
   }
 
+  public void unequipAll()
+  {
+    byte[] positions={
+        Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE,
+        Constant.ITEM_POS_ARME
+    };
+    for(byte pos : positions)
+    {
+      GameObject obj=getObjetByPos(pos);
+      if(obj==null||obj.getTemplate()==null)
+        continue;
+      unequipedObjet(obj);
+    }
+  }
+
+  private void reapplyParchoStat(int parchoStatId, int boostStatId)
+  {
+    int value=this.getStatsParcho().getEffect(parchoStatId);
+    if(value==0)
+      return;
+    this.getStatsParcho().addOneStat(parchoStatId,-value);
+    for(int i=0;i<value;i++)
+    {
+      switch(boostStatId)
+      {
+        case 11:
+          if(this.getClasse()!=Constant.CLASS_SACRIEUR)
+            this.stats.addOneStat(Constant.STATS_ADD_VITA,1);
+          else
+            this.stats.addOneStat(Constant.STATS_ADD_VITA,2);
+          break;
+        case 12:
+          this.stats.addOneStat(Constant.STATS_ADD_SAGE,1);
+          break;
+        case 10:
+          this.stats.addOneStat(Constant.STATS_ADD_FORC,1);
+          break;
+        case 13:
+          this.stats.addOneStat(Constant.STATS_ADD_CHAN,1);
+          break;
+        case 14:
+          this.stats.addOneStat(Constant.STATS_ADD_AGIL,1);
+          break;
+        case 15:
+          this.stats.addOneStat(Constant.STATS_ADD_INTE,1);
+          break;
+        default:
+          return;
+      }
+      this.getStatsParcho().addOneStat(parchoStatId,1);
+    }
+  }
+
+  public void resetCharacteristicsKeepParcho()
+  {
+    this.stats.addOneStat(125,-this.stats.getEffect(125));
+    this.stats.addOneStat(124,-this.stats.getEffect(124));
+    this.stats.addOneStat(118,-this.stats.getEffect(118));
+    this.stats.addOneStat(123,-this.stats.getEffect(123));
+    this.stats.addOneStat(119,-this.stats.getEffect(119));
+    this.stats.addOneStat(126,-this.stats.getEffect(126));
+
+    reapplyParchoStat(Constant.STATS_ADD_VITA,11);
+    reapplyParchoStat(Constant.STATS_ADD_SAGE,12);
+    reapplyParchoStat(Constant.STATS_ADD_FORC,10);
+    reapplyParchoStat(Constant.STATS_ADD_CHAN,13);
+    reapplyParchoStat(Constant.STATS_ADD_AGIL,14);
+    reapplyParchoStat(Constant.STATS_ADD_INTE,15);
+
+    this.addCapital((this.getLevel()-1)*5-this.get_capital());
+    this.refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
   //v2.0 - Removed voting message
   public void OnJoinGame()
   {
@@ -2343,6 +2423,11 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_Ow_PACKET(this);
     SocketManager.GAME_SEND_SEE_FRIEND_CONNEXION(client,_showFriendConnection);
     SocketManager.GAME_SEND_SPELL_LIST(this);
+    if(this.curMap!=null&&Constant.isGladiatroolMap(this.curMap.getId()))
+    {
+      this.unequipAll();
+      this.resetCharacteristicsKeepParcho();
+    }
     this.account.sendOnline();
 
     try {
@@ -3951,8 +4036,11 @@ public void setTotal_reculte() {
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
       disableRestrictedFullMorphIfNeeded(newMapID);
-      if(newMapID==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isGladiatroolMap(newMapID))
+      {
+        this.unequipAll();
+        this.resetCharacteristicsKeepParcho();
+      }
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4012,8 +4100,11 @@ public void setTotal_reculte() {
     if(fullmorph)
       this.unsetFullMorph();
     disableRestrictedFullMorphIfNeeded(newMapID);
-    if(newMapID==12277)
-      this.unequipAllExceptApparats();
+    if(Constant.isGladiatroolMap(newMapID))
+    {
+      this.unequipAll();
+      this.resetCharacteristicsKeepParcho();
+    }
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4094,8 +4185,11 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isGladiatroolMap(map.getId()))
+      {
+        this.unequipAll();
+        this.resetCharacteristicsKeepParcho();
+      }
       return;
     }
     if(PW!=null)
@@ -4142,14 +4236,20 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isGladiatroolMap(map.getId()))
+      {
+        this.unequipAll();
+        this.resetCharacteristicsKeepParcho();
+      }
     }
     else
     {
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isGladiatroolMap(map.getId()))
+      {
+        this.unequipAll();
+        this.resetCharacteristicsKeepParcho();
+      }
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
