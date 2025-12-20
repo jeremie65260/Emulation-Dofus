@@ -5,8 +5,10 @@ Emulateur Game de Rpg-rampage, basé sur casper.
     -Ajout des listes de cartes autorisées et des identifiants de fullmorph restreintes.
     - Désactivation automatique des fullmorphs restreintes en dehors des cartes autorisées lors des connexions et téléportations.
     -Création d'une action scripted_cells (2001) pour appliquer ces fullmorphs uniquement sur les cartes autorisées.
-    Blocage de l'utilisation des potions de changement de classe sur les cartes gladiatrool.
-    Ajout d'un checkpoint Gladiatrool avec action de reprise (2002) et remise à zéro après victoire sur la carte 15080.
+    - Blocage de l'utilisation des potions de changement de classe sur les cartes gladiatrool.
+    - Ajout d'un checkpoint Gladiatrool avec action de reprise (2002) et remise à zéro après victoire sur la carte 15080.
+    - correction du glitch de reprise de progression en gladiatrool : Vérifie désormais qu'on a bien selectionné une classe.
+    - Désactivation du CaC en Gladiatrool
 # Game-Rpg-rampage 0.9.9:
     - Désactivation des bonus d'alignements + correction du modulaire pour qu'il prenne le haut gradé en compte
     -Quand on est en .maitre et qu'un player abandonne, il ne spawn plus au point sauvegardé mais bien sur la même map que son coéquipier et n'est plus figé sur la map.

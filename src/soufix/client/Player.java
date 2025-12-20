@@ -3770,34 +3770,6 @@ public void setTotal_reculte() {
     }
   }
 
-  public void unequipAllExceptApparats()
-  {
-    unequipAllExceptApparatsInternal();
-  }
-
-  private void unequipAllExceptApparatsInternal()
-  {
-    byte[] positions={
-        Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
-        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
-        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
-        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
-        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
-        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
-        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE,
-        Constant.ITEM_POS_ARME
-    };
-    for(byte pos : positions)
-    {
-      GameObject obj=getObjetByPos(pos);
-      if(obj==null||obj.getTemplate()==null)
-        continue;
-      if(obj.getTemplate().getType()==Constant.ITEM_TYPE_OBJET_VIVANT)
-        continue;
-      unequipedObjet(obj);
-    }
-  }
-
   public void verifEquiped()
   {
     if(this.getMorphMode())
