@@ -35,17 +35,17 @@ public class CommandPlayerheroic {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
 		} 
-		String loweredMsg = trimmedMsg.toLowerCase();
-		if(loweredMsg.startsWith(".popup")) {
+		String trimmedMsg = msg.trim();
+		if(trimmedMsg.length() == 6 && trimmedMsg.substring(1, 6).equalsIgnoreCase("popup")) {
 			return perso.showGladiatroolBonusPopup();
 		}
-		if(loweredMsg.startsWith(".b1")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b1")) {
 			return perso.applyGladiatroolBonusChoice(0);
 		}
-		if(loweredMsg.startsWith(".b2")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b2")) {
 			return perso.applyGladiatroolBonusChoice(1);
 		}
-		if(loweredMsg.startsWith(".b3")) {
+		if(trimmedMsg.length() == 3 && trimmedMsg.substring(1, 3).equalsIgnoreCase("b3")) {
 			return perso.applyGladiatroolBonusChoice(2);
 		}
 		if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("all") || msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("monde")) {
