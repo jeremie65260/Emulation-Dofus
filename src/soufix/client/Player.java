@@ -960,38 +960,18 @@ public void setTotal_reculte() {
 
   private void ensureGladiatroolQuestItem()
   {
+    if(hasItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1))
+      return;
     ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
     if(template==null)
       return;
-    GameObject existingQuestItem=getGladiatroolQuestItem();
-    if(existingQuestItem!=null&&hasGladiatroolQuestItemStats(existingQuestItem))
-      return;
-    if(existingQuestItem!=null)
-      removeByTemplateID(GLADIATROOL_QUEST_ITEM_ID,1);
-    GameObject obj=template.createNewItem(1,true);
+    GameObject obj=template.createNewItem(1,false);
     if(addObjet(obj,true))
       World.addGameObject(obj,true);
     SocketManager.GAME_SEND_Ow_PACKET(this);
     SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+GLADIATROOL_QUEST_ITEM_ID);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
-  }
-
-  private GameObject getGladiatroolQuestItem()
-  {
-    for(GameObject obj : objects.values())
-    {
-      if(obj.getTemplate().getId()==GLADIATROOL_QUEST_ITEM_ID)
-        return obj;
-    }
-    return null;
-  }
-
-  private boolean hasGladiatroolQuestItemStats(GameObject item)
-  {
-    if(item==null||item.getStats()==null)
-      return false;
-    return !item.getStats().getMap().isEmpty();
   }
 
   private void removeGladiatroolQuestItem()
