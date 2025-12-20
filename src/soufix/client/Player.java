@@ -1048,7 +1048,7 @@ public void setTotal_reculte() {
     gladiatroolBonusChoices.clear();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
-    SocketManager.GAME_SEND_MESSAGE(this,"Bonus obtenu : "+option.getLabel(),"008000");
+    SocketManager.GAME_SEND_MESSAGE(this,"Votre bonus a été appliqué : "+option.getLabel(),"008000");
     return true;
   }
 
