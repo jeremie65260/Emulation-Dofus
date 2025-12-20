@@ -3880,7 +3880,6 @@ public class Constant
       case 15016:
       case 15008:
       case 15000:
-      case 12277:
         return true;
     }
     return false;

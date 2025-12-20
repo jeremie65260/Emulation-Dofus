@@ -987,9 +987,7 @@ public void setTotal_reculte() {
   {
     if(item==null||template==null)
       return;
-    Stats baseStats=template.generateNewStatsFromTemplate(template.getStrTemplate(),false);
-    double multiplier=getGladiatroolWinMultiplier();
-    item.setStats(scaleStats(baseStats,multiplier));
+    item.setStats(template.generateNewStatsFromTemplate(template.getStrTemplate(),false));
     SocketManager.GAME_SEND_UPDATE_ITEM(this,item);
   }
 
