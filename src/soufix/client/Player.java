@@ -983,9 +983,10 @@ public void setTotal_reculte() {
 
   public void applyGladiatroolVictoryBonus()
   {
+    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+      return;
     gladiatroolWinStreak++;
-    gladiatroolBonusStats=new Stats();
-    updateGladiatroolQuestItemStats(true);
+    refreshGladiatroolBonusStats();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
@@ -996,29 +997,20 @@ public void setTotal_reculte() {
       return;
     gladiatroolWinStreak=0;
     gladiatroolBonusStats=new Stats();
-    updateGladiatroolQuestItemStats(false);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
 
-  private void updateGladiatroolQuestItemStats(boolean ensureItem)
+  private void refreshGladiatroolBonusStats()
   {
+    gladiatroolBonusStats=new Stats();
+    if(gladiatroolWinStreak<=0)
+      return;
     ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
     if(template==null)
       return;
-    GameObject questItem=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID);
-    if(questItem==null)
-    {
-      if(!ensureItem)
-        return;
-      ensureGladiatroolQuestItem();
-      questItem=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID);
-      if(questItem==null)
-        return;
-    }
     Stats baseStats=template.generateNewStatsFromTemplate(template.getStrTemplate(),true);
     double multiplier=1.0+(gladiatroolWinStreak*0.2);
-    Stats scaledStats=new Stats();
     for(Entry<Integer, Integer> entry : baseStats.getMap().entrySet())
     {
       Integer value=entry.getValue();
@@ -1026,11 +1018,8 @@ public void setTotal_reculte() {
         continue;
       int scaledValue=(int)Math.round(value*multiplier);
       if(scaledValue!=0)
-        scaledStats.addOneStat(entry.getKey(),scaledValue);
+        gladiatroolBonusStats.addOneStat(entry.getKey(),scaledValue);
     }
-    gladiatroolBonusStats=scaledStats;
-    questItem.setStats(scaledStats);
-    SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this,questItem);
   }
 
   private Stats getEffectiveBaseStats()
