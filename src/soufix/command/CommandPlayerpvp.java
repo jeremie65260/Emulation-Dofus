@@ -24,16 +24,20 @@ public class CommandPlayerpvp {
 	}
 
 	public static boolean analyse(final Player perso, final String msg) {
-		if (msg.charAt(0) != '.' || msg.charAt(1) == '.') {
+		String commandLower = msg.trim().toLowerCase();
+		if (commandLower.isEmpty() || commandLower.charAt(0) != '.' || commandLower.length() < 2 || commandLower.charAt(1) == '.') {
 			return false;
 		}
-		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b1")) {
+		if(commandLower.startsWith(".popup")) {
+			return perso.showGladiatroolBonusPopup();
+		}
+		if(commandLower.startsWith(".b1")) {
 			return perso.applyGladiatroolBonusChoice(0);
 		}
-		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b2")) {
+		if(commandLower.startsWith(".b2")) {
 			return perso.applyGladiatroolBonusChoice(1);
 		}
-		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b3")) {
+		if(commandLower.startsWith(".b3")) {
 			return perso.applyGladiatroolBonusChoice(2);
 		}
 		if(msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {

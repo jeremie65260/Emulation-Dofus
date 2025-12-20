@@ -996,12 +996,34 @@ public void setTotal_reculte() {
     gladiatroolBonusChoices.addAll(Gladiatrool.rollToniqueBonuses(3));
     if(gladiatroolBonusChoices.isEmpty())
       return;
+    sendGladiatroolBonusPopup();
+  }
+
+  private void sendGladiatroolBonusPopup()
+  {
     StringBuilder message=new StringBuilder();
     message.append("Victoire ! Choisissez un bonus :");
     for(int i=0;i<gladiatroolBonusChoices.size();i++)
       message.append("\n").append(i+1).append(") ").append(gladiatroolBonusChoices.get(i).getLabel());
     message.append("\nUtilisez .b1, .b2 ou .b3 pour sélectionner.");
+    message.append("\nSi tu veux revoir la fenêtre tape .popup.");
     SocketManager.PACKET_POPUP(this,message.toString());
+  }
+
+  public boolean showGladiatroolBonusPopup()
+  {
+    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+    {
+      SocketManager.GAME_SEND_MESSAGE(this,"Ce bonus n'est disponible qu'en gladiatrool.");
+      return true;
+    }
+    if(gladiatroolBonusChoices.isEmpty())
+    {
+      SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
+      return true;
+    }
+    sendGladiatroolBonusPopup();
+    return true;
   }
 
   public boolean applyGladiatroolBonusChoice(int choiceIndex)
@@ -1026,7 +1048,7 @@ public void setTotal_reculte() {
     gladiatroolBonusChoices.clear();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
-    SocketManager.GAME_SEND_MESSAGE(this,"Bonus obtenu : "+option.getLabel(),"008000");
+    SocketManager.GAME_SEND_MESSAGE(this,"Votre bonus a été appliqué : "+option.getLabel(),"008000");
     return true;
   }
 
