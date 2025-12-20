@@ -561,18 +561,643 @@ public class CommandPlayerpvm {
 				return true;
 			}
 
-			// ----------------------------
-			// IMPORTANT :
-			// Ton fichier complet est très long ; la partie restante (vip, banque, spellmax, hdv, tp, jetmax, etc.)
-			// est inchangée et doit rester identique à ton original.
-			//
-			// Si tu veux que je te renvoie *l’intégralité* jusqu’à la dernière accolade (100% du fichier),
-			// colle simplement la fin manquante (à partir de "if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("vip"))")
-			// dans ton prochain message, et je te renverrai la classe complète sans aucune coupure.
-			// ----------------------------
+			if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("vip")) {
+				SocketManager.PACKET_POPUP_DEPART(perso,
+						"\n- Vos points acquis par vote sur Serveur-Prive passent é 35 PB par vote."
+								+ "\n- Avoir accés é la <b>banque</b>. gratuitement pour les VIP."
+								+ "\n+ <b>10.000</b> pods de plus."
+								+ "\n<b>.ipdrop</b> - Permets de récupérer le drop de vos mules."
+								+ "\n<b>.ipkamas</b> - Permets de récupérer les kamas de vos mules."
+								+ "\n<b>.nodropitem</b> - Vous empéche de recevoir des items de monstres."
+								+ "\n<b>.nodropressources</b> - Vous empéche de recevoir des ressources de monstres."
+								+ "\n Vous obtenez un bonus de 25% d'expérience é chaque combat pour toute la team"
+								+ "\n Vous obtenez un bonus de 25% d'expérience métier "
+								+ "\n Vous obtenez un bonus de 25% de drop é chaque combat pour toute la team"
+								+ "\n<b>.aura</b> - Aura exlusive multicolore"
+								+ "\nAugmente la chance de reussite d'un <b>Exo</b> 1/10 vip 1/20 non vip.");
+				return true;
+			}
 
-			// En attendant, pour éviter un fichier non-compilable dans cette réponse, on laisse tomber sur le "help" original
-			// (comme dans ton code), si aucune commande précédente ne match.
+			if ((msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("start"))
+					|| (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("astrub"))) {
+				if (perso.isInPrison()) {
+					return true;
+				}
+				if (perso.getFight() != null) {
+					return true;
+				}
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 1000;
+				short mapId = (short) (Config.getInstance().startMap != 0 ? Config.getInstance().startMap
+						: Constant.getStartMap(perso.getClasse()));
+				int cellId = Config.getInstance().startCell != 0 ? Config.getInstance().startCell
+						: Constant.getStartCell(perso.getClasse());
+				perso.teleport(mapId, cellId);
+				return true;
+			}
+
+			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("marchand")) {
+				if (perso.isInPrison()) {
+					return true;
+				}
+				if (perso.getFight() != null) {
+					return true;
+				}
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 1000;
+				perso.teleport((short) 33, 283);
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("maitre")) {
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 700;
+				if (perso.getParty() != null) {
+					if (perso.getParty().getMaster() != null && perso.getParty().getMaster().getId() == perso.getId()) {
+						perso.getParty().setMaster(null);
+						perso.getParty().clear_groupe();
+						perso.setOne_windows(false);
+						perso.sendMessage("Mode Maitre off.");
+						return true;
+					}
+					perso.sendMessage("Vos etes déjé dans un groupe.");
+					return true;
+				}
+				int nbr = 0;
+				for (final Player z : perso.getCurMap().getPlayers()) {
+					if (z == null) {
+						continue;
+					}
+					if (z.getGameClient() == null) {
+						continue;
+					}
+					if (z.getAccount().getId_web() != perso.getAccount().getId_web())
+						if (!z.getAccount().getCurrentIp().equals(perso.getAccount().getCurrentIp()))
+							continue;
+					if (perso.getId() == z.getId())
+						continue;
+					if (z.getParty() != null)
+						continue;
+					if (perso.getParty() != null && nbr == 8)
+						continue;
+					nbr++;
+					perso.getGameClient().inviteParty("zz" + z.getName(), true);
+					z.getGameClient().acceptInvitation();
+					SocketManager.GAME_SEND_PR_PACKET(z);
+					SocketManager.GAME_SEND_MESSAGE(z, "Vous suivez maintenant " + perso.getName() + "");
+				}
+				if (nbr == 0 || perso.getParty() == null) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Aucune mule n'est sur la map");
+					return true;
+				}
+				final Party party = perso.getParty();
+				party.setMaster(perso);
+				party.disableModuForGroup();
+				party.moveAllPlayersToMaster(null);
+				SocketManager.GAME_SEND_MESSAGE(perso, "Vous étes désormais le maitre de votre groupe");
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("banque")) {
+				if (perso.getFight() != null) {
+					return true;
+				}
+				if (perso.getGameClient().show_cell_BANK) {
+					GameClient.leaveExchange(perso);
+					perso.getGameClient().show_cell_BANK = false;
+				} else {
+					GameClient.leaveExchange(perso);
+					final int cost = perso.getBankCost();
+					if (perso.getAccount().getSubscribeRemaining() == 0L)
+						if (cost > 0) {
+							final long playerKamas = perso.getKamas();
+							final long kamasRemaining = playerKamas - cost;
+							final long bankKamas = perso.getAccount().getBankKamas();
+							long totalKamas = bankKamas + playerKamas;
+							if (kamasRemaining < 0L) {
+								if (bankKamas >= cost) {
+									Main.world.kamas_total -= cost;
+									perso.setBankKamas(bankKamas - cost);
+								} else {
+									if (totalKamas < cost) {
+										SocketManager.GAME_SEND_MESSAGE_SERVER(perso, "10|" + cost);
+										return true;
+									}
+									Main.world.kamas_total -= cost;
+									perso.setKamas(0L);
+									perso.setBankKamas(totalKamas - cost);
+									SocketManager.GAME_SEND_STATS_PACKET(perso);
+									SocketManager.GAME_SEND_Im_PACKET(perso, "020;" + playerKamas);
+								}
+							} else {
+								Main.world.kamas_total -= cost;
+								perso.setKamas(kamasRemaining);
+								SocketManager.GAME_SEND_STATS_PACKET(perso);
+								SocketManager.GAME_SEND_Im_PACKET(perso, "020;" + cost);
+							}
+						}
+					SocketManager.GAME_SEND_ECK_PACKET(perso.getGameClient(), 5, "");
+					SocketManager.GAME_SEND_EL_BANK_PACKET(perso);
+					perso.setAway(true);
+					perso.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_BANK, 0));
+					perso.getGameClient().show_cell_BANK = true;
+				}
+				return true;
+			}
+
+			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("spellmax")) {
+				if (perso.getFight() != null) {
+					return true;
+				}
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 1000;
+
+				final List<String> lockedSpells = new ArrayList<>();
+				final boolean boosted = perso.boostAllSpellsToMax(lockedSpells);
+
+				SocketManager.GAME_SEND_ASK(perso.getGameClient(), perso);
+				SocketManager.GAME_SEND_SPELL_LIST(perso);
+
+				if (boosted) {
+					perso.sendMessage("Vos sorts disponibles ont été améliorés.");
+				} else {
+					perso.sendMessage("Aucun de vos sorts n'a pu être amélioré.");
+				}
+				if (!lockedSpells.isEmpty()) {
+					final StringBuilder message = new StringBuilder("Sorts nécessitant un niveau supérieur: <b>");
+					for (int i = 0; i < lockedSpells.size(); i++) {
+						if (i > 0) {
+							message.append("</b>, <b>");
+						}
+						message.append(lockedSpells.get(i));
+					}
+					message.append("</b>.");
+					SocketManager.GAME_SEND_MESSAGE(perso, message.toString());
+				}
+
+				return true;
+			}
+
+			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("boutique")) {
+				GameClient.leaveExchange(perso);
+				soufix.main.Boutique.open(perso);
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("window")) {
+				if (perso.getFight() != null) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error Combat", "008000");
+					return true;
+				}
+				if (perso.getParty() == null || perso.getParty().getMaster() == null
+						|| perso.getParty().getMaster().getId() != perso.getId()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Mets toi Maétre avant");
+					return true;
+				}
+				if (perso.isOne_windows()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "One Window Off");
+					perso.setOne_windows(false);
+				} else {
+					SocketManager.GAME_SEND_MESSAGE(perso, "One Window On");
+					perso.setOne_windows(true);
+				}
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("cinvoc")) {
+				final boolean enable = !perso.isControlInvocations();
+				perso.setControlInvocations(enable);
+				if (!enable) {
+					perso.clearInvocationControlled(null);
+				}
+				SocketManager.GAME_SEND_MESSAGE(perso,
+						enable ? "Contrôle des invocations activé." : "Contrôle des invocations désactivé.", "008000");
+				return true;
+			}
+
+			if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("hdv")) {
+				if (perso.getFight() != null)
+					SocketManager.GAME_SEND_MESSAGE(perso, "Vous ne pouvez pas ouvrir le marché pendant le combat.");
+				else {
+					Hdv hdv = Main.world.getWorldMarket();
+					if (hdv != null) {
+						String info = "1,10,100;" + hdv.getStrCategory() + ";" + hdv.parseTaxe() + ";" + hdv.getLvlMax()
+								+ ";" + hdv.getMaxAccountItem() + ";-1;" + hdv.getSellTime();
+						SocketManager.GAME_SEND_ECK_PACKET(perso, 11, info);
+						ExchangeAction<Integer> exchangeAction = new ExchangeAction<>(ExchangeAction.AUCTION_HOUSE_BUYING,
+								-perso.getCurMap().getId());
+						perso.setExchangeAction(exchangeAction);
+						perso.setWorldMarket(true);
+					}
+				}
+				return true;
+			}
+
+			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("movemobs")) {
+				perso.getCurMap().onMapMonsterDeplacement();
+				perso.sendMessage("Vous avez deplace un groupe de monstres.");
+				return true;
+			}
+
+			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("debug")) {
+				GameClient.leaveExchange(perso);
+				if (perso.getFight() != null) {
+					perso.sendMessage("Combat !!!!.");
+					return true;
+				}
+				if (System.currentTimeMillis() < perso.getAccount().timeLastdebug) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getAccount().timeLastdebug) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getAccount().timeLastdebug = System.currentTimeMillis() + 60000;
+
+				try {
+					for (GameObject object : new ArrayList<>(perso.getObjects().values())) {
+						if (object == null)
+							continue;
+						if (object.modification == 0)
+							Database.getDynamics().getObjectData().insert(object);
+						else if (object.modification == 1)
+							Database.getDynamics().getObjectData().update(object);
+						object.modification = -1;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Database.getStatics().getPlayerData().update(perso);
+				perso.getCurCell().removePlayer(perso);
+				if (perso.getGameClient() != null)
+					perso.getGameClient().disconnect();
+				perso.setOnline(false);
+				perso.resetVars();
+				SocketManager.GAME_SEND_ERASE_ON_MAP_TO_MAP(perso.getCurMap(), perso.getId());
+				Main.world.unloadPerso(perso);
+				Database.getStatics().getPlayerData().load(perso.getId());
+				if (perso.get_guild() != null)
+					perso.get_guild().getMember(perso.getId()).setPlayer(Main.world.getPlayer(perso.getId()));
+				return true;
+			}
+
+			if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("tpgroupe")) {
+				if (perso.getFight() != null)
+					return true;
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 1000;
+				for (final String s : Main.world.maps_dj) {
+					if (Integer.parseInt(s) == perso.getCurMap().getId()) {
+						SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+						return true;
+					}
+				}
+				if (perso.isInPrison()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Prison", "008000");
+					return true;
+				}
+				if (perso.cantTP()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+					return true;
+				}
+				if (perso.getFight() != null) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error Combat", "008000");
+					return true;
+				}
+				if (perso.getCurMap().getId() == 9877) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+					return true;
+				}
+				if (perso.getCurMap().getSong() == 1) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone Songe", "008000");
+					return true;
+				}
+				boolean autorised = true;
+				switch (perso.getCurMap().getId()) {
+					case 9646:
+					case 8905:
+					case 8911:
+					case 8916:
+					case 8917:
+					case 9827:
+					case 8930:
+					case 8932:
+					case 8933:
+					case 8934:
+					case 8935:
+					case 8936:
+					case 8938:
+					case 8939:
+					case 9230:
+					case 9589:
+					case 9590:
+						autorised = false;
+						break;
+				}
+				if (!autorised) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+					return true;
+				}
+				if (perso.getParty() != null) {
+					for (final Player z : perso.getParty().getPlayers()) {
+						if (z.getGameClient() == null) {
+							continue;
+						}
+						if (z.getFight() != null)
+							continue;
+						if (z.getId() == perso.getId())
+							continue;
+						z.teleport(perso.getCurMap(), perso.getCurCell().getId());
+					}
+				} else {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Mets toi en groupe avant", "008000");
+				}
+				return true;
+			}
+
+			if (msg.length() > 2 && msg.substring(1, 3).equalsIgnoreCase("tp")) {
+				if (perso.getFight() != null)
+					return true;
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 1000;
+				for (final String s : Main.world.maps_dj) {
+					if (Integer.parseInt(s) == perso.getCurMap().getId()) {
+						SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+						return true;
+					}
+				}
+				if (perso.isInPrison()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Prison", "008000");
+					return true;
+				}
+				if (perso.cantTP()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+					return true;
+				}
+				if (perso.getFight() != null) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error Combat", "008000");
+					return true;
+				}
+				if (perso.getCurMap().getId() == 9877) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+					return true;
+				}
+				if (perso.getCurMap().getSong() == 1) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone Songe", "008000");
+					return true;
+				}
+				boolean autorised = true;
+				switch (perso.getCurMap().getId()) {
+					case 9646:
+					case 8911:
+					case 8916:
+					case 8917:
+					case 9827:
+					case 8930:
+					case 8932:
+					case 8933:
+					case 8934:
+					case 8935:
+					case 8936:
+					case 8938:
+					case 8939:
+					case 9230:
+					case 9589:
+					case 9590:
+						autorised = false;
+						break;
+				}
+				if (!autorised) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Error TP Zone DJ", "008000");
+					return true;
+				}
+				if (perso.getParty() != null && perso.getParty().isChief(perso.getId())) {
+					for (final Player z : perso.getParty().getPlayers()) {
+						if (z.getGameClient() == null) {
+							continue;
+						}
+						if (z.getFight() != null)
+							continue;
+						if (z.getAccount().getId_web() != perso.getAccount().getId_web())
+							if (!z.getAccount().getCurrentIp().equals(perso.getAccount().getCurrentIp()))
+								continue;
+						if (z.getId() == perso.getId())
+							continue;
+						z.teleport(perso.getCurMap(), perso.getCurCell().getId());
+					}
+				} else {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Mets toi Maétre avant", "008000");
+				}
+				return true;
+			}
+
+			if (msg.length() > 16 && msg.substring(1, 17).equalsIgnoreCase("nodropressources")) {
+				if (perso.getAccount().getSubscribeRemaining() == 0L) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Réservé au V.I.P.", "008000");
+					return true;
+				}
+				if (perso.isCanDrop_ressources()) {
+					perso.setCanDrop(true);
+					perso.setCanDrop_items(true);
+					perso.setCanDrop_ressources(false);
+					SocketManager.GAME_SEND_MESSAGE(perso, "No drop ressources on.");
+				} else {
+					perso.setCanDrop(true);
+					perso.setCanDrop_items(true);
+					perso.setCanDrop_ressources(true);
+					SocketManager.GAME_SEND_MESSAGE(perso, "No drop ressources off.");
+				}
+				return true;
+			}
+
+			if (msg.length() > 10 && msg.substring(1, 11).equalsIgnoreCase("nodropitem")) {
+				if (perso.getAccount().getSubscribeRemaining() == 0L) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Réservé au V.I.P.", "008000");
+					return true;
+				}
+				if (perso.isCanDrop_items()) {
+					perso.setCanDrop(true);
+					perso.setCanDrop_items(false);
+					perso.setCanDrop_ressources(true);
+					SocketManager.GAME_SEND_MESSAGE(perso, "No drop items on.");
+				} else {
+					perso.setCanDrop(true);
+					perso.setCanDrop_items(true);
+					perso.setCanDrop_ressources(true);
+					SocketManager.GAME_SEND_MESSAGE(perso, "No drop items off.");
+				}
+				return true;
+			}
+
+			if (msg.length() > 7 && msg.substring(1, 8).equalsIgnoreCase("ipkamas")) {
+				if (perso.getParty() == null || perso.getParty().getMaster() == null
+						|| perso.getParty().getMaster().getId() != perso.getId()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Mets toi Maétre avant");
+					return true;
+				}
+				if (perso.getAccount().getSubscribeRemaining() == 0L) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Réservé au V.I.P.", "008000");
+					return true;
+				}
+				if (perso.ipKamas) {
+					perso.ipKamas = false;
+					SocketManager.GAME_SEND_MESSAGE(perso, "Vous ne gagnerez plus tous les kamas de cette IP.");
+				} else {
+					perso.ipKamas = true;
+					SocketManager.GAME_SEND_MESSAGE(perso, "Vous allez maintenant gagner tous les kamas de cette IP.");
+					for (Player z : Main.world.getOnlinePlayers()) {
+						if (z == null)
+							continue;
+						if (z.getAccount().getCurrentIp().equals(perso.getAccount().getCurrentIp())) {
+							if (z.ipKamas && z.getId() != perso.getId()) {
+								z.ipKamas = false;
+								SocketManager.GAME_SEND_MESSAGE(z, "Vous ne gagnerez plus tous les kamas de cette IP.");
+							}
+						}
+					}
+				}
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("ipdrop")) {
+				if (perso.getParty() == null || perso.getParty().getMaster() == null
+						|| perso.getParty().getMaster().getId() != perso.getId()) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Mets toi Maétre avant");
+					return true;
+				}
+				if (perso.getAccount().getSubscribeRemaining() == 0L) {
+					SocketManager.GAME_SEND_MESSAGE(perso, "Réservé au V.I.P.", "008000");
+					return true;
+				}
+				if (perso.ipDrop) {
+					perso.ipDrop = false;
+					SocketManager.GAME_SEND_MESSAGE(perso, "Vous ne gagnerez plus tous les drops de cette IP.");
+				} else {
+					perso.ipDrop = true;
+					SocketManager.GAME_SEND_MESSAGE(perso, "Vous allez maintenant gagner tous les drops de cette IP.");
+					for (Player z : Main.world.getOnlinePlayers()) {
+						if (z == null)
+							continue;
+						if (z.getAccount().getCurrentIp().equals(perso.getAccount().getCurrentIp())) {
+							if (z.ipDrop && z.getId() != perso.getId()) {
+								z.ipDrop = false;
+								SocketManager.GAME_SEND_MESSAGE(z, "Vous ne gagnerez plus tous les drops de cette IP.");
+							}
+						}
+					}
+				}
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("nodrop")) {
+				if (perso.getCanDrop()) {
+					perso.setCanDrop(false);
+					perso.setCanDrop_items(true);
+					perso.setCanDrop_ressources(true);
+					SocketManager.GAME_SEND_MESSAGE(perso, "No drop on.");
+				} else {
+					perso.setCanDrop(true);
+					perso.setCanDrop_items(true);
+					perso.setCanDrop_ressources(true);
+					SocketManager.GAME_SEND_MESSAGE(perso, "No drop off.");
+				}
+				return true;
+			}
+
+			if (msg.length() > 9 && msg.substring(1, 10).equalsIgnoreCase("joindelay")) {
+				try {
+					int join = Integer.parseInt(msg.substring(11).replace("|", ""));
+					if (join < 1)
+						join = 1;
+					if (join > 10)
+						join = 10;
+					perso.setJoindelay(join);
+					SocketManager.GAME_SEND_MESSAGE(perso, "joindelay " + perso.getJoindelay() + " seconde(s)");
+				} catch (Exception e) {
+					SocketManager.GAME_SEND_MESSAGE(perso, ".joindelay 1 é 10 en seconde");
+				}
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("jetmax")) {
+				if (perso.getFight() != null) {
+					return true;
+				}
+				String choix = "";
+				if (msg.length() > 8) {
+					choix = msg.substring(8).trim();
+				}
+				if (choix.isEmpty()) {
+					perso.sendMessage(
+							"Utilisation : .jetmax <coiffe|cape|ceinture|bottes|amulette|anneauG|anneauD|cac|familier|bouclier|dofus|all>");
+					return true;
+				}
+
+				boolean updated = false;
+				if (choix.equalsIgnoreCase("all")) {
+					for (int i = 0; i < emplacements.length; i++) {
+						String emplacement = emplacements[i];
+						if ("all".equalsIgnoreCase(emplacement) || "dofus".equalsIgnoreCase(emplacement)) {
+							continue;
+						}
+						updated |= jetMaxAItem(perso, emplacement, emplacementsID[i], false);
+					}
+					for (byte dofusSlot : dofusEmplacements) {
+						updated |= jetMaxAItem(perso, "dofus", dofusSlot, false);
+					}
+					if (updated) {
+						perso.sendMessage("Vos items équipés ont été passés en jet max.");
+					} else {
+						perso.sendMessage("Action impossible : aucun item équipé.");
+					}
+					return true;
+				}
+
+				if (choix.equalsIgnoreCase("dofus")) {
+					for (byte dofusSlot : dofusEmplacements) {
+						updated |= jetMaxAItem(perso, "dofus", dofusSlot, false);
+					}
+					if (updated) {
+						perso.sendMessage("Vos dofus équipés ont été passés en jet max.");
+					} else {
+						perso.sendMessage("Action impossible : vous ne portez aucun dofus.");
+					}
+					return true;
+				}
+
+				for (int i = 0; i < emplacements.length; i++) {
+					if (emplacements[i].equalsIgnoreCase(choix)) {
+						jetMaxAItem(perso, emplacements[i], emplacementsID[i], true);
+						return true;
+					}
+				}
+
+				perso.sendMessage(
+						"Utilisation : .jetmax <coiffe|cape|ceinture|bottes|amulette|anneauG|anneauD|cac|familier|bouclier|dofus|all>");
+				return true;
+			}
 
 			if (Config.singleton.serverId == 1) {
 				SocketManager.GAME_SEND_MESSAGE(perso,
