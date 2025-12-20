@@ -3770,6 +3770,27 @@ public void setTotal_reculte() {
     }
   }
 
+  public void unequipAll()
+  {
+    byte[] positions={
+        Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE,
+        Constant.ITEM_POS_ARME
+    };
+    for(byte pos : positions)
+    {
+      GameObject obj=getObjetByPos(pos);
+      if(obj==null||obj.getTemplate()==null)
+        continue;
+      unequipedObjet(obj);
+    }
+  }
+
   public void verifEquiped()
   {
     if(this.getMorphMode())
@@ -3951,8 +3972,8 @@ public void setTotal_reculte() {
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
       disableRestrictedFullMorphIfNeeded(newMapID);
-      if(newMapID==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isInGladiatorDonjon(newMapID)||newMapID==12277)
+        this.unequipAll();
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4012,8 +4033,8 @@ public void setTotal_reculte() {
     if(fullmorph)
       this.unsetFullMorph();
     disableRestrictedFullMorphIfNeeded(newMapID);
-    if(newMapID==12277)
-      this.unequipAllExceptApparats();
+    if(Constant.isInGladiatorDonjon(newMapID)||newMapID==12277)
+      this.unequipAll();
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4094,8 +4115,8 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isInGladiatorDonjon(map.getId())||map.getId()==12277)
+        this.unequipAll();
       return;
     }
     if(PW!=null)
@@ -4142,14 +4163,14 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isInGladiatorDonjon(map.getId())||map.getId()==12277)
+        this.unequipAll();
     }
     else
     {
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277)
-        this.unequipAllExceptApparats();
+      if(Constant.isInGladiatorDonjon(map.getId())||map.getId()==12277)
+        this.unequipAll();
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent

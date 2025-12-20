@@ -8622,9 +8622,9 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           }
           this.player.removeItemClasse(objTemplate.getId());
         }
-        if(this.player.getCurMap()!=null&&this.player.getCurMap().getId()==12277&&position!=Constant.ITEM_POS_NO_EQUIPED&&object.getTemplate().getType()!=Constant.ITEM_TYPE_OBJET_VIVANT)
+        if(this.player.getCurMap()!=null&&(Constant.isInGladiatorDonjon(this.player.getCurMap().getId())||this.player.getCurMap().getId()==12277)&&position!=Constant.ITEM_POS_NO_EQUIPED)
         {
-          SocketManager.GAME_SEND_MESSAGE(this.player,"Vous ne pouvez équiper que des apparats sur cette carte.");
+          SocketManager.GAME_SEND_MESSAGE(this.player,"Vous ne pouvez équiper aucun objet sur cette carte.");
           return;
         }
         if(!Constant.isValidPlaceForItem(object.getTemplate(),position)&&position!=Constant.ITEM_POS_NO_EQUIPED&&object.getTemplate().getType()!=Constant.ITEM_TYPE_OBJET_VIVANT)
