@@ -953,7 +953,6 @@ public void setTotal_reculte() {
     else
     {
       removeGladiatroolQuestItem();
-      resetGladiatroolVictoryBonus();
     }
   }
 
@@ -998,6 +997,9 @@ public void setTotal_reculte() {
       return;
     gladiatroolWinStreak++;
     refreshGladiatroolBonusStats();
+    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
+    if(template!=null)
+      refreshGladiatroolQuestItemStats(getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1),template);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
@@ -1021,7 +1023,19 @@ public void setTotal_reculte() {
     if(template==null)
       return;
     Stats baseStats=template.generateNewStatsFromTemplate(template.getStrTemplate(),true);
-    double multiplier=1.0+(gladiatroolWinStreak*0.2);
+    gladiatroolBonusStats=scaleStats(baseStats,getGladiatroolWinMultiplier());
+  }
+
+  private double getGladiatroolWinMultiplier()
+  {
+    return 1.0+(gladiatroolWinStreak*0.4);
+  }
+
+  private Stats scaleStats(Stats baseStats, double multiplier)
+  {
+    Stats scaledStats=new Stats();
+    if(baseStats==null)
+      return scaledStats;
     for(Entry<Integer, Integer> entry : baseStats.getMap().entrySet())
     {
       Integer value=entry.getValue();
@@ -1029,8 +1043,9 @@ public void setTotal_reculte() {
         continue;
       int scaledValue=(int)Math.round(value*multiplier);
       if(scaledValue!=0)
-        gladiatroolBonusStats.addOneStat(entry.getKey(),scaledValue);
+        scaledStats.addOneStat(entry.getKey(),scaledValue);
     }
+    return scaledStats;
   }
 
   private Stats getEffectiveBaseStats()
