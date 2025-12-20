@@ -2250,6 +2250,61 @@ public void setTotal_reculte() {
     Database.getStatics().getPlayerData().delete(this);
   }
 
+  public void unequipAll()
+  {
+    byte[] positions={
+        Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE,
+        Constant.ITEM_POS_ARME
+    };
+    for(byte pos : positions)
+    {
+      GameObject obj=getObjetByPos(pos);
+      if(obj==null||obj.getTemplate()==null)
+        continue;
+      unequipedObjet(obj);
+    }
+  }
+
+  private void reapplyParchoStat(int parchoStatId, int boostStatId)
+  {
+    int value=this.getStatsParcho().getEffect(parchoStatId);
+    if(value==0)
+      return;
+    this.getStatsParcho().addOneStat(parchoStatId,-value);
+    for(int i=0;i<value;i++)
+    {
+      this.boostStat(boostStatId,false);
+      this.getStatsParcho().addOneStat(parchoStatId,1);
+    }
+  }
+
+  public void resetCharacteristicsKeepParcho()
+  {
+    this.getStats().addOneStat(125,-this.getStats().getEffect(125));
+    this.getStats().addOneStat(124,-this.getStats().getEffect(124));
+    this.getStats().addOneStat(118,-this.getStats().getEffect(118));
+    this.getStats().addOneStat(123,-this.getStats().getEffect(123));
+    this.getStats().addOneStat(119,-this.getStats().getEffect(119));
+    this.getStats().addOneStat(126,-this.getStats().getEffect(126));
+
+    reapplyParchoStat(Constant.STATS_ADD_VITA,11);
+    reapplyParchoStat(Constant.STATS_ADD_SAGE,12);
+    reapplyParchoStat(Constant.STATS_ADD_FORC,10);
+    reapplyParchoStat(Constant.STATS_ADD_CHAN,13);
+    reapplyParchoStat(Constant.STATS_ADD_AGIL,14);
+    reapplyParchoStat(Constant.STATS_ADD_INTE,15);
+
+    this.addCapital((this.getLevel()-1)*5-this.get_capital());
+    this.refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
   //v2.0 - Removed voting message
   public void OnJoinGame()
   {
