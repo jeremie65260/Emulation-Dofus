@@ -953,22 +953,24 @@ public void setTotal_reculte() {
     else
     {
       removeGladiatroolQuestItem();
-      resetGladiatroolVictoryBonus();
     }
   }
 
   private void ensureGladiatroolQuestItem()
   {
-    if(hasItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1))
-      return;
     ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
     if(template==null)
       return;
-    GameObject obj=template.createNewItem(1,false);
-    if(addObjet(obj,true))
-      World.addGameObject(obj,true);
-    SocketManager.GAME_SEND_Ow_PACKET(this);
-    SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+GLADIATROOL_QUEST_ITEM_ID);
+    GameObject obj=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1);
+    if(obj==null)
+    {
+      obj=template.createNewItem(1,false);
+      if(addObjet(obj,true))
+        World.addGameObject(obj,true);
+      SocketManager.GAME_SEND_Ow_PACKET(this);
+      SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+GLADIATROOL_QUEST_ITEM_ID);
+    }
+    refreshGladiatroolQuestItemStats(obj,template);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
@@ -981,12 +983,25 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
 
+  private void refreshGladiatroolQuestItemStats(GameObject item, ObjectTemplate template)
+  {
+    if(item==null||template==null)
+      return;
+    Stats baseStats=template.generateNewStatsFromTemplate(template.getStrTemplate(),false);
+    double multiplier=getGladiatroolWinMultiplier();
+    item.setStats(scaleStats(baseStats,multiplier));
+    SocketManager.GAME_SEND_UPDATE_ITEM(this,item);
+  }
+
   public void applyGladiatroolVictoryBonus()
   {
     if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
       return;
     gladiatroolWinStreak++;
     refreshGladiatroolBonusStats();
+    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
+    if(template!=null)
+      refreshGladiatroolQuestItemStats(getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1),template);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
@@ -1010,7 +1025,19 @@ public void setTotal_reculte() {
     if(template==null)
       return;
     Stats baseStats=template.generateNewStatsFromTemplate(template.getStrTemplate(),true);
-    double multiplier=1.0+(gladiatroolWinStreak*0.2);
+    gladiatroolBonusStats=scaleStats(baseStats,getGladiatroolWinMultiplier());
+  }
+
+  private double getGladiatroolWinMultiplier()
+  {
+    return 1.0+(gladiatroolWinStreak*0.4);
+  }
+
+  private Stats scaleStats(Stats baseStats, double multiplier)
+  {
+    Stats scaledStats=new Stats();
+    if(baseStats==null)
+      return scaledStats;
     for(Entry<Integer, Integer> entry : baseStats.getMap().entrySet())
     {
       Integer value=entry.getValue();
@@ -1018,8 +1045,9 @@ public void setTotal_reculte() {
         continue;
       int scaledValue=(int)Math.round(value*multiplier);
       if(scaledValue!=0)
-        gladiatroolBonusStats.addOneStat(entry.getKey(),scaledValue);
+        scaledStats.addOneStat(entry.getKey(),scaledValue);
     }
+    return scaledStats;
   }
 
   private Stats getEffectiveBaseStats()
@@ -4130,7 +4158,7 @@ public void setTotal_reculte() {
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
       disableRestrictedFullMorphIfNeeded(newMapID);
-      if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
+      if(Constant.isGladiatroolMap(newMapID))
         this.unequipAllExceptApparats();
       updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
       return;
@@ -4192,7 +4220,7 @@ public void setTotal_reculte() {
     if(fullmorph)
       this.unsetFullMorph();
     disableRestrictedFullMorphIfNeeded(newMapID);
-    if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
+    if(Constant.isGladiatroolMap(newMapID))
       this.unequipAllExceptApparats();
     refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(newMapID));
     updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
@@ -4277,7 +4305,7 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
+      if(Constant.isGladiatroolMap(map.getId()))
         this.unequipAllExceptApparats();
       updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
       return;
@@ -4326,7 +4354,7 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
+      if(Constant.isGladiatroolMap(map.getId()))
         this.unequipAllExceptApparats();
       refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
       updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
@@ -4334,7 +4362,7 @@ public void setTotal_reculte() {
     else
     {
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
+      if(Constant.isGladiatroolMap(map.getId()))
         this.unequipAllExceptApparats();
       refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
       updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
