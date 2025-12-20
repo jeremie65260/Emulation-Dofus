@@ -1023,12 +1023,6 @@ public void setTotal_reculte() {
 
   public boolean showGladiatroolBonusPopup()
   {
-    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
-    {
-      SocketManager.GAME_SEND_MESSAGE(this,"Ce bonus n'est disponible qu'en gladiatrool.");
-      Main.world.logger.warn("Commande gladiatrool .popup refusée pour {}: map invalide (mapId={}).",this.getName(),this.curMap!=null ? this.curMap.getId() : "null");
-      return true;
-    }
     if(gladiatroolBonusChoices.isEmpty())
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
@@ -1043,12 +1037,6 @@ public void setTotal_reculte() {
   public boolean applyGladiatroolBonusChoice(int choiceIndex)
   {
     String commandLabel=".b"+(choiceIndex+1);
-    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
-    {
-      SocketManager.GAME_SEND_MESSAGE(this,"Ce bonus n'est disponible qu'en gladiatrool.");
-      Main.world.logger.warn("Commande gladiatrool {} refusée pour {}: map invalide (mapId={}).",commandLabel,this.getName(),this.curMap!=null ? this.curMap.getId() : "null");
-      return true;
-    }
     if(gladiatroolBonusChoices.isEmpty())
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
