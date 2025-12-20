@@ -3162,7 +3162,6 @@ public class Action
             if(checkpointMap!=null&&checkpointMap.getCase(checkpointCellId)!=null)
             {
               player.disableCac();
-              player.unequipAllExceptQuestItems();
               player.teleport(checkpointMapId,checkpointCellId);
               break;
             }
@@ -3209,10 +3208,7 @@ public class Action
           SocketManager.GAME_SEND_Ow_PACKET(player);
           player.clearGladiatroolCheckpoint();
           if(Constant.isInGladiatorDonjon(mapId))
-          {
             player.disableCac();
-            player.unequipAllExceptQuestItems();
-          }
           player.teleport((short)mapId,cellId);
         }
         catch(Exception e)
