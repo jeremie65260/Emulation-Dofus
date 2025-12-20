@@ -5,7 +5,6 @@ import soufix.area.map.GameMap;
 import soufix.area.map.entity.House;
 import soufix.area.map.entity.InteractiveObject;
 import soufix.area.map.entity.MountPark;
-import soufix.area.map.labyrinth.Gladiatrool;
 import soufix.client.other.Party;
 import soufix.client.other.Shortcuts;
 import soufix.client.other.Stalk;
@@ -112,8 +111,8 @@ public class Player
   private short gladiatroolCheckpointMap=0;
   private int gladiatroolCheckpointCell=0;
   private static final int GLADIATROOL_QUEST_ITEM_ID=20142;
-  private final List<Gladiatrool.BonusOption> gladiatroolBonusChoices=new ArrayList<>();
   private Stats gladiatroolBonusStats=new Stats();
+  private int gladiatroolWinStreak=0;
   //PDV
   private int _accID;
   private boolean canAggro=true;
@@ -954,7 +953,7 @@ public void setTotal_reculte() {
     else
     {
       removeGladiatroolQuestItem();
-      clearGladiatroolBonuses();
+      resetGladiatroolVictoryBonus();
     }
   }
 
@@ -982,81 +981,56 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
 
-  private void clearGladiatroolBonuses()
+  public void applyGladiatroolVictoryBonus()
   {
+    gladiatroolWinStreak++;
     gladiatroolBonusStats=new Stats();
-    gladiatroolBonusChoices.clear();
-  }
-
-  private void applyGladiatroolBonusToQuestItem(Gladiatrool.BonusOption option)
-  {
-    ensureGladiatroolQuestItem();
-    GameObject questItem=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID);
-    if(questItem==null)
-      return;
-    questItem.getStats().addOneStat(option.getStatId(),option.getValue());
-    questItem.setModification();
-    SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this,questItem);
-  }
-
-  public void offerGladiatroolBonusChoices()
-  {
-    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
-      return;
-    gladiatroolBonusChoices.clear();
-    gladiatroolBonusChoices.addAll(Gladiatrool.rollToniqueBonuses(3));
-    if(gladiatroolBonusChoices.isEmpty())
-      return;
-    sendGladiatroolBonusPopup();
-  }
-
-  private void sendGladiatroolBonusPopup()
-  {
-    StringBuilder message=new StringBuilder();
-    message.append("Victoire ! Choisissez un bonus :");
-    for(int i=0;i<gladiatroolBonusChoices.size();i++)
-      message.append("\n").append(i+1).append(") ").append(gladiatroolBonusChoices.get(i).getLabel());
-    message.append("\nUtilisez .b1, .b2 ou .b3 pour sélectionner.");
-    message.append("\nSi tu veux revoir la fenêtre tape .popup.");
-    SocketManager.PACKET_POPUP(this,message.toString());
-  }
-
-  public boolean showGladiatroolBonusPopup()
-  {
-    if(gladiatroolBonusChoices.isEmpty())
-    {
-      SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
-      Main.world.logger.warn("Commande gladiatrool .popup refusée pour {}: aucun bonus en attente.",this.getName());
-      return true;
-    }
-    sendGladiatroolBonusPopup();
-    Main.world.logger.info("Commande gladiatrool .popup envoyée pour {}.",this.getName());
-    return true;
-  }
-
-  public boolean applyGladiatroolBonusChoice(int choiceIndex)
-  {
-    String commandLabel=".b"+(choiceIndex+1);
-    if(gladiatroolBonusChoices.isEmpty())
-    {
-      SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
-      Main.world.logger.warn("Commande gladiatrool {} refusée pour {}: aucun bonus en attente.",commandLabel,this.getName());
-      return true;
-    }
-    if(choiceIndex<0||choiceIndex>=gladiatroolBonusChoices.size())
-    {
-      SocketManager.GAME_SEND_MESSAGE(this,"Choix invalide.");
-      Main.world.logger.warn("Commande gladiatrool {} refusée pour {}: choix invalide (index={}, total={}).",commandLabel,this.getName(),choiceIndex,gladiatroolBonusChoices.size());
-      return true;
-    }
-    Gladiatrool.BonusOption option=gladiatroolBonusChoices.get(choiceIndex);
-    gladiatroolBonusStats.addOneStat(option.getStatId(),option.getValue());
-    gladiatroolBonusChoices.clear();
+    updateGladiatroolQuestItemStats(true);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
-    SocketManager.GAME_SEND_MESSAGE(this,"Votre bonus a été appliqué : "+option.getLabel(),"008000");
-    Main.world.logger.info("Commande gladiatrool {} appliquée pour {}: {}.",commandLabel,this.getName(),option.getLabel());
-    return true;
+  }
+
+  public void resetGladiatroolVictoryBonus()
+  {
+    if(gladiatroolWinStreak==0&&gladiatroolBonusStats.getMap().isEmpty())
+      return;
+    gladiatroolWinStreak=0;
+    gladiatroolBonusStats=new Stats();
+    updateGladiatroolQuestItemStats(false);
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private void updateGladiatroolQuestItemStats(boolean ensureItem)
+  {
+    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
+    if(template==null)
+      return;
+    GameObject questItem=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID);
+    if(questItem==null)
+    {
+      if(!ensureItem)
+        return;
+      ensureGladiatroolQuestItem();
+      questItem=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID);
+      if(questItem==null)
+        return;
+    }
+    Stats baseStats=template.generateNewStatsFromTemplate(template.getStrTemplate(),true);
+    double multiplier=1.0+(gladiatroolWinStreak*0.4);
+    Stats scaledStats=new Stats();
+    for(Entry<Integer, Integer> entry : baseStats.getMap().entrySet())
+    {
+      Integer value=entry.getValue();
+      if(value==null||value==0)
+        continue;
+      int scaledValue=(int)Math.round(value*multiplier);
+      if(scaledValue!=0)
+        scaledStats.addOneStat(entry.getKey(),scaledValue);
+    }
+    gladiatroolBonusStats=scaledStats;
+    questItem.setStats(scaledStats);
+    SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this,questItem);
   }
 
   private Stats getEffectiveBaseStats()
@@ -3108,14 +3082,7 @@ public void setTotal_reculte() {
   {
     if(this.useStats||isGladiatroolStatsSuppressed())
     {
-      Stats stats=new Stats(false,null);
-      for(GameObject gameObject : this.objects.values())
-      {
-        if(gameObject.getTemplate().getId()!=GLADIATROOL_QUEST_ITEM_ID)
-          continue;
-        stats=Stats.cumulStat(stats,gameObject.getStats(),this);
-      }
-      return stats;
+      return new Stats(false,null);
     }
 
     Stats stats=new Stats(false,null);
