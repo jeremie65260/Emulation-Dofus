@@ -72,20 +72,6 @@ public class CommandPlayerpvm {
 			return false;
 		}
 
-		// Petites commandes "simples"
-		if (isSimpleCommand(trimmedMsg, ".popup")) {
-			return perso.showGladiatroolBonusPopup();
-		}
-		if (isSimpleCommand(trimmedMsg, ".b1")) {
-			return perso.applyGladiatroolBonusChoice(0);
-		}
-		if (isSimpleCommand(trimmedMsg, ".b2")) {
-			return perso.applyGladiatroolBonusChoice(1);
-		}
-		if (isSimpleCommand(trimmedMsg, ".b3")) {
-			return perso.applyGladiatroolBonusChoice(2);
-		}
-
 		if (perso.getGameClient() == null)
 			return true;
 
