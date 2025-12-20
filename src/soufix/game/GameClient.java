@@ -1523,6 +1523,27 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           return;
 
         msg=packet.split("\\|",2)[1];
+        String trimmedMsg=msg.trim();
+        if(".popup".equalsIgnoreCase(trimmedMsg))
+        {
+          if(this.player.showGladiatroolBonusPopup())
+            return;
+        }
+        if(".b1".equalsIgnoreCase(trimmedMsg))
+        {
+          if(this.player.applyGladiatroolBonusChoice(0))
+            return;
+        }
+        if(".b2".equalsIgnoreCase(trimmedMsg))
+        {
+          if(this.player.applyGladiatroolBonusChoice(1))
+            return;
+        }
+        if(".b3".equalsIgnoreCase(trimmedMsg))
+        {
+          if(this.player.applyGladiatroolBonusChoice(2))
+            return;
+        }
         if(Config.singleton.serverId == 6)
         {
         	 if(CommandPlayerpvp.analyse(this.player,msg))
