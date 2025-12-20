@@ -936,6 +936,20 @@ public void setTotal_reculte() {
       return this.stats;
   }
 
+  private boolean isGladiatroolStatsSuppressed()
+  {
+    return this.curMap!=null&&Constant.isGladiatroolMap(this.curMap.getId());
+  }
+
+  private Stats getEffectiveBaseStats()
+  {
+    if(isGladiatroolStatsSuppressed())
+      return new Stats(true,this);
+    if(useStats)
+      return newStatsMorph();
+    return this.stats;
+  }
+
   public Stats getStatsParcho()
   {
     return statsParcho;
@@ -2400,8 +2414,8 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_SPELL_LIST(this);
     if(this.curMap!=null&&Constant.isGladiatroolMap(this.curMap.getId()))
     {
-      this.unequipAll();
-      this.resetCharacteristicsKeepParcho();
+      this.refreshStats();
+      SocketManager.GAME_SEND_STATS_PACKET(this);
     }
     this.account.sendOnline();
 
@@ -2882,7 +2896,7 @@ public void setTotal_reculte() {
         pdvMax=f.getPdvMax();
       }
     }
-    Stats stats=this.getStats(),sutffStats=this.getStuffStats(),donStats=this.getDonsStats(),buffStats=this.getBuffsStats(),totalStats=this.getTotalStats();
+    Stats stats=this.getEffectiveBaseStats(),sutffStats=this.getStuffStats(),donStats=this.getDonsStats(),buffStats=this.getBuffsStats(),totalStats=this.getTotalStats();
 
     ASData.append(pdv).append(",").append(pdvMax).append("|");
     ASData.append(this.getEnergy()).append(",10000|");
@@ -2973,7 +2987,7 @@ public void setTotal_reculte() {
 
   public Stats getStuffStats()
   {
-    if(this.useStats)
+    if(this.useStats||isGladiatroolStatsSuppressed())
       return new Stats();
 
     Stats stats=new Stats(false,null);
@@ -3062,18 +3076,13 @@ public void setTotal_reculte() {
   public Stats getTotalStats()
   {
     Stats total=new Stats(false,null);
-    if(!useStats)
-    {
-      total=Stats.cumulStat(total,this.getStats(),this);
-      total=Stats.cumulStat(total,this.getStuffStats(),this);
-      total=Stats.cumulStat(total,this.getDonsStats(),this);
-      if(fight!=null)
-        total=Stats.cumulStatfight2(total,this.getBuffsStats(),this);
-    }
-    else
-    {
+    if(useStats&&!isGladiatroolStatsSuppressed())
       return newStatsMorph();
-    }
+    total=Stats.cumulStat(total,this.getEffectiveBaseStats(),this);
+    total=Stats.cumulStat(total,this.getStuffStats(),this);
+    total=Stats.cumulStat(total,this.getDonsStats(),this);
+    if(fight!=null)
+      total=Stats.cumulStatfight2(total,this.getBuffsStats(),this);
     return total;
   }
 
@@ -3081,16 +3090,11 @@ public void setTotal_reculte() {
   public Stats getBaseStats()
   {
     Stats total=new Stats(false,null);
-    if(!useStats)
-    {
-      total=Stats.cumulStat(total,this.getStats(),this);
-      total=Stats.cumulStat(total,this.getStuffStats(),this);
-      total=Stats.cumulStat(total,this.getDonsStats(),this);
-    }
-    else
-    {
+    if(useStats&&!isGladiatroolStatsSuppressed())
       return newStatsMorph();
-    }
+    total=Stats.cumulStat(total,this.getEffectiveBaseStats(),this);
+    total=Stats.cumulStat(total,this.getStuffStats(),this);
+    total=Stats.cumulStat(total,this.getDonsStats(),this);
     return total;
   }
 
@@ -3133,10 +3137,7 @@ public void setTotal_reculte() {
   //v2.8 - different base pods
   public int getMaxPod()
   {
-    Stats total=new Stats(false,null);
-    total=Stats.cumulStat(total,this.getStats(),this);
-    total=Stats.cumulStat(total,this.getStuffStats(),this);
-    total=Stats.cumulStat(total,this.getDonsStats(),this);
+    Stats total=this.getBaseStats();
     int pods=Config.getInstance().basePods;
     pods+=this.getLevel()*5;
     pods+=total.getEffect(Constant.STATS_ADD_PODS);
@@ -3992,6 +3993,14 @@ public void setTotal_reculte() {
       saveGladiatroolCheckpoint(curMap.getId(),curCell.getId());
   }
 
+  private void refreshGladiatroolStatsIfNeeded(boolean wasSuppressed, boolean willSuppress)
+  {
+    if(wasSuppressed==willSuppress)
+      return;
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
   public void teleportD(short newMapID, int newCellID)
   {
     if(this.getFight()!=null)
@@ -4014,6 +4023,7 @@ public void setTotal_reculte() {
       return;
     GameClient.leaveExchange(this);
     recordGladiatroolProgress();
+    boolean wasGladiatrool=Constant.isGladiatroolMap(this.curMap.getId());
     GameMap map=Main.world.getMap(newMapID);
     if(map==null)
     {
@@ -4034,8 +4044,6 @@ public void setTotal_reculte() {
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
       disableRestrictedFullMorphIfNeeded(newMapID);
-      if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
-        this.unequipAllExceptApparats();
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4095,8 +4103,7 @@ public void setTotal_reculte() {
     if(fullmorph)
       this.unsetFullMorph();
     disableRestrictedFullMorphIfNeeded(newMapID);
-    if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
-      this.unequipAllExceptApparats();
+    refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(newMapID));
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4134,6 +4141,7 @@ public void setTotal_reculte() {
       PW=account.getGameClient();
     }
     recordGladiatroolProgress();
+    boolean wasGladiatrool=Constant.isGladiatroolMap(curMap.getId());
     if(map==null)
     {
       return;
@@ -4177,8 +4185,6 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
-        this.unequipAllExceptApparats();
       return;
     }
     if(PW!=null)
@@ -4225,14 +4231,12 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
-        this.unequipAllExceptApparats();
+      refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
     }
     else
     {
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
-        this.unequipAllExceptApparats();
+      refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
