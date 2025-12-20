@@ -2279,44 +2279,19 @@ public void setTotal_reculte() {
     this.getStatsParcho().addOneStat(parchoStatId,-value);
     for(int i=0;i<value;i++)
     {
-      switch(boostStatId)
-      {
-        case 11:
-          if(this.getClasse()!=Constant.CLASS_SACRIEUR)
-            this.stats.addOneStat(Constant.STATS_ADD_VITA,1);
-          else
-            this.stats.addOneStat(Constant.STATS_ADD_VITA,2);
-          break;
-        case 12:
-          this.stats.addOneStat(Constant.STATS_ADD_SAGE,1);
-          break;
-        case 10:
-          this.stats.addOneStat(Constant.STATS_ADD_FORC,1);
-          break;
-        case 13:
-          this.stats.addOneStat(Constant.STATS_ADD_CHAN,1);
-          break;
-        case 14:
-          this.stats.addOneStat(Constant.STATS_ADD_AGIL,1);
-          break;
-        case 15:
-          this.stats.addOneStat(Constant.STATS_ADD_INTE,1);
-          break;
-        default:
-          return;
-      }
+      this.boostStat(boostStatId,false);
       this.getStatsParcho().addOneStat(parchoStatId,1);
     }
   }
 
   public void resetCharacteristicsKeepParcho()
   {
-    this.stats.addOneStat(125,-this.stats.getEffect(125));
-    this.stats.addOneStat(124,-this.stats.getEffect(124));
-    this.stats.addOneStat(118,-this.stats.getEffect(118));
-    this.stats.addOneStat(123,-this.stats.getEffect(123));
-    this.stats.addOneStat(119,-this.stats.getEffect(119));
-    this.stats.addOneStat(126,-this.stats.getEffect(126));
+    this.getStats().addOneStat(125,-this.getStats().getEffect(125));
+    this.getStats().addOneStat(124,-this.getStats().getEffect(124));
+    this.getStats().addOneStat(118,-this.getStats().getEffect(118));
+    this.getStats().addOneStat(123,-this.getStats().getEffect(123));
+    this.getStats().addOneStat(119,-this.getStats().getEffect(119));
+    this.getStats().addOneStat(126,-this.getStats().getEffect(126));
 
     reapplyParchoStat(Constant.STATS_ADD_VITA,11);
     reapplyParchoStat(Constant.STATS_ADD_SAGE,12);
@@ -3855,6 +3830,29 @@ public void setTotal_reculte() {
     }
   }
 
+  public void unequipAllExceptApparats()
+  {
+    byte[] positions={
+        Constant.ITEM_POS_DOFUS1, Constant.ITEM_POS_DOFUS2, Constant.ITEM_POS_DOFUS3,
+        Constant.ITEM_POS_DOFUS4, Constant.ITEM_POS_DOFUS5, Constant.ITEM_POS_DOFUS6,
+        Constant.ITEM_POS_DOFUS7, Constant.ITEM_POS_DOFUS8, Constant.ITEM_POS_DOFUS9,
+        Constant.ITEM_POS_DOFUS10, Constant.ITEM_POS_DOFUS11, Constant.ITEM_POS_DOFUS12,
+        Constant.ITEM_POS_FAMILIER, Constant.ITEM_POS_ANNEAU1, Constant.ITEM_POS_BOUCLIER,
+        Constant.ITEM_POS_ANNEAU2, Constant.ITEM_POS_BOTTES, Constant.ITEM_POS_CEINTURE,
+        Constant.ITEM_POS_AMULETTE, Constant.ITEM_POS_COIFFE, Constant.ITEM_POS_CAPE,
+        Constant.ITEM_POS_ARME
+    };
+    for(byte pos : positions)
+    {
+      GameObject obj=getObjetByPos(pos);
+      if(obj==null||obj.getTemplate()==null)
+        continue;
+      if(obj.getTemplate().getType()==Constant.ITEM_TYPE_OBJET_VIVANT)
+        continue;
+      unequipedObjet(obj);
+    }
+  }
+
   public void verifEquiped()
   {
     if(this.getMorphMode())
@@ -4036,11 +4034,8 @@ public void setTotal_reculte() {
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
       disableRestrictedFullMorphIfNeeded(newMapID);
-      if(Constant.isGladiatroolMap(newMapID))
-      {
-        this.unequipAll();
-        this.resetCharacteristicsKeepParcho();
-      }
+      if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
+        this.unequipAllExceptApparats();
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4100,11 +4095,8 @@ public void setTotal_reculte() {
     if(fullmorph)
       this.unsetFullMorph();
     disableRestrictedFullMorphIfNeeded(newMapID);
-    if(Constant.isGladiatroolMap(newMapID))
-    {
-      this.unequipAll();
-      this.resetCharacteristicsKeepParcho();
-    }
+    if(newMapID==12277||Constant.isInGladiatorDonjon(newMapID))
+      this.unequipAllExceptApparats();
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4185,11 +4177,8 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(Constant.isGladiatroolMap(map.getId()))
-      {
-        this.unequipAll();
-        this.resetCharacteristicsKeepParcho();
-      }
+      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
+        this.unequipAllExceptApparats();
       return;
     }
     if(PW!=null)
@@ -4236,20 +4225,14 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(Constant.isGladiatroolMap(map.getId()))
-      {
-        this.unequipAll();
-        this.resetCharacteristicsKeepParcho();
-      }
+      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
+        this.unequipAllExceptApparats();
     }
     else
     {
       disableRestrictedFullMorphIfNeeded(map.getId());
-      if(Constant.isGladiatroolMap(map.getId()))
-      {
-        this.unequipAll();
-        this.resetCharacteristicsKeepParcho();
-      }
+      if(map.getId()==12277||Constant.isInGladiatorDonjon(map.getId()))
+        this.unequipAllExceptApparats();
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
