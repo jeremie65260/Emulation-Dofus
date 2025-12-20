@@ -8622,6 +8622,11 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           }
           this.player.removeItemClasse(objTemplate.getId());
         }
+        if(this.player.getCurMap()!=null&&this.player.getCurMap().getId()==12277&&position!=Constant.ITEM_POS_NO_EQUIPED&&object.getTemplate().getType()!=Constant.ITEM_TYPE_OBJET_VIVANT)
+        {
+          SocketManager.GAME_SEND_MESSAGE(this.player,"Vous ne pouvez équiper que des apparats sur cette carte.");
+          return;
+        }
         if(!Constant.isValidPlaceForItem(object.getTemplate(),position)&&position!=Constant.ITEM_POS_NO_EQUIPED&&object.getTemplate().getType()!=Constant.ITEM_TYPE_OBJET_VIVANT)
           return;
         if(!object.getTemplate().getConditions().equalsIgnoreCase("")&&!ConditionParser.validConditions(this.player,object.getTemplate().getConditions()))

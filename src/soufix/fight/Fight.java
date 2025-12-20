@@ -131,7 +131,10 @@ public class Fight
     if(getMapOld()!=null&&GLADIATROOL_MAPS.contains((int)getMapOld().getId()))
     {
       gladiatroolRespawnScheduled=true;
-      Gladiatrool.respawn((short)getMapOld().getId());
+      if(this.mobGroup!=null)
+        Gladiatrool.respawnSameGroup((short)getMapOld().getId(),this.mobGroup);
+      else
+        Gladiatrool.respawn((short)getMapOld().getId());
     }
   }
 
