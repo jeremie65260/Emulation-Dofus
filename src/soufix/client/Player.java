@@ -988,6 +988,17 @@ public void setTotal_reculte() {
     gladiatroolBonusChoices.clear();
   }
 
+  private void applyGladiatroolBonusToQuestItem(Gladiatrool.BonusOption option)
+  {
+    ensureGladiatroolQuestItem();
+    GameObject questItem=getItemTemplate(GLADIATROOL_QUEST_ITEM_ID);
+    if(questItem==null)
+      return;
+    questItem.getStats().addOneStat(option.getStatId(),option.getValue());
+    questItem.setModification();
+    SocketManager.GAME_SEND_UPDATE_OBJECT_DISPLAY_PACKET(this,questItem);
+  }
+
   public void offerGladiatroolBonusChoices()
   {
     if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
@@ -1045,6 +1056,7 @@ public void setTotal_reculte() {
     }
     Gladiatrool.BonusOption option=gladiatroolBonusChoices.get(choiceIndex);
     gladiatroolBonusStats.addOneStat(option.getStatId(),option.getValue());
+    applyGladiatroolBonusToQuestItem(option);
     gladiatroolBonusChoices.clear();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
@@ -3222,7 +3234,8 @@ public void setTotal_reculte() {
   public Stats getDonsStats()
   {
     Stats stats=new Stats(false,null);
-    stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
+    if(!isGladiatroolStatsSuppressed())
+      stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
     return stats;
   }
 
