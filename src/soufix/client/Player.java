@@ -1026,32 +1026,39 @@ public void setTotal_reculte() {
     if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Ce bonus n'est disponible qu'en gladiatrool.");
+      Main.world.logger.warn("Commande gladiatrool .popup refusée pour {}: map invalide (mapId={}).",this.getName(),this.curMap!=null ? this.curMap.getId() : "null");
       return true;
     }
     if(gladiatroolBonusChoices.isEmpty())
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
+      Main.world.logger.warn("Commande gladiatrool .popup refusée pour {}: aucun bonus en attente.",this.getName());
       return true;
     }
     sendGladiatroolBonusPopup();
+    Main.world.logger.info("Commande gladiatrool .popup envoyée pour {}.",this.getName());
     return true;
   }
 
   public boolean applyGladiatroolBonusChoice(int choiceIndex)
   {
+    String commandLabel=".b"+(choiceIndex+1);
     if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Ce bonus n'est disponible qu'en gladiatrool.");
+      Main.world.logger.warn("Commande gladiatrool {} refusée pour {}: map invalide (mapId={}).",commandLabel,this.getName(),this.curMap!=null ? this.curMap.getId() : "null");
       return true;
     }
     if(gladiatroolBonusChoices.isEmpty())
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Aucun bonus en attente.");
+      Main.world.logger.warn("Commande gladiatrool {} refusée pour {}: aucun bonus en attente.",commandLabel,this.getName());
       return true;
     }
     if(choiceIndex<0||choiceIndex>=gladiatroolBonusChoices.size())
     {
       SocketManager.GAME_SEND_MESSAGE(this,"Choix invalide.");
+      Main.world.logger.warn("Commande gladiatrool {} refusée pour {}: choix invalide (index={}, total={}).",commandLabel,this.getName(),choiceIndex,gladiatroolBonusChoices.size());
       return true;
     }
     Gladiatrool.BonusOption option=gladiatroolBonusChoices.get(choiceIndex);
@@ -1061,6 +1068,7 @@ public void setTotal_reculte() {
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
     SocketManager.GAME_SEND_MESSAGE(this,"Votre bonus a été appliqué : "+option.getLabel(),"008000");
+    Main.world.logger.info("Commande gladiatrool {} appliquée pour {}: {}.",commandLabel,this.getName(),option.getLabel());
     return true;
   }
 
