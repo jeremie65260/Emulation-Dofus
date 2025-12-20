@@ -28,18 +28,6 @@ public class CommandPlayerpvp {
 		if (trimmedMsg.isEmpty() || trimmedMsg.charAt(0) != '.' || trimmedMsg.length() < 2 || trimmedMsg.charAt(1) == '.') {
 			return false;
 		}
-		if(isSimpleCommand(trimmedMsg, ".popup")) {
-			return perso.showGladiatroolBonusPopup();
-		}
-		if(isSimpleCommand(trimmedMsg, ".b1")) {
-			return perso.applyGladiatroolBonusChoice(0);
-		}
-		if(isSimpleCommand(trimmedMsg, ".b2")) {
-			return perso.applyGladiatroolBonusChoice(1);
-		}
-		if(isSimpleCommand(trimmedMsg, ".b3")) {
-			return perso.applyGladiatroolBonusChoice(2);
-		}
 		if(msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
