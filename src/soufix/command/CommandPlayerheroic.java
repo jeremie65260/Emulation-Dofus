@@ -34,6 +34,15 @@ public class CommandPlayerheroic {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
 		} 
+		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b1")) {
+			return perso.applyGladiatroolBonusChoice(0);
+		}
+		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b2")) {
+			return perso.applyGladiatroolBonusChoice(1);
+		}
+		if(msg.length() == 3 && msg.substring(1, 3).equalsIgnoreCase("b3")) {
+			return perso.applyGladiatroolBonusChoice(2);
+		}
 		if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("all") || msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("monde")) {
 			if (perso.noall) {
 				SocketManager.GAME_SEND_MESSAGE(perso,
