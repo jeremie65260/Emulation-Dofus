@@ -3951,6 +3951,8 @@ public void setTotal_reculte() {
       this.curMap.addPlayer(this);
       SocketManager.GAME_SEND_ADD_PLAYER_TO_MAP(this.curMap,this);
       disableRestrictedFullMorphIfNeeded(newMapID);
+      if(newMapID==12277)
+        this.unequipAllExceptApparats();
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4010,6 +4012,8 @@ public void setTotal_reculte() {
     if(fullmorph)
       this.unsetFullMorph();
     disableRestrictedFullMorphIfNeeded(newMapID);
+    if(newMapID==12277)
+      this.unequipAllExceptApparats();
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4090,6 +4094,8 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
+      if(map.getId()==12277)
+        this.unequipAllExceptApparats();
       return;
     }
     if(PW!=null)
@@ -4136,10 +4142,14 @@ public void setTotal_reculte() {
       if(fullmorph)
         this.unsetFullMorph();
       disableRestrictedFullMorphIfNeeded(map.getId());
+      if(map.getId()==12277)
+        this.unequipAllExceptApparats();
     }
     else
     {
       disableRestrictedFullMorphIfNeeded(map.getId());
+      if(map.getId()==12277)
+        this.unequipAllExceptApparats();
     }
 
     if(!follower.isEmpty())// On met a jour la Map des personnages qui nous suivent
