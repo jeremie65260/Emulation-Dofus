@@ -2343,6 +2343,11 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_Ow_PACKET(this);
     SocketManager.GAME_SEND_SEE_FRIEND_CONNEXION(client,_showFriendConnection);
     SocketManager.GAME_SEND_SPELL_LIST(this);
+    if(this.curMap!=null&&Constant.isGladiatroolMap(this.curMap.getId()))
+    {
+      this.unequipAll();
+      this.resetCharacteristicsKeepParcho();
+    }
     this.account.sendOnline();
 
     try {
