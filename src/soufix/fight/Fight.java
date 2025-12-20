@@ -5531,6 +5531,15 @@ public void Anti_bug () {
           fighter.getPersonnage().clearGladiatroolCheckpoint();
     }
 
+    if(this.getType()==Constant.FIGHT_TYPE_PVM&&this.getMapOld()!=null&&Constant.isGladiatroolMap(this.getMapOld().getId()))
+    {
+      for(Fighter fighter : winners)
+      {
+        if(fighter!=null&&fighter.getPersonnage()!=null)
+          fighter.getPersonnage().offerGladiatroolBonusChoices();
+      }
+    }
+
     try
     {
       boolean team=false;
