@@ -1514,8 +1514,6 @@ public void setTimeLastTaverne(long timeLastTaverne) {
     if(packetParts.length>1)
     {
       msg=packetParts[1];
-      if(handleGladiatroolChatCommand(msg))
-        return;
     }
 
     switch(packet.charAt(2))
@@ -1532,26 +1530,6 @@ public void setTimeLastTaverne(long timeLastTaverne) {
 
         msg=packet.split("\\|",2)[1];
         String trimmedMsg=msg.trim();
-        if(".popup".equalsIgnoreCase(trimmedMsg))
-        {
-          if(this.player.showGladiatroolBonusPopup())
-            return;
-        }
-        if(".b1".equalsIgnoreCase(trimmedMsg))
-        {
-          if(this.player.applyGladiatroolBonusChoice(0))
-            return;
-        }
-        if(".b2".equalsIgnoreCase(trimmedMsg))
-        {
-          if(this.player.applyGladiatroolBonusChoice(1))
-            return;
-        }
-        if(".b3".equalsIgnoreCase(trimmedMsg))
-        {
-          if(this.player.applyGladiatroolBonusChoice(2))
-            return;
-        }
         if(Config.singleton.serverId == 6)
         {
         	 if(CommandPlayerpvp.analyse(this.player,msg))
@@ -1850,22 +1828,6 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           this.send("Im0168;"+target.getName()+"~"+target.getAccount().getMuteTime());
         break;
     }
-  }
-
-  private boolean handleGladiatroolChatCommand(String msg)
-  {
-    if(msg==null)
-      return false;
-    String trimmedMsg=msg.trim();
-    if(".popup".equalsIgnoreCase(trimmedMsg))
-      return this.player.showGladiatroolBonusPopup();
-    if(".b1".equalsIgnoreCase(trimmedMsg))
-      return this.player.applyGladiatroolBonusChoice(0);
-    if(".b2".equalsIgnoreCase(trimmedMsg))
-      return this.player.applyGladiatroolBonusChoice(1);
-    if(".b3".equalsIgnoreCase(trimmedMsg))
-      return this.player.applyGladiatroolBonusChoice(2);
-    return false;
   }
 
   private void whoIs(String packet)
