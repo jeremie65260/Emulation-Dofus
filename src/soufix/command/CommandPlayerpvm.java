@@ -140,17 +140,8 @@ public class CommandPlayerpvm {
 			else {
 	    		SocketManager.GAME_SEND_MESSAGE(perso,"Vous ne portez pas l'item neccéssaire.","222222");
 	    		return true;
-	}
-
-	private static boolean isSimpleCommand(String trimmedMsg, String command) {
-		String lower = trimmedMsg.toLowerCase();
-		if (!lower.startsWith(command)) {
-			return false;
+			}
 		}
-		int commandLength = command.length();
-		return lower.length() == commandLength || Character.isWhitespace(lower.charAt(commandLength));
-	}
-}
 		else
 		if (choix.equalsIgnoreCase("Cac"))
 	    {
@@ -1192,10 +1183,19 @@ public class CommandPlayerpvm {
 				          if(z.ipKamas && z.getId() != perso.getId()) {
 				        	  z.ipKamas=false;
 						      SocketManager.GAME_SEND_MESSAGE(z,"Vous ne gagnerez plus tous les kamas de cette IP.");  
-				          }
-				        }
-				      }
-				    }
+			}
+		}
+	}
+
+	private static boolean isSimpleCommand(String trimmedMsg, String command) {
+		String lower = trimmedMsg.toLowerCase();
+		if (!lower.startsWith(command)) {
+			return false;
+		}
+		int commandLength = command.length();
+		return lower.length() == commandLength || Character.isWhitespace(lower.charAt(commandLength));
+	}
+}
 				    return true;
 			} 
 			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("ipdrop")) {
