@@ -35,18 +35,6 @@ public class CommandPlayerheroic {
 			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
 			return true;
 		} 
-		if(isSimpleCommand(trimmedMsg, ".popup")) {
-			return perso.showGladiatroolBonusPopup();
-		}
-		if(isSimpleCommand(trimmedMsg, ".b1")) {
-			return perso.applyGladiatroolBonusChoice(0);
-		}
-		if(isSimpleCommand(trimmedMsg, ".b2")) {
-			return perso.applyGladiatroolBonusChoice(1);
-		}
-		if(isSimpleCommand(trimmedMsg, ".b3")) {
-			return perso.applyGladiatroolBonusChoice(2);
-		}
 		if (msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("all") || msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("monde")) {
 			if (perso.noall) {
 				SocketManager.GAME_SEND_MESSAGE(perso,
