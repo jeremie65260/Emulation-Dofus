@@ -24,7 +24,7 @@ public class CommandPlayerpvm {
 	static {
 		CommandPlayerpvm.canal = "Casper";
 	}
-	
+
 	private static final String[] emplacements = new String[] {
 
 			// Pour jetMax et exo
@@ -140,8 +140,7 @@ public class CommandPlayerpvm {
 			else {
 	    		SocketManager.GAME_SEND_MESSAGE(perso,"Vous ne portez pas l'item neccéssaire.","222222");
 	    		return true;
-			}
-		}
+	}
 		else
 		if (choix.equalsIgnoreCase("Cac"))
 	    {
@@ -1161,9 +1160,9 @@ public class CommandPlayerpvm {
 				return true;
 				}
 				if(perso.getAccount().getSubscribeRemaining() == 0L){
-	               	 SocketManager.GAME_SEND_MESSAGE(perso,"Réservé au V.I.P.","008000");	 
-	                return true;	 
-	                }
+               	 SocketManager.GAME_SEND_MESSAGE(perso,"Réservé au V.I.P.","008000");	 
+                return true;	 
+                }
 				 if(perso.ipKamas)
 				    {
 				      perso.ipKamas=false;
@@ -1183,19 +1182,10 @@ public class CommandPlayerpvm {
 				          if(z.ipKamas && z.getId() != perso.getId()) {
 				        	  z.ipKamas=false;
 						      SocketManager.GAME_SEND_MESSAGE(z,"Vous ne gagnerez plus tous les kamas de cette IP.");  
-			}
-		}
-	}
-
-	private static boolean isSimpleCommand(String trimmedMsg, String command) {
-		String lower = trimmedMsg.toLowerCase();
-		if (!lower.startsWith(command)) {
-			return false;
-		}
-		int commandLength = command.length();
-		return lower.length() == commandLength || Character.isWhitespace(lower.charAt(commandLength));
-	}
-}
+				          }
+				        }
+				      }
+				    }
 				    return true;
 			} 
 			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("ipdrop")) {
@@ -1426,10 +1416,20 @@ public class CommandPlayerpvm {
 							+ "\n<b>.fmcac</b> - Permet de fm votre cac."
                                                         + "\n<b>.jetmax</b> - Permet de passer les items equiper jet max."
                                                         + "\n<b>.spellmax</b> - permet de monter level 6 tous les sorts."
-                                                        + "\n<b>.vip</b> - Affiche les priviléges VIP."
+							+ "\n<b>.vip</b> - Affiche les priviléges VIP."
 							);	
 				}
 				return true;
 			}
 		}
 	}
+
+	private static boolean isSimpleCommand(String trimmedMsg, String command) {
+		String lower = trimmedMsg.toLowerCase();
+		if (!lower.startsWith(command)) {
+			return false;
+		}
+		int commandLength = command.length();
+		return lower.length() == commandLength || Character.isWhitespace(lower.charAt(commandLength));
+	}
+}
