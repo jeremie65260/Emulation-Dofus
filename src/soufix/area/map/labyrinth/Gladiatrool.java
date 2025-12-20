@@ -11,7 +11,9 @@ import java.util.function.Predicate;
 
 import soufix.area.map.GameMap;
 import soufix.entity.monster.MobGrade;
+import soufix.entity.monster.MobGroup;
 import soufix.entity.monster.Monster;
+import soufix.job.JobConstant;
 import soufix.main.Constant;
 import soufix.main.Main;
 import soufix.utility.TimerWaiterPlus;
@@ -20,7 +22,14 @@ public class Gladiatrool
 {
 
   private static final Set<Integer> BOSS_IDS=new HashSet<>(Arrays.asList(58,85,86,107,113,121,147,173,180,225,226,230,232,251,252,257,289,295,374,375,377,382,404,423,430,457,478,519,568,605,612,669,670,673,675,677,681,780,792,797,799,800,827,854,926,939,940,943,1015,1027,1045,1051,1071,1072,1085,1086,1087,1159,1184,1185,1186,1187,1188));
+  private static final Set<Integer> RESOURCE_PROTECTOR_IDS=new HashSet<>();
   private static final Random RANDOM=new Random();
+
+  static
+  {
+    for(int[] protector : JobConstant.JOB_PROTECTORS)
+      RESOURCE_PROTECTOR_IDS.add(protector[0]);
+  }
 
   public static void initialize()
   {
@@ -30,6 +39,19 @@ public class Gladiatrool
   public static void respawn(short mapid)
   {
     TimerWaiterPlus.addNext(() -> spawnGroupGladiatrool(mapid),10,TimeUnit.SECONDS);
+  }
+
+  public static void respawnSameGroup(short mapid, MobGroup group)
+  {
+    String groupData=buildGroupData(group);
+    if(groupData==null||groupData.isEmpty())
+      return;
+    respawnSameGroup(mapid,groupData);
+  }
+
+  public static void respawnSameGroup(short mapid, String groupData)
+  {
+    TimerWaiterPlus.addNext(() -> spawnGroupGladiatrool(mapid,groupData),10,TimeUnit.SECONDS);
   }
 
   private static void initializeGladiatrool()
@@ -48,6 +70,11 @@ public class Gladiatrool
 
   private static void spawnGroupGladiatrool(short mapid)
   {
+    spawnGroupGladiatrool(mapid,null);
+  }
+
+  private static void spawnGroupGladiatrool(short mapid, String groupData)
+  {
     if(!Constant.isInGladiatorDonjon(mapid))
       return;
 
@@ -61,136 +88,140 @@ public class Gladiatrool
     int min=1,max=1,minArchi=1,maxArchi=1,minBoss=1,maxBoss=1,nbMob=0;
     boolean hasBoss=false;
     boolean hasArchi=false;
-    String groupData="";
+    String generatedGroupData="";
 
-    switch(mapid)
+    if(groupData==null||groupData.isEmpty())
     {
-      case 15000: // 10 jeton
-        min=40;
-        max=51;
-        break;
-      case 15008: // 30 jeton
-        min=50;
-        max=70;
-        break;
-      case 15016: // 70 jeton
-        hasArchi=true;
-        minArchi=40;
-        maxArchi=50;
-        min=60;
-        max=80;
-        break;
-      case 15024: // 130 jeton
-        hasArchi=true;
-        minArchi=50;
-        maxArchi=60;
-        min=80;
-        max=100;
-        break;
-      case 15032: // 220 jeton
-        hasBoss=true;
-        minBoss=140;
-        maxBoss=190;
-        min=90;
-        max=120;
-        break;
-      case 15040: // 340 jeton
-        hasBoss=true;
-        min=115;
-        max=140;
-        minBoss=140;
-        maxBoss=190;
-        break;
-      case 15048: // 500 jeton
-        hasBoss=true;
-        hasArchi=true;
-        minArchi=90;
-        maxArchi=110;
-        minBoss=140;
-        maxBoss=200;
-        min=120;
-        max=170;
-        break;
-      case 15056: // 700 jeton
-        hasArchi=true;
-        hasBoss=true;
-        minArchi=100;
-        maxArchi=120;
-        minBoss=140;
-        maxBoss=440;
-        min=125;
-        max=200;
-        break;
-      case 15064: // 950 jeton
-        hasBoss=true;
-        hasArchi=true;
-        minArchi=120;
-        maxArchi=140;
-        minBoss=180;
-        maxBoss=480;
-        min=130;
-        max=210;
-        break;
-      case 15072: // 1250 jeton
-        hasArchi=true;
-        hasBoss=true;
-        minArchi=140;
-        maxArchi=200;
-        minBoss=440;
-        maxBoss=1000;
-        min=170;
-        max=250;
-        break;
-      case 15080: // palier final
-        hasArchi=true;
-        hasBoss=true;
-        minArchi=140;
-        maxArchi=200;
-        minBoss=440;
-        maxBoss=1000;
-        min=170;
-        max=250;
-        break;
-    }
-
-    ArrayList<MobGrade> regularGrades=collectMobGrades(min,max,Gladiatrool::isStandardMonster);
-    ArrayList<MobGrade> bossGrades=collectMobGrades(minBoss,maxBoss,Gladiatrool::isBossMonster);
-    ArrayList<MobGrade> archiGrades=collectMobGrades(minArchi,maxArchi,Gladiatrool::isArchiMonster);
-
-    if(hasBoss)
-    {
-      MobGrade grade=pickRandom(bossGrades);
-      if(grade==null)
-        grade=pickRandom(regularGrades);
-      if(grade!=null)
+      switch(mapid)
       {
-        groupData+=grade.getTemplate().getId()+","+grade.getLevel()+","+grade.getLevel()+";";
+        case 15000: // 10 jeton
+          min=40;
+          max=51;
+          break;
+        case 15008: // 30 jeton
+          min=50;
+          max=70;
+          break;
+        case 15016: // 70 jeton
+          hasArchi=true;
+          minArchi=40;
+          maxArchi=50;
+          min=60;
+          max=80;
+          break;
+        case 15024: // 130 jeton
+          hasArchi=true;
+          minArchi=50;
+          maxArchi=60;
+          min=80;
+          max=100;
+          break;
+        case 15032: // 220 jeton
+          hasBoss=true;
+          minBoss=140;
+          maxBoss=190;
+          min=90;
+          max=120;
+          break;
+        case 15040: // 340 jeton
+          hasBoss=true;
+          min=115;
+          max=140;
+          minBoss=140;
+          maxBoss=190;
+          break;
+        case 15048: // 500 jeton
+          hasBoss=true;
+          hasArchi=true;
+          minArchi=90;
+          maxArchi=110;
+          minBoss=140;
+          maxBoss=200;
+          min=120;
+          max=170;
+          break;
+        case 15056: // 700 jeton
+          hasArchi=true;
+          hasBoss=true;
+          minArchi=100;
+          maxArchi=120;
+          minBoss=140;
+          maxBoss=440;
+          min=125;
+          max=200;
+          break;
+        case 15064: // 950 jeton
+          hasBoss=true;
+          hasArchi=true;
+          minArchi=120;
+          maxArchi=140;
+          minBoss=180;
+          maxBoss=480;
+          min=130;
+          max=210;
+          break;
+        case 15072: // 1250 jeton
+          hasArchi=true;
+          hasBoss=true;
+          minArchi=140;
+          maxArchi=200;
+          minBoss=440;
+          maxBoss=1000;
+          min=170;
+          max=250;
+          break;
+        case 15080: // palier final
+          hasArchi=true;
+          hasBoss=true;
+          minArchi=140;
+          maxArchi=200;
+          minBoss=440;
+          maxBoss=1000;
+          min=170;
+          max=250;
+          break;
+      }
+
+      ArrayList<MobGrade> regularGrades=collectMobGrades(min,max,Gladiatrool::isStandardMonster);
+      ArrayList<MobGrade> bossGrades=collectMobGrades(minBoss,maxBoss,Gladiatrool::isBossMonster);
+      ArrayList<MobGrade> archiGrades=collectMobGrades(minArchi,maxArchi,Gladiatrool::isArchiMonster);
+
+      if(hasBoss)
+      {
+        MobGrade grade=pickRandom(bossGrades);
+        if(grade==null)
+          grade=pickRandom(regularGrades);
+        if(grade!=null)
+        {
+          generatedGroupData+=grade.getTemplate().getId()+","+grade.getLevel()+","+grade.getLevel()+";";
+          nbMob++;
+        }
+      }
+      if(hasArchi)
+      {
+        MobGrade grade=pickRandom(archiGrades);
+        if(grade==null)
+          grade=pickRandom(regularGrades);
+        if(grade!=null)
+        {
+          generatedGroupData+=grade.getTemplate().getId()+","+grade.getLevel()+","+grade.getLevel()+";";
+          nbMob++;
+        }
+      }
+      while(nbMob<4&&!regularGrades.isEmpty())
+      {
+        int randomIndex=RANDOM.nextInt(regularGrades.size());
+        MobGrade grade=regularGrades.remove(randomIndex);
+        generatedGroupData+=grade.getTemplate().getId()+","+grade.getLevel()+","+grade.getLevel()+";";
         nbMob++;
       }
-    }
-    if(hasArchi)
-    {
-      MobGrade grade=pickRandom(archiGrades);
-      if(grade==null)
-        grade=pickRandom(regularGrades);
-      if(grade!=null)
-      {
-        groupData+=grade.getTemplate().getId()+","+grade.getLevel()+","+grade.getLevel()+";";
-        nbMob++;
-      }
-    }
-    while(nbMob<4&&!regularGrades.isEmpty())
-    {
-      int randomIndex=RANDOM.nextInt(regularGrades.size());
-      MobGrade grade=regularGrades.remove(randomIndex);
-      groupData+=grade.getTemplate().getId()+","+grade.getLevel()+","+grade.getLevel()+";";
-      nbMob++;
-    }
 
-    if(groupData.isEmpty())
-    {
-      Main.world.logger.warn("Gladiatrool spawn skipped on map {} due to missing eligible mobs.",mapid);
-      return;
+      if(generatedGroupData.isEmpty())
+      {
+        Main.world.logger.warn("Gladiatrool spawn skipped on map {} due to missing eligible mobs.",mapid);
+        return;
+      }
+      groupData=generatedGroupData;
     }
 
     if(map.getMobGroups().size()<1)
@@ -210,6 +241,8 @@ public class Gladiatrool
     for(Monster monster : Main.world.getMonstres())
     {
       if(monster==null)
+        continue;
+      if(isResourceProtector(monster))
         continue;
       if(filter!=null&&!filter.test(monster))
         continue;
@@ -244,10 +277,32 @@ public class Gladiatrool
     return monster!=null&&!isBossMonster(monster)&&!isArchiMonster(monster);
   }
 
+  private static boolean isResourceProtector(Monster monster)
+  {
+    return monster!=null&&RESOURCE_PROTECTOR_IDS.contains(monster.getId());
+  }
+
   private static MobGrade pickRandom(List<MobGrade> grades)
   {
     if(grades==null||grades.isEmpty())
       return null;
     return grades.get(RANDOM.nextInt(grades.size()));
+  }
+
+  private static String buildGroupData(MobGroup group)
+  {
+    if(group==null||group.getMobs()==null||group.getMobs().isEmpty())
+      return "";
+    StringBuilder groupData=new StringBuilder();
+    for(MobGrade grade : group.getMobs().values())
+    {
+      if(grade==null||grade.getTemplate()==null)
+        continue;
+      if(groupData.length()>0)
+        groupData.append(";");
+      int level=grade.getLevel();
+      groupData.append(grade.getTemplate().getId()).append(",").append(level).append(",").append(level);
+    }
+    return groupData.toString();
   }
 }
