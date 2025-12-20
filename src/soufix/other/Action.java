@@ -3147,6 +3147,12 @@ public class Action
       case 2002://Gladiatrool : reprendre la progression
         try
         {
+          if(!player.getMorphMode())
+          {
+            SocketManager.GAME_SEND_MESSAGE(player,"Vous devez choisir une classe avant de pouvoir reprendre la progression");
+            break;
+          }
+
           short checkpointMapId=player.getGladiatroolCheckpointMap();
           int checkpointCellId=player.getGladiatroolCheckpointCell();
 
@@ -3155,6 +3161,7 @@ public class Action
             GameMap checkpointMap=Main.world.getMap(checkpointMapId);
             if(checkpointMap!=null&&checkpointMap.getCase(checkpointCellId)!=null)
             {
+              player.disableCac();
               player.teleport(checkpointMapId,checkpointCellId);
               break;
             }
@@ -3200,6 +3207,8 @@ public class Action
           player.removeByTemplateID(12804,1);
           SocketManager.GAME_SEND_Ow_PACKET(player);
           player.clearGladiatroolCheckpoint();
+          if(Constant.isInGladiatorDonjon(mapId))
+            player.disableCac();
           player.teleport((short)mapId,cellId);
         }
         catch(Exception e)

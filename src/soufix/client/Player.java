@@ -2106,6 +2106,11 @@ public void setTotal_reculte() {
     return this.useCac;
   }
 
+  public void disableCac()
+  {
+    this.useCac=false;
+  }
+
   public void unsetMorph()
   {
     this.setGfxId(this.getClasse()*10+this.getSexe());
