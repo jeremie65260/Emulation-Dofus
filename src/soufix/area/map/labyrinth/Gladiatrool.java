@@ -22,6 +22,8 @@ public class Gladiatrool
 {
 
   private static final Set<Integer> BOSS_IDS=new HashSet<>(Arrays.asList(58,85,86,107,113,121,147,173,180,225,226,230,232,251,252,257,289,295,374,375,377,382,404,423,430,457,478,519,568,605,612,669,670,673,675,677,681,780,792,797,799,800,827,854,926,939,940,943,1015,1027,1045,1051,1071,1072,1085,1086,1087,1159,1184,1185,1186,1187,1188));
+  private static final Set<Integer> EXCLUDED_IDS=new HashSet<>(Arrays.asList(5002,5003,5004,5005,5006,5007,5008,5009,5010,5011,5012,5013,5014,5015,5016,5017,5018,5019,5020,5021,5022,5030,5031,5032,5033,5034,5035,5036,5037,5038,5039,5040,5041,5042,5043,5044,5045,5046,5047,5048,5049,5050,5051,5052,5053,5054,5056,5057,5058,5059,5060,5061,5062,5063,5064,5065,5066,5067,5068,5069,5070,5071,5072,5073,5074,5075,5076,5077,5078,5079,5080,5081,5082));
+  private static final Set<String> EXCLUDED_NAMES=new HashSet<>(Arrays.asList("TEST","GARDIENNE DES EGOUTS","GARDIENNE DES ÉGOUTS","MOMIE NOVA","SPHINCTER CELL"));
   private static final Set<Integer> RESOURCE_PROTECTOR_IDS=new HashSet<>();
   private static final Random RANDOM=new Random();
 
@@ -224,6 +226,15 @@ public class Gladiatrool
       }
       groupData=generatedGroupData;
     }
+    else
+    {
+      groupData=sanitizeGroupData(groupData);
+      if(groupData.isEmpty())
+      {
+        Main.world.logger.warn("Gladiatrool spawn skipped on map {} due to excluded mobs in group data.",mapid);
+        return;
+      }
+    }
 
     if(map.getMobGroups().size()<1)
     {
@@ -242,6 +253,8 @@ public class Gladiatrool
     for(Monster monster : Main.world.getMonstres())
     {
       if(monster==null)
+        continue;
+      if(isExcludedFromGladiatrool(monster))
         continue;
       if(isResourceProtector(monster))
         continue;
@@ -266,6 +279,16 @@ public class Gladiatrool
   private static boolean isBossMonster(Monster monster)
   {
     return monster!=null&&BOSS_IDS.contains(monster.getId());
+  }
+
+  private static boolean isExcludedFromGladiatrool(Monster monster)
+  {
+    if(monster==null)
+      return false;
+    if(EXCLUDED_IDS.contains(monster.getId()))
+      return true;
+    String name=monster.getName();
+    return name!=null&&EXCLUDED_NAMES.contains(name.toUpperCase());
   }
 
   private static boolean isArchiMonster(Monster monster)
@@ -305,5 +328,34 @@ public class Gladiatrool
       groupData.append(grade.getTemplate().getId()).append(",").append(level).append(",").append(level);
     }
     return groupData.toString();
+  }
+
+  private static String sanitizeGroupData(String groupData)
+  {
+    if(groupData==null||groupData.isEmpty())
+      return "";
+    StringBuilder sanitized=new StringBuilder();
+    for(String entry : groupData.split(";"))
+    {
+      if(entry==null||entry.isEmpty())
+        continue;
+      String[] parts=entry.split(",");
+      if(parts.length==0)
+        continue;
+      try
+      {
+        int mobId=Integer.parseInt(parts[0]);
+        if(EXCLUDED_IDS.contains(mobId))
+          continue;
+      }
+      catch(Exception e)
+      {
+        continue;
+      }
+      if(sanitized.length()>0)
+        sanitized.append(";");
+      sanitized.append(entry);
+    }
+    return sanitized.toString();
   }
 }
