@@ -283,12 +283,7 @@ public class Gladiatrool
 
   private static boolean isExcludedFromGladiatrool(Monster monster)
   {
-    if(monster==null)
-      return false;
-    if(EXCLUDED_IDS.contains(monster.getId()))
-      return true;
-    String name=monster.getName();
-    return name!=null&&EXCLUDED_NAMES.contains(name.toUpperCase());
+    return monster!=null&&"TEST".equalsIgnoreCase(monster.getName());
   }
 
   private static boolean isArchiMonster(Monster monster)
