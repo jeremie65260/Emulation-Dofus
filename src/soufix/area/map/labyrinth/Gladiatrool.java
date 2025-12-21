@@ -243,6 +243,8 @@ public class Gladiatrool
     {
       if(monster==null)
         continue;
+      if(isExcludedFromGladiatrool(monster))
+        continue;
       if(isResourceProtector(monster))
         continue;
       if(filter!=null&&!filter.test(monster))
@@ -266,6 +268,11 @@ public class Gladiatrool
   private static boolean isBossMonster(Monster monster)
   {
     return monster!=null&&BOSS_IDS.contains(monster.getId());
+  }
+
+  private static boolean isExcludedFromGladiatrool(Monster monster)
+  {
+    return monster!=null&&"TEST".equalsIgnoreCase(monster.getName());
   }
 
   private static boolean isArchiMonster(Monster monster)
