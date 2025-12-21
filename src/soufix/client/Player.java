@@ -948,6 +948,7 @@ public void setTotal_reculte() {
   {
     if(shouldHaveItem)
     {
+      syncGladiatroolBonusWithMap();
       ensureGladiatroolQuestItem();
     }
     else
@@ -989,6 +990,20 @@ public void setTotal_reculte() {
       return;
     item.setStats(template.generateNewStatsFromTemplate(template.getStrTemplate(),false));
     SocketManager.GAME_SEND_UPDATE_ITEM(this,item);
+  }
+
+  private void syncGladiatroolBonusWithMap()
+  {
+    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+      return;
+    int stage=(this.curMap.getId()-15000)/8;
+    if(stage<0)
+      return;
+    if(gladiatroolWinStreak<stage)
+    {
+      gladiatroolWinStreak=stage;
+      refreshGladiatroolBonusStats();
+    }
   }
 
   public void applyGladiatroolVictoryBonus()
