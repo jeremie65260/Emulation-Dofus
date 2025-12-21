@@ -948,6 +948,7 @@ public void setTotal_reculte() {
   {
     if(shouldHaveItem)
     {
+      syncGladiatroolBonusWithMap();
       ensureGladiatroolQuestItem();
     }
     else
@@ -989,6 +990,20 @@ public void setTotal_reculte() {
       return;
     item.setStats(template.generateNewStatsFromTemplate(template.getStrTemplate(),false));
     SocketManager.GAME_SEND_UPDATE_ITEM(this,item);
+  }
+
+  private void syncGladiatroolBonusWithMap()
+  {
+    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+      return;
+    int stage=(this.curMap.getId()-15000)/8;
+    if(stage<0)
+      return;
+    if(gladiatroolWinStreak<stage)
+    {
+      gladiatroolWinStreak=stage;
+      refreshGladiatroolBonusStats();
+    }
   }
 
   public void applyGladiatroolVictoryBonus()
@@ -3095,10 +3110,10 @@ public void setTotal_reculte() {
 
   public Stats getStuffStats()
   {
-    if(this.useStats||isGladiatroolStatsSuppressed())
-    {
+    if(this.useStats)
       return new Stats(false,null);
-    }
+    if(isGladiatroolStatsSuppressed())
+      return getGladiatroolQuestItemStats();
 
     Stats stats=new Stats(false,null);
     ArrayList<Integer> itemSetApplied=new ArrayList<>();
@@ -3127,6 +3142,20 @@ public void setTotal_reculte() {
     if(this._mount!=null&&this._onMount)
       stats=Stats.cumulStat(stats,this._mount.getStats(),this);
 
+    return stats;
+  }
+
+  private Stats getGladiatroolQuestItemStats()
+  {
+    Stats stats=new Stats(false,null);
+    for(GameObject gameObject : this.objects.values())
+    {
+      if(gameObject==null||gameObject.getTemplate()==null)
+        continue;
+      if(gameObject.getTemplate().getId()!=GLADIATROOL_QUEST_ITEM_ID)
+        continue;
+      stats=Stats.cumulStat(stats,gameObject.getStats(),this);
+    }
     return stats;
   }
 
@@ -3211,7 +3240,8 @@ public void setTotal_reculte() {
   public Stats getDonsStats()
   {
     Stats stats=new Stats(false,null);
-    stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
+    if(isGladiatroolStatsSuppressed())
+      stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
     return stats;
   }
 
