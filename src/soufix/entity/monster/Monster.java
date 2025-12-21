@@ -263,6 +263,11 @@ public class Monster
     return this.aggroDistance;
   }
 
+  public String getName()
+  {
+    return this.name;
+  }
+
   public MobGrade getGradeByLevel(int lvl)
   {
     for(Entry<Integer, MobGrade> grade : getGrades().entrySet())
