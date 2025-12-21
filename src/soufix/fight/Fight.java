@@ -5538,11 +5538,6 @@ public void Anti_bug () {
         if(fighter!=null&&fighter.getPersonnage()!=null)
           fighter.getPersonnage().applyGladiatroolVictoryBonus();
       }
-      for(Fighter fighter : loosers)
-      {
-        if(fighter!=null&&fighter.getPersonnage()!=null)
-          fighter.getPersonnage().resetGladiatroolVictoryBonus();
-      }
     }
 
     try

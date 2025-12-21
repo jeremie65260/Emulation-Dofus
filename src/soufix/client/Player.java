@@ -4108,6 +4108,8 @@ public void setTotal_reculte() {
   {
     if(wasSuppressed==willSuppress)
       return;
+    if(wasSuppressed&&!willSuppress)
+      resetGladiatroolVictoryBonus();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
