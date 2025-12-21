@@ -3225,7 +3225,8 @@ public void setTotal_reculte() {
   public Stats getDonsStats()
   {
     Stats stats=new Stats(false,null);
-    stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
+    if(isGladiatroolStatsSuppressed())
+      stats=Stats.cumulStat(stats,gladiatroolBonusStats,this);
     return stats;
   }
 
