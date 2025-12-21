@@ -3095,10 +3095,10 @@ public void setTotal_reculte() {
 
   public Stats getStuffStats()
   {
-    if(this.useStats||isGladiatroolStatsSuppressed())
-    {
+    if(this.useStats)
       return new Stats(false,null);
-    }
+    if(isGladiatroolStatsSuppressed())
+      return getGladiatroolQuestItemStats();
 
     Stats stats=new Stats(false,null);
     ArrayList<Integer> itemSetApplied=new ArrayList<>();
@@ -3127,6 +3127,20 @@ public void setTotal_reculte() {
     if(this._mount!=null&&this._onMount)
       stats=Stats.cumulStat(stats,this._mount.getStats(),this);
 
+    return stats;
+  }
+
+  private Stats getGladiatroolQuestItemStats()
+  {
+    Stats stats=new Stats(false,null);
+    for(GameObject gameObject : this.objects.values())
+    {
+      if(gameObject==null||gameObject.getTemplate()==null)
+        continue;
+      if(gameObject.getTemplate().getId()!=GLADIATROOL_QUEST_ITEM_ID)
+        continue;
+      stats=Stats.cumulStat(stats,gameObject.getStats(),this);
+    }
     return stats;
   }
 
