@@ -8496,7 +8496,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
       	this.player.sendMessage("Erreur Object move 1 merci de contacter un administrateur");
         return ;
       }
-      byte oldPos = object.getPosition();
+      byte oldPos = (byte) object.getPosition();
       if(this.player.getFight()!=null)
         if(this.player.getFight().getState()>Constant.FIGHT_STATE_ACTIVE)
         {
@@ -8752,7 +8752,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
             GameObject obj2;
             ObjectTemplate exObjTpl=exObj.getTemplate();
             int idSetExObj=exObj.getTemplate().getPanoId();
-            byte exObjOldPos = exObj.getPosition();
+            byte exObjOldPos = (byte) exObj.getPosition();
             if((obj2=this.player.getSimilarItem(exObj))!=null)//On le possé¿½de deja
             {
  
@@ -8781,7 +8781,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
               this.player.refreshItemClasse(null);
             }
             SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,exObj);
-            this.player.actualizarSetsRapido(exObj.getGuid(), exObj.getGuid(), exObjOldPos, Constant.ITEM_POS_NO_EQUIPED);
+            this.player.actualizarSetsRapido(exObj.getGuid(), exObj.getGuid(), exObjOldPos, (byte) Constant.ITEM_POS_NO_EQUIPED);
           }
           if(this.player.getObjetByPos(Constant.ITEM_POS_ARME)==null)
             SocketManager.GAME_SEND_OT_PACKET(this,-1);
@@ -8823,7 +8823,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
             if(object.getPosition()>16)
             {
 
-              int oldPos=object.getPosition();
+              int previousPos=object.getPosition();
               object.setPosition(position);
               SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,object);
 
@@ -8835,7 +8835,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
                 if(object.getQuantity()-quantity>0)
                 {//Si il en reste
                   GameObject newItem=GameObject.getCloneObjet(object,object.getQuantity()-quantity);
-                  newItem.setPosition(oldPos);
+                  newItem.setPosition(previousPos);
 
                   object.setQuantity(quantity, this.player);
                   SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player,object);
