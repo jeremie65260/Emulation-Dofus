@@ -65,7 +65,7 @@ public class PlayerData extends AbstractDAO<Player>
         stats.put(Constant.STATS_ADD_INTE,RS.getInt("intelligence"));
         stats.put(Constant.STATS_ADD_CHAN,RS.getInt("chance"));
         stats.put(Constant.STATS_ADD_AGIL,RS.getInt("agilite"));
-        Player perso=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),false,RS.getInt("ornement"),RS.getString("ornementsList"));
+        Player perso=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),RS.getInt("gladiatroolWinStreak"),false,RS.getInt("ornement"),RS.getString("ornementsList"));
         Main.world.kamas_total += RS.getLong("kamas");
         perso.VerifAndChangeItemPlace();
         Main.world.addPlayer(perso);
@@ -105,7 +105,7 @@ public class PlayerData extends AbstractDAO<Player>
         stats.put(Constant.STATS_ADD_AGIL,RS.getInt("agilite"));
         Main.world.kamas_total += RS.getLong("kamas");
         Player oldPlayer=Main.world.getPlayer((int)obj);
-        player=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),true,RS.getInt("ornement"),RS.getString("ornementsList"));
+        player=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),RS.getInt("gladiatroolWinStreak"),true,RS.getInt("ornement"),RS.getString("ornementsList"));
         if(oldPlayer!=null)
           player.setNeededEndFight(oldPlayer.needEndFight(),oldPlayer.hasMobGroup());
 
@@ -150,7 +150,7 @@ public class PlayerData extends AbstractDAO<Player>
         stats.put(Constant.STATS_ADD_AGIL,RS.getInt("agilite"));
         Main.world.kamas_total += RS.getLong("kamas");
         Player oldPlayer=Main.world.getPlayer(RS.getInt("id"));
-        player=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),true,RS.getInt("ornement"),RS.getString("ornementsList"));
+        player=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),RS.getInt("gladiatroolWinStreak"),true,RS.getInt("ornement"),RS.getString("ornementsList"));
         if(oldPlayer!=null)
           player.setNeededEndFight(oldPlayer.needEndFight(),oldPlayer.hasMobGroup());
 
@@ -215,7 +215,7 @@ public class PlayerData extends AbstractDAO<Player>
         stats.put(Constant.STATS_ADD_INTE,RS.getInt("intelligence"));
         stats.put(Constant.STATS_ADD_CHAN,RS.getInt("chance"));
         stats.put(Constant.STATS_ADD_AGIL,RS.getInt("agilite"));
-        Player player=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),true,RS.getInt("ornement"),RS.getString("ornementsList"));
+        Player player=new Player(RS.getInt("id"),RS.getString("name"),RS.getInt("groupe"),RS.getInt("sexe"),RS.getInt("class"),RS.getInt("color1"),RS.getInt("color2"),RS.getInt("color3"),RS.getLong("kamas"),RS.getInt("spellboost"),RS.getInt("capital"),RS.getInt("energy"),RS.getInt("level"),RS.getLong("xp"),RS.getInt("size"),RS.getInt("gfx"),RS.getByte("alignement"),RS.getInt("account"),stats,RS.getByte("seeFriend"),RS.getByte("seeAlign"),RS.getByte("seeSeller"),RS.getString("canaux"),RS.getShort("map"),RS.getInt("cell"),RS.getString("objets"),RS.getString("storeObjets"),RS.getString("pdvper"),RS.getString("spells"),RS.getString("savepos"),RS.getString("jobs"),RS.getInt("mountxpgive"),RS.getInt("mount"),RS.getInt("honor"),RS.getInt("deshonor"),RS.getInt("alvl"),RS.getString("zaaps"),RS.getInt("title"),RS.getInt("wife"),RS.getString("morphMode"),RS.getString("allTitle"),RS.getString("emotes"),RS.getLong("prison"),false,RS.getString("parcho"),RS.getLong("timeDeblo"),RS.getBoolean("noall"),RS.getString("deadInformation"),RS.getByte("deathCount"),RS.getLong("totalKills"),RS.getInt("tokens"),RS.getInt("apExo"),RS.getInt("mpExo"),RS.getInt("raExo"),RS.getString("rapid"),RS.getInt("song"),RS.getInt("gladiatroolWinStreak"),true,RS.getInt("ornement"),RS.getString("ornementsList"));
         Main.world.kamas_total += RS.getLong("kamas");
         if(p!=null)
           player.setNeededEndFight(p.needEndFight(),p.hasMobGroup());
@@ -263,7 +263,7 @@ public class PlayerData extends AbstractDAO<Player>
     PreparedStatement p=null;
     try
     {
-      p=getPreparedStatement("INSERT INTO players(`id`, `name`, `sexe`, `class`, `color1`, `color2`, `color3`, `kamas`, `spellboost`, `capital`, `energy`, `level`, `xp`, `size`, `gfx`, `account`, `cell`, `map`, `spells`, `objets`, `storeObjets`, `morphMode`, `server`,`rapid`, `ornement`,`ornementsList`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'','','0',?,'',?,?)");
+      p=getPreparedStatement("INSERT INTO players(`id`, `name`, `sexe`, `class`, `color1`, `color2`, `color3`, `kamas`, `spellboost`, `capital`, `energy`, `level`, `xp`, `size`, `gfx`, `account`, `cell`, `map`, `spells`, `objets`, `storeObjets`, `morphMode`, `server`,`rapid`, `gladiatroolWinStreak`, `ornement`,`ornementsList`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'','','0',?,'',?, ?, ?)");
       p.setInt(1,perso.getId());
       p.setString(2,perso.getName());
       p.setInt(3,perso.getSexe());
@@ -284,8 +284,9 @@ public class PlayerData extends AbstractDAO<Player>
       p.setInt(18,perso.getCurMap().getId());
       p.setString(19,perso.parseSpellToDB());
       p.setInt(20,Config.getInstance().serverId);
-	  p.setInt(21,perso.getOrnement());
-	  p.setString(22,perso.parseOrnementsToDB());
+      p.setInt(21,perso.getGladiatroolWinStreak());
+      p.setInt(22,perso.getOrnement());
+      p.setString(23,perso.parseOrnementsToDB());
       execute(p);
       return true;
     }
@@ -345,7 +346,7 @@ public class PlayerData extends AbstractDAO<Player>
     PreparedStatement p=null;
     try
     {
-      p=getPreparedStatement("UPDATE `players` SET `kamas`= ?, `spellboost`= ?, `capital`= ?, `energy`= ?, `level`= ?, `xp`= ?, `size` = ?, `gfx`= ?, `alignement`= ?, `honor`= ?, `deshonor`= ?, `alvl`= ?, `vitalite`= ?, `force`= ?, `sagesse`= ?, `intelligence`= ?, `chance`= ?, `agilite`= ?, `seeFriend`= ?, `seeAlign`= ?, `seeSeller`= ?, `canaux`= ?, `map`= ?, `cell`= ?, `pdvper`= ?, `spells`= ?, `objets`= ?, `storeObjets`= ?, `savepos`= ?, `zaaps`= ?, `jobs`= ?, `mountxpgive`= ?, `mount`= ?, `title`= ?, `wife`= ?, `morphMode`= ?, `allTitle` = ?, `emotes` = ?, `prison` = ?, `parcho` = ?, `timeDeblo` = ?, `noall` = ?, `deadInformation` = ?, `deathCount` = ?, `totalKills` = ?, `rapid` = ? , `song` = ? , `ornement` = ?,  `ornementsList` = ? WHERE `players`.`id` = ? LIMIT 1");
+      p=getPreparedStatement("UPDATE `players` SET `kamas`= ?, `spellboost`= ?, `capital`= ?, `energy`= ?, `level`= ?, `xp`= ?, `size` = ?, `gfx`= ?, `alignement`= ?, `honor`= ?, `deshonor`= ?, `alvl`= ?, `vitalite`= ?, `force`= ?, `sagesse`= ?, `intelligence`= ?, `chance`= ?, `agilite`= ?, `seeFriend`= ?, `seeAlign`= ?, `seeSeller`= ?, `canaux`= ?, `map`= ?, `cell`= ?, `pdvper`= ?, `spells`= ?, `objets`= ?, `storeObjets`= ?, `savepos`= ?, `zaaps`= ?, `jobs`= ?, `mountxpgive`= ?, `mount`= ?, `title`= ?, `wife`= ?, `morphMode`= ?, `allTitle` = ?, `emotes` = ?, `prison` = ?, `parcho` = ?, `timeDeblo` = ?, `noall` = ?, `deadInformation` = ?, `deathCount` = ?, `totalKills` = ?, `rapid` = ? , `song` = ? , `gladiatroolWinStreak` = ?, `ornement` = ?,  `ornementsList` = ? WHERE `players`.`id` = ? LIMIT 1");
       p.setLong(1,player.getKamas());
       p.setInt(2,player.get_spellPts());
       p.setInt(3,player.get_capital());
@@ -399,9 +400,10 @@ public class PlayerData extends AbstractDAO<Player>
       p.setLong(45,player.getTotalKills());
       p.setString(46, player.getSetsRapidos());
       p.setInt(47,player.Song);
-      p.setInt(48,player.getOrnement());
-      p.setString(49,player.parseOrnementsToDB());
-      p.setInt(50,player.getId());
+      p.setInt(48,player.getGladiatroolWinStreak());
+      p.setInt(49,player.getOrnement());
+      p.setString(50,player.parseOrnementsToDB());
+      p.setInt(51,player.getId());
       execute(p);
       if(player.getGuildMember()!=null)
         Database.getDynamics().getGuildMemberData().update(player);
