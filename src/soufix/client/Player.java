@@ -112,7 +112,6 @@ public class Player
   private int gladiatroolCheckpointCell=0;
   private static final int GLADIATROOL_QUEST_ITEM_ID=20142;
   private static final int GLADIATROOL_TOKEN_ITEM_ID=16000;
-  private static final int GLADIATROOL_FINAL_REWARD_ITEM_ID=16001;
   private static final Map<Short, Integer> GLADIATROOL_ROOM_REWARDS;
   private static final Set<Short> GLADIATROOL_REWARD_EXCLUDED_MAPS=
     new HashSet<>(Arrays.asList((short)15080,(short)12277));
@@ -1120,8 +1119,6 @@ public void setTotal_reculte() {
     if(template!=null)
       refreshGladiatroolQuestItemStats(getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1),template);
     applyGladiatroolTokenReward(mapId);
-    if(mapId==15072)
-      grantGladiatroolFinalReward();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
   }
@@ -1141,18 +1138,6 @@ public void setTotal_reculte() {
       World.addGameObject(obj,true);
     SocketManager.GAME_SEND_Ow_PACKET(this);
     SocketManager.GAME_SEND_Im_PACKET(this,"021;"+reward+"~"+GLADIATROOL_TOKEN_ITEM_ID);
-  }
-
-  private void grantGladiatroolFinalReward()
-  {
-    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_FINAL_REWARD_ITEM_ID);
-    if(template==null)
-      return;
-    GameObject obj=template.createNewItem(1,false);
-    if(addObjet(obj,true))
-      World.addGameObject(obj,true);
-    SocketManager.GAME_SEND_Ow_PACKET(this);
-    SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+GLADIATROOL_FINAL_REWARD_ITEM_ID);
   }
 
   public void resetGladiatroolVictoryBonus()
