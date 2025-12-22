@@ -2361,12 +2361,11 @@ public class Function
       if(f.getBuff(184) != null && f.getBuff(184).getValue() == 1000) {
     	  continue;
       }
-      if(f.getMob() != null && f.getMob().getTemplate() != null && f.getMob().getTemplate().getId() == 282) {
-    	  continue;
-      }
       if(f.getTeam2()!=fighter.getTeam2())//Si c'est un ennemis
       {
         int d=PathFinding.getDistanceBetween(fight.getMap(),fighter.getCell().getId(),f.getCell().getId());
+        if(isStaticInvocation(f) && d > 1)
+          continue;
         if(d<dist)
         {
           dist=d;
@@ -2445,22 +2444,11 @@ public class Function
       if(f.getBuff(184) != null && f.getBuff(184).getValue() == 1000) {
     	  continue;
       }
-      if(f.getMob() != null && f.getMob().getTemplate() != null && f.getMob().getTemplate().getId() == 282) {
-    	  continue;
-      }
-      if(f.getMob()!=null&&f.getMob().getTemplate()!=null)
-      {
-        boolean ok=false;
-        for(int i : Constant.STATIC_INVOCATIONS)
-          if(i==f.getMob().getTemplate().getId())
-            ok=true;
-        if(ok)
-          continue;
-      }
-
       if(f.getTeam2()!=fighter.getTeam2())//Si c'est un ennemis
       {
         int d=PathFinding.getDistanceBetween(fight.getMap(),fighter.getCell().getId(),f.getCell().getId());
+        if(isStaticInvocation(f) && d > 1)
+          continue;
         if(d<distmax)
         {
           if(d>distmin)
@@ -2472,6 +2460,17 @@ public class Function
       }
     }
     return curF;
+  }
+
+  private boolean isStaticInvocation(Fighter fighter)
+  {
+    if(fighter.getMob()==null||fighter.getMob().getTemplate()==null)
+      return false;
+    int templateId=fighter.getMob().getTemplate().getId();
+    for(int id : Constant.STATIC_INVOCATIONS)
+      if(id==templateId)
+        return true;
+    return false;
   }
 
   public Fighter getNearEnnemylignenbrcasemax(Fight fight, Fighter fighter, int distmin, int distmax)
