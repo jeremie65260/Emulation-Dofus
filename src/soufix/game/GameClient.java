@@ -4681,6 +4681,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
       switch(packet.charAt(2))
       {
         case 'g':// Enclos -> Etable
+        case 'G':
           if(park.hasEtableFull(this.player.getId()))
           {
             this.send("Im1105");
@@ -4725,6 +4726,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           break;
 
         case 'p':// Etable -> Enclos
+        case 'P':
           if(this.player.getMount()!=null)
           {
             if(this.player.getMount().getObjects().size()!=0)
