@@ -10473,7 +10473,7 @@ Logging.getInstance().write("DDOS","IP Same Packet 500 out "+packet+" "+ip);
 	    }
   }
 
-  private void openOrnementsPanel() {
+  public void openOrnementsPanel() {
     if (World.getOrnements().isEmpty()) {
       this.player.sendMessage("Aucun ornement disponible pour le moment.");
       return;
