@@ -1176,7 +1176,8 @@ public class ObjectAction
         	  return;
 			}
           case 53: {// panel Size
-        	  player.send("wO");
+        	  if(player.getGameClient()!=null)
+        	    player.getGameClient().openOrnementsPanel();
         	  return;
 			}
         }

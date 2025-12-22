@@ -111,8 +111,29 @@ public class Player
   private short gladiatroolCheckpointMap=0;
   private int gladiatroolCheckpointCell=0;
   private static final int GLADIATROOL_QUEST_ITEM_ID=20142;
+  private static final int GLADIATROOL_TOKEN_ITEM_ID=16000;
+  private static final int GLADIATROOL_FINAL_REWARD_ITEM_ID=16001;
+  private static final Map<Short, Integer> GLADIATROOL_ROOM_REWARDS;
+  private static final Set<Short> GLADIATROOL_REWARD_EXCLUDED_MAPS=
+    new HashSet<>(Arrays.asList((short)15080,(short)12277));
   private static final int ARENA_REWARD_ITEM_ID=20143;
   private static final int ARENA_REWARD_ENTRY_MAP_ID=12277;
+
+  static
+  {
+    Map<Short, Integer> rewards=new HashMap<>();
+    rewards.put((short)15000,10);
+    rewards.put((short)15008,30);
+    rewards.put((short)15016,70);
+    rewards.put((short)15024,130);
+    rewards.put((short)15032,220);
+    rewards.put((short)15040,340);
+    rewards.put((short)15048,500);
+    rewards.put((short)15056,700);
+    rewards.put((short)15064,950);
+    rewards.put((short)15072,1250);
+    GLADIATROOL_ROOM_REWARDS=Collections.unmodifiableMap(rewards);
+  }
   private Stats gladiatroolBonusStats=new Stats();
   private int gladiatroolWinStreak=0;
   //PDV
@@ -1088,9 +1109,9 @@ public void setTotal_reculte() {
     }
   }
 
-  public void applyGladiatroolVictoryBonus()
+  public void applyGladiatroolVictoryBonus(short mapId)
   {
-    if(this.curMap==null||!Constant.isGladiatroolMap(this.curMap.getId()))
+    if(!Constant.isGladiatroolMap(mapId))
       return;
     gladiatroolWinStreak++;
     refreshGladiatroolBonusStats();
@@ -1098,8 +1119,40 @@ public void setTotal_reculte() {
     ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
     if(template!=null)
       refreshGladiatroolQuestItemStats(getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1),template);
+    applyGladiatroolTokenReward(mapId);
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private void applyGladiatroolTokenReward(short mapId)
+  {
+    if(GLADIATROOL_REWARD_EXCLUDED_MAPS.contains(mapId))
+      return;
+    Integer reward=GLADIATROOL_ROOM_REWARDS.get(mapId);
+    if(reward==null||reward<=0)
+      return;
+    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_TOKEN_ITEM_ID);
+    if(template==null)
+      return;
+    GameObject obj=template.createNewItem(reward,false);
+    if(addObjet(obj,true))
+      World.addGameObject(obj,true);
+    SocketManager.GAME_SEND_Ow_PACKET(this);
+    SocketManager.GAME_SEND_Im_PACKET(this,"021;"+reward+"~"+GLADIATROOL_TOKEN_ITEM_ID);
+    if(mapId==15072)
+      grantGladiatroolFinalReward();
+  }
+
+  private void grantGladiatroolFinalReward()
+  {
+    ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_FINAL_REWARD_ITEM_ID);
+    if(template==null)
+      return;
+    GameObject obj=template.createNewItem(1,false);
+    if(addObjet(obj,true))
+      World.addGameObject(obj,true);
+    SocketManager.GAME_SEND_Ow_PACKET(this);
+    SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+GLADIATROOL_FINAL_REWARD_ITEM_ID);
   }
 
   public void resetGladiatroolVictoryBonus()
