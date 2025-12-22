@@ -3942,6 +3942,7 @@ public void setTotal_reculte() {
   {
 	  if(o == null)
 		  return;
+    byte oldPos = o.getPosition();
     o.setPosition(Constant.ITEM_POS_NO_EQUIPED);
     ObjectTemplate oTpl=o.getTemplate();
     int idSetExObj=oTpl.getPanoId();
@@ -3960,6 +3961,7 @@ public void setTotal_reculte() {
     SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this,o);
     if(oTpl.getPanoId()>0)
       SocketManager.GAME_SEND_OS_PACKET(this,oTpl.getPanoId());
+    this.actualizarSetsRapido(o.getGuid(), o.getGuid(), oldPos, Constant.ITEM_POS_NO_EQUIPED);
     this.refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
     //Database.getStatics().getObjectData().update(o);
@@ -7922,6 +7924,7 @@ public void setOne_windows(boolean one_windows) {
 		}
 		if (b) {
 			SocketManager.ENVIAR_Os_SETS_RAPIDOS(this.getGameClient());
+			Database.getStatics().getPlayerData().update(this);
 		}
 	}
 
