@@ -564,8 +564,7 @@ public class CommandPlayerpvm {
 				return true;
 			}
 
-			if ((msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("start"))
-					|| (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("astrub"))) {
+			if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("start")) {
 				if (perso.isInPrison()) {
 					return true;
 				}
@@ -583,6 +582,23 @@ public class CommandPlayerpvm {
 				int cellId = Config.getInstance().startCell != 0 ? Config.getInstance().startCell
 						: Constant.getStartCell(perso.getClasse());
 				perso.teleport(mapId, cellId);
+				return true;
+			}
+
+			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("astrub")) {
+				if (perso.isInPrison()) {
+					return true;
+				}
+				if (perso.getFight() != null) {
+					return true;
+				}
+				if (System.currentTimeMillis() < perso.getGameClient().timeLasttpcommande) {
+					perso.sendMessage("Tu dois attendre encore "
+							+ (System.currentTimeMillis() - perso.getGameClient().timeLasttpcommande) / 1000 + " seconde(s)");
+					return true;
+				}
+				perso.getGameClient().timeLasttpcommande = System.currentTimeMillis() + 1000;
+				perso.teleport((short) 7411, 311);
 				return true;
 			}
 
