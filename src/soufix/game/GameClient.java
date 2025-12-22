@@ -4681,6 +4681,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
       switch(packet.charAt(2))
       {
         case 'g':// Enclos -> Etable
+        case 'G':
           if(park.hasEtableFull(this.player.getId()))
           {
             this.send("Im1105");
@@ -4725,6 +4726,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           break;
 
         case 'p':// Etable -> Enclos
+        case 'P':
           if(this.player.getMount()!=null)
           {
             if(this.player.getMount().getObjects().size()!=0)
@@ -4751,7 +4753,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           mount=Main.world.getMountById(id);
           
           if(mount.getEtape() != -1){
-				if(mount.getEtape() != 1)return;	
+				if(mount.getEtape() != 1 && mount.getEtape() != 2)return;	
 				}
           boolean can2 = false;
 			if(park.getGuild() != null && this.player.get_guild() != null){
@@ -10682,7 +10684,7 @@ private void Core(String packet)
     	      this.send(cell);
       break;
     case '4':
-    	// L'icône d'ornements ne doit pas ouvrir la liste des commandes.
+    	openOrnementsPanel();
     break;
     case '5':
        CommandPlayerpvm.analyse(this.player,".noall");
