@@ -7922,6 +7922,7 @@ public void setOne_windows(boolean one_windows) {
 		}
 		if (b) {
 			SocketManager.ENVIAR_Os_SETS_RAPIDOS(this.getGameClient());
+			Database.getStatics().getPlayerData().update(this);
 		}
 	}
 

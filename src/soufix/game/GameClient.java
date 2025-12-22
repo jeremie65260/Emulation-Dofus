@@ -8496,6 +8496,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
       	this.player.sendMessage("Erreur Object move 1 merci de contacter un administrateur");
         return ;
       }
+      byte oldPos = object.getPosition();
       if(this.player.getFight()!=null)
         if(this.player.getFight().getState()>Constant.FIGHT_STATE_ACTIVE)
         {
@@ -8746,23 +8747,24 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           return; // on s'arré¿½te lé¿½ pour l'obvi
         } // FIN DU CODE OBVI
 
-        if(exObj!=null)//S'il y avait dé¿½ja un objet sur cette place on dé¿½sé¿½quipe
-        {
-          GameObject obj2;
-          ObjectTemplate exObjTpl=exObj.getTemplate();
-          int idSetExObj=exObj.getTemplate().getPanoId();
-          if((obj2=this.player.getSimilarItem(exObj))!=null)//On le possé¿½de deja
+          if(exObj!=null)//S'il y avait dé¿½ja un objet sur cette place on dé¿½sé¿½quipe
           {
+            GameObject obj2;
+            ObjectTemplate exObjTpl=exObj.getTemplate();
+            int idSetExObj=exObj.getTemplate().getPanoId();
+            byte exObjOldPos = exObj.getPosition();
+            if((obj2=this.player.getSimilarItem(exObj))!=null)//On le possé¿½de deja
+            {
  
-            obj2.setQuantity(obj2.getQuantity()+exObj.getQuantity(), this.player);
-            SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player,obj2);
-            Main.world.removeGameObject(exObj.getGuid());
-            this.player.removeItem(exObj.getGuid());
-            SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player,exObj.getGuid());
-          }
-          else
-          //On ne le possé¿½de pas
-          {
+              obj2.setQuantity(obj2.getQuantity()+exObj.getQuantity(), this.player);
+              SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player,obj2);
+              Main.world.removeGameObject(exObj.getGuid());
+              this.player.removeItem(exObj.getGuid());
+              SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player,exObj.getGuid());
+            }
+            else
+            //On ne le possé¿½de pas
+            {
        
             exObj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
             if((idSetExObj>=81&&idSetExObj<=92)||(idSetExObj>=201&&idSetExObj<=212))
@@ -8779,6 +8781,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
               this.player.refreshItemClasse(null);
             }
             SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,exObj);
+            this.player.actualizarSetsRapido(exObj.getGuid(), exObj.getGuid(), exObjOldPos, Constant.ITEM_POS_NO_EQUIPED);
           }
           if(this.player.getObjetByPos(Constant.ITEM_POS_ARME)==null)
             SocketManager.GAME_SEND_OT_PACKET(this,-1);
@@ -8936,6 +8939,10 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         }
 
        
+        if(oldPos != object.getPosition()) {
+          this.player.actualizarSetsRapido(object.getGuid(), object.getGuid(), oldPos, (byte) object.getPosition());
+        }
+
         this.player.refreshStats();
         SocketManager.GAME_SEND_STATS_PACKET(this.player);
 
@@ -9028,7 +9035,6 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         SocketManager.GAME_SEND_STATS_PACKET(this.player);
       }
      //this.player.verifEquiped();
-     //Database.getStatics().getPlayerData().update(this.player);
 
     }
     catch(Exception e)
@@ -10675,7 +10681,7 @@ private void Core(String packet)
     	      this.send(cell);
       break;
     case '4':
-    	CommandPlayerpvm.analyse(this.player,".help");
+    	// L'icône d'ornements ne doit pas ouvrir la liste des commandes.
     break;
     case '5':
        CommandPlayerpvm.analyse(this.player,".noall");
