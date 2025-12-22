@@ -269,7 +269,7 @@ public ArrayList<Integer> getIsCraftingType()
     return craftingType;
   }
 
-  public Player(int id, String name, int groupe, int sexe, int classe, int color1, int color2, int color3, long kamas, int pts, int _capital, int energy, int level, long exp, int _size, int _gfxid, byte alignement, int account, Map<Integer, Integer> stats, byte seeFriend, byte seeAlign, byte seeSeller, String canaux, short map, int cell, String stuff, String storeObjets, String pdvPer, String spells, String savePos, String jobs, int mountXp, int mount, int honor, int deshonor, int alvl, String z, int title, int wifeGuid, String morphMode, String allTitle, String emotes, long prison, boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills, final int tokens, final int apExo, final int mpExo, final int raExo, String rapid,int song, boolean Reload_item, int ornement, String ListOrnements)
+  public Player(int id, String name, int groupe, int sexe, int classe, int color1, int color2, int color3, long kamas, int pts, int _capital, int energy, int level, long exp, int _size, int _gfxid, byte alignement, int account, Map<Integer, Integer> stats, byte seeFriend, byte seeAlign, byte seeSeller, String canaux, short map, int cell, String stuff, String storeObjets, String pdvPer, String spells, String savePos, String jobs, int mountXp, int mount, int honor, int deshonor, int alvl, String z, int title, int wifeGuid, String morphMode, String allTitle, String emotes, long prison, boolean isNew, String parcho, long timeDeblo, boolean noall, String deadInformation, byte deathCount, long totalKills, final int tokens, final int apExo, final int mpExo, final int raExo, String rapid, int song, int gladiatroolWinStreak, boolean Reload_item, int ornement, String ListOrnements)
   {
     this.id=id;
     this.noall=noall;
@@ -400,6 +400,7 @@ public ArrayList<Integer> getIsCraftingType()
         Main.stop("Player2");
         return;
       }
+      syncGladiatroolBonusWithMap();
       if(Reload_item)
       if(!stuff.equals(""))
       {
@@ -441,6 +442,8 @@ public ArrayList<Integer> getIsCraftingType()
       {
         e.printStackTrace();
       }
+      this.gladiatroolWinStreak=Math.max(0,gladiatroolWinStreak);
+      refreshGladiatroolBonusStats();
       try {
     	  if(rapid != null)
 			for (String s : rapid.split(Pattern.quote("*"))) {
@@ -602,7 +605,7 @@ public ArrayList<Integer> getIsCraftingType()
       return null;
     if(sexe<0||sexe>1)
       return null;
-    Player perso=new Player(Database.getStatics().getPlayerData().getNextId(),name,-1,sexe,classe,color1,color2,color3,(Config.getInstance().serverId==6 ? 10000000 : 0),((Config.getInstance().startLevel-1)),((Config.getInstance().startLevel-1)*5),10000,Config.getInstance().startLevel,Main.world.getPersoXpMin(Config.getInstance().startLevel),100,Integer.parseInt(classe+""+sexe),(byte)0,compte.getId(),new HashMap<Integer, Integer>(),(byte)1,(byte)0,(byte)0,"*#%!pi$:?",(Config.getInstance().startMap!=0 ? (short)Config.getInstance().startMap : Constant.getStartMap(classe)),(Config.getInstance().startCell!=0 ? (short)Config.getInstance().startCell : Constant.getStartCell(classe)),"","","100;0","",(Config.getInstance().startMap!=0 ? (short)Config.getInstance().startMap : Constant.getStartMap(classe))+","+(Config.getInstance().startCell!=0 ? (short)Config.getInstance().startCell : Constant.getStartCell(classe)),"",0,-1,0,0,0,z.toString(),(byte)0,0,"0;0","",(Config.getInstance().allEmote ? "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21" : "0"),0,true,"118,0;119,0;123,0;124,0;125,0;126,0",0,false,"0,0,0,0",(byte)0,0,0,0,0,0,"",0,false,ornement, ListOrnements);
+    Player perso=new Player(Database.getStatics().getPlayerData().getNextId(),name,-1,sexe,classe,color1,color2,color3,(Config.getInstance().serverId==6 ? 10000000 : 0),((Config.getInstance().startLevel-1)),((Config.getInstance().startLevel-1)*5),10000,Config.getInstance().startLevel,Main.world.getPersoXpMin(Config.getInstance().startLevel),100,Integer.parseInt(classe+""+sexe),(byte)0,compte.getId(),new HashMap<Integer, Integer>(),(byte)1,(byte)0,(byte)0,"*#%!pi$:?",(Config.getInstance().startMap!=0 ? (short)Config.getInstance().startMap : Constant.getStartMap(classe)),(Config.getInstance().startCell!=0 ? (short)Config.getInstance().startCell : Constant.getStartCell(classe)),"","","100;0","",(Config.getInstance().startMap!=0 ? (short)Config.getInstance().startMap : Constant.getStartMap(classe))+","+(Config.getInstance().startCell!=0 ? (short)Config.getInstance().startCell : Constant.getStartCell(classe)),"",0,-1,0,0,0,z.toString(),(byte)0,0,"0;0","",(Config.getInstance().allEmote ? "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21" : "0"),0,true,"118,0;119,0;123,0;124,0;125,0;126,0",0,false,"0,0,0,0",(byte)0,0,0,0,0,0,"",0,0,false,ornement, ListOrnements);
     perso.emotes.add(1);
     perso._sorts=Constant.getStartSorts(classe);
     for(int a=1;a<=perso.getLevel();a++)
@@ -1012,6 +1015,7 @@ public void setTotal_reculte() {
       return;
     gladiatroolWinStreak++;
     refreshGladiatroolBonusStats();
+    persistGladiatroolWinStreak();
     ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
     if(template!=null)
       refreshGladiatroolQuestItemStats(getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1),template);
@@ -1025,8 +1029,16 @@ public void setTotal_reculte() {
       return;
     gladiatroolWinStreak=0;
     gladiatroolBonusStats=new Stats();
+    persistGladiatroolWinStreak();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private void persistGladiatroolWinStreak()
+  {
+    if(this.id<=0)
+      return;
+    Database.getStatics().getPlayerData().update(this);
   }
 
   private void refreshGladiatroolBonusStats()
@@ -1094,6 +1106,11 @@ public void setTotal_reculte() {
   public void setDoAction(boolean b)
   {
     doAction=b;
+  }
+
+  public int getGladiatroolWinStreak()
+  {
+    return gladiatroolWinStreak;
   }
 
   public void setRoleplayBuff(int id)
