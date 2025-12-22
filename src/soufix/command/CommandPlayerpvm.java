@@ -1177,6 +1177,34 @@ public class CommandPlayerpvm {
 					return true;
 				}
 
+				if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("ornement")) {
+					StringBuilder ornements = new StringBuilder();
+					Map<Integer, Ornements> sortedMap = World.getOrnements().entrySet()
+							.stream()
+							.sorted(Map.Entry.<Integer, Ornements>comparingByKey(Comparator.reverseOrder()))
+							.collect(Collectors.toMap(
+									Map.Entry::getKey,
+									Map.Entry::getValue,
+									(e1, e2) -> e1,
+									LinkedHashMap::new
+							));
+					for (Ornements o : sortedMap.values()) {
+						if(perso.getOrnementsList().contains(o.getId())) {
+							if (ornements.length() > 0) {
+								ornements.append(";");
+							}
+							ornements.append(o.getId() + ","+ o.getName() +",T");
+
+						} else if (!o.isCanbuy()) {
+							if (ornements.length() > 0) {
+								ornements.append(";");
+							}
+							ornements.append(o.getId() + ","+o.getName()+"," + o.getPrice());
+						}
+					}
+					perso.send("wl"+ornements.toString());
+					return true;
+				}
 				if (choix.equalsIgnoreCase("dofus")) {
 					for (byte dofusSlot : dofusEmplacements) {
 						updated |= jetMaxAItem(perso, "dofus", dofusSlot, false);
