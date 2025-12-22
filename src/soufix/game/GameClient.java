@@ -10472,6 +10472,32 @@ Logging.getInstance().write("DDOS","IP Same Packet 500 out "+packet+" "+ip);
 		 player.removeByTemplateID(22005,1);
 	    }
   }
+
+  private void openOrnementsPanel() {
+    if (World.getOrnements().isEmpty()) {
+      this.player.sendMessage("Aucun ornement disponible pour le moment.");
+      return;
+    }
+    StringBuilder data = new StringBuilder();
+    for (soufix.client.other.Ornements ornement : World.getOrnements().values()) {
+      if (ornement == null) {
+        continue;
+      }
+      if (data.length() > 0) {
+        data.append("|");
+      }
+      data.append(ornement.getId())
+          .append(";")
+          .append(ornement.getName())
+          .append(";")
+          .append(ornement.getPrice())
+          .append(";")
+          .append(ornement.getSucces())
+          .append(";")
+          .append(ornement.isCanbuy() ? 1 : 0);
+    }
+    this.send("wO" + data);
+  }
   public void size(String packet)
   {
 	  if(player.hasItemTemplate(22009,1))
