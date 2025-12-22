@@ -400,6 +400,7 @@ public ArrayList<Integer> getIsCraftingType()
         Main.stop("Player2");
         return;
       }
+      syncGladiatroolBonusWithMap();
       if(Reload_item)
       if(!stuff.equals(""))
       {
@@ -1014,6 +1015,7 @@ public void setTotal_reculte() {
       return;
     gladiatroolWinStreak++;
     refreshGladiatroolBonusStats();
+    persistGladiatroolWinStreak();
     ObjectTemplate template=Main.world.getObjTemplate(GLADIATROOL_QUEST_ITEM_ID);
     if(template!=null)
       refreshGladiatroolQuestItemStats(getItemTemplate(GLADIATROOL_QUEST_ITEM_ID,1),template);
@@ -1027,8 +1029,16 @@ public void setTotal_reculte() {
       return;
     gladiatroolWinStreak=0;
     gladiatroolBonusStats=new Stats();
+    persistGladiatroolWinStreak();
     refreshStats();
     SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private void persistGladiatroolWinStreak()
+  {
+    if(this.id<=0)
+      return;
+    Database.getStatics().getPlayerData().update(this);
   }
 
   private void refreshGladiatroolBonusStats()
