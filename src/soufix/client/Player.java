@@ -111,6 +111,8 @@ public class Player
   private short gladiatroolCheckpointMap=0;
   private int gladiatroolCheckpointCell=0;
   private static final int GLADIATROOL_QUEST_ITEM_ID=20142;
+  private static final int ARENA_REWARD_ITEM_ID=20143;
+  private static final int ARENA_REWARD_ENTRY_MAP_ID=12277;
   private Stats gladiatroolBonusStats=new Stats();
   private int gladiatroolWinStreak=0;
   //PDV
@@ -958,6 +960,83 @@ public void setTotal_reculte() {
     {
       removeGladiatroolQuestItem();
     }
+  }
+
+  private void handleArenaRewardItemEntry(int previousMapId)
+  {
+    if(previousMapId==ARENA_REWARD_ENTRY_MAP_ID)
+      return;
+    if(this.curMap!=null&&this.curMap.getId()==ARENA_REWARD_ENTRY_MAP_ID)
+      ensureArenaRewardItem();
+  }
+
+  private void ensureArenaRewardItem()
+  {
+    if(hasItemTemplate(ARENA_REWARD_ITEM_ID,1))
+      return;
+    ObjectTemplate template=Main.world.getObjTemplate(ARENA_REWARD_ITEM_ID);
+    if(template==null)
+      return;
+    GameObject obj=template.createNewItem(1,false);
+    obj.setStats(new Stats());
+    if(addObjet(obj,true))
+      World.addGameObject(obj,true);
+    SocketManager.GAME_SEND_Ow_PACKET(this);
+    SocketManager.GAME_SEND_Im_PACKET(this,"021;1~"+ARENA_REWARD_ITEM_ID);
+    SocketManager.GAME_SEND_UPDATE_ITEM(this,obj);
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  public void applyArenaRewardVictoryBonus()
+  {
+    GameObject item=getItemTemplate(ARENA_REWARD_ITEM_ID,1);
+    if(item==null)
+      return;
+    Stats currentStats=item.getStats();
+    Stats updatedStats=buildArenaRewardStats(currentStats);
+    if(updatedStats.isSameStats(currentStats))
+      return;
+    item.setStats(updatedStats);
+    SocketManager.GAME_SEND_UPDATE_ITEM(this,item);
+    refreshStats();
+    SocketManager.GAME_SEND_STATS_PACKET(this);
+  }
+
+  private Stats buildArenaRewardStats(Stats currentStats)
+  {
+    Stats updated=new Stats();
+    int force=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_FORC),100);
+    int intelligence=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_INTE),100);
+    int chance=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_CHAN),100);
+    int agi=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_AGIL),100);
+    int vita=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_VITA),300);
+    int sagesse=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_SAGE),50);
+    int dommages=computeArenaRewardValue(currentStats.get(Constant.STATS_ADD_DOMA),20);
+    addArenaRewardStat(updated,Constant.STATS_ADD_FORC,force);
+    addArenaRewardStat(updated,Constant.STATS_ADD_INTE,intelligence);
+    addArenaRewardStat(updated,Constant.STATS_ADD_CHAN,chance);
+    addArenaRewardStat(updated,Constant.STATS_ADD_AGIL,agi);
+    addArenaRewardStat(updated,Constant.STATS_ADD_VITA,vita);
+    addArenaRewardStat(updated,Constant.STATS_ADD_SAGE,sagesse);
+    addArenaRewardStat(updated,Constant.STATS_ADD_DOMA,dommages);
+    return updated;
+  }
+
+  private int computeArenaRewardValue(int currentValue, int maxValue)
+  {
+    int current=Math.max(0,currentValue);
+    if(current>=maxValue)
+      return maxValue;
+    int increment=(int)Math.round(maxValue*0.2);
+    return Math.min(maxValue,current+increment);
+  }
+
+  private void addArenaRewardStat(Stats stats, int statId, int value)
+  {
+    if(value<=0)
+      return;
+    stats.addOneStat(statId,value);
   }
 
   private void ensureGladiatroolQuestItem()
@@ -2797,6 +2876,7 @@ public void setTotal_reculte() {
       SocketManager.GAME_SEND_MAP_FIGHT_COUNT(client,this.getCurMap());
       if(this.getFight()==null)
         this.curMap.addPlayer(this);
+      handleArenaRewardItemEntry(-1);
     }
     else
     {
@@ -4167,9 +4247,11 @@ public void setTotal_reculte() {
   {
     if(this.getFight()!=null)
       return;
+    short previousMapId=this.curMap!=null ? this.curMap.getId() : -1;
     this.curMap=Main.world.getMap(newMapID);
     this.curCell=Main.world.getMap(newMapID).getCase(newCellID);
     updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
+    handleArenaRewardItemEntry(previousMapId);
     //Database.getStatics().getPlayerData().update(this);
   }
 
@@ -4186,6 +4268,7 @@ public void setTotal_reculte() {
       return;
     GameClient.leaveExchange(this);
     recordGladiatroolProgress();
+    short previousMapId=this.curMap!=null ? this.curMap.getId() : -1;
     boolean wasGladiatrool=Constant.isGladiatroolMap(this.curMap.getId());
     GameMap map=Main.world.getMap(newMapID);
     if(map==null)
@@ -4210,6 +4293,7 @@ public void setTotal_reculte() {
       if(Constant.isGladiatroolMap(newMapID))
         this.unequipAllExceptApparats();
       updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
+      handleArenaRewardItemEntry(previousMapId);
       return;
     }
     if(this.getSpioned_by() != null)
@@ -4273,6 +4357,7 @@ public void setTotal_reculte() {
       this.unequipAllExceptApparats();
     refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(newMapID));
     updateGladiatroolQuestItem(Constant.isGladiatroolMap(newMapID));
+    handleArenaRewardItemEntry(previousMapId);
 
     if(this.follower!=null&&!this.follower.isEmpty()) // On met a jour la Map des personnages qui nous suivent
     {
@@ -4310,6 +4395,7 @@ public void setTotal_reculte() {
       PW=account.getGameClient();
     }
     recordGladiatroolProgress();
+    short previousMapId=this.curMap!=null ? this.curMap.getId() : -1;
     boolean wasGladiatrool=Constant.isGladiatroolMap(curMap.getId());
     if(map==null)
     {
@@ -4357,6 +4443,7 @@ public void setTotal_reculte() {
       if(Constant.isGladiatroolMap(map.getId()))
         this.unequipAllExceptApparats();
       updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
+      handleArenaRewardItemEntry(previousMapId);
       return;
     }
     if(PW!=null)
@@ -4405,8 +4492,9 @@ public void setTotal_reculte() {
       disableRestrictedFullMorphIfNeeded(map.getId());
       if(Constant.isGladiatroolMap(map.getId()))
         this.unequipAllExceptApparats();
-      refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
-      updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
+    refreshGladiatroolStatsIfNeeded(wasGladiatrool,Constant.isGladiatroolMap(map.getId()));
+    updateGladiatroolQuestItem(Constant.isGladiatroolMap(map.getId()));
+    handleArenaRewardItemEntry(previousMapId);
     }
     else
     {
