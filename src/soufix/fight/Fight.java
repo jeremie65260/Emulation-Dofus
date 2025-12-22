@@ -5524,11 +5524,14 @@ public void Anti_bug () {
       loosers.addAll(this.getTeam0().values());
     }
 
-    if(this.getMapOld()!=null&&this.getMapOld().getId()==15080&&win==1)
+    if(this.getMapOld()!=null&&this.getMapOld().getId()==15072&&win==1)
     {
       for(Fighter fighter : winners)
         if(fighter!=null&&fighter.getPersonnage()!=null)
+        {
           fighter.getPersonnage().clearGladiatroolCheckpoint();
+          fighter.getPersonnage().applyArenaRewardVictoryBonus();
+        }
     }
 
     if(this.getType()==Constant.FIGHT_TYPE_PVM&&this.getMapOld()!=null&&Constant.isGladiatroolMap(this.getMapOld().getId()))
