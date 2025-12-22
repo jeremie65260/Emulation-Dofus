@@ -5539,7 +5539,7 @@ public void Anti_bug () {
       for(Fighter fighter : winners)
       {
         if(fighter!=null&&fighter.getPersonnage()!=null)
-          fighter.getPersonnage().applyGladiatroolVictoryBonus();
+          fighter.getPersonnage().applyGladiatroolVictoryBonus((short)this.getMapOld().getId());
       }
     }
 
