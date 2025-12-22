@@ -754,6 +754,7 @@ public boolean isBank_load() {
 		  player.setTime_total(System.currentTimeMillis() - player.getTime_co());
 		  player.setTime_co(0);
 	  }
+    Database.getStatics().getPlayerData().update(player);
     Database.getStatics().getAccountData().setLogged(this.id,0);
     Database.getStatics().getPlayerData().updateAllLogged(this.getId(),0);
     //Database.getStatics().getPlayerData().update(player);
