@@ -5528,7 +5528,10 @@ public void Anti_bug () {
     {
       for(Fighter fighter : winners)
         if(fighter!=null&&fighter.getPersonnage()!=null)
+        {
           fighter.getPersonnage().clearGladiatroolCheckpoint();
+          fighter.getPersonnage().applyArenaRewardVictoryBonus();
+        }
     }
 
     if(this.getType()==Constant.FIGHT_TYPE_PVM&&this.getMapOld()!=null&&Constant.isGladiatroolMap(this.getMapOld().getId()))

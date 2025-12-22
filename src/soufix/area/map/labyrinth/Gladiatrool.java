@@ -24,7 +24,7 @@ public class Gladiatrool
   private static final Set<Integer> BOSS_IDS=new HashSet<>(Arrays.asList(58,85,86,107,113,121,147,173,180,225,226,230,232,251,252,257,289,295,374,375,377,382,404,423,430,457,478,519,568,605,612,669,670,673,675,677,681,780,792,797,799,800,827,854,926,939,940,943,1015,1027,1045,1051,1071,1072,1085,1086,1087,1159,1184,1185,1186,1187,1188));
   private static final Set<Integer> EXCLUDED_IDS=new HashSet<>(Arrays.asList(5002,5003,5004,5005,5006,5007,5008,5009,5010,5011,5012,5013,5014,5015,5016,5017,5018,5019,5020,5021,5022,5030,5031,5032,5033,5034,5035,5036,5037,5038,5039,5040,5041,5042,5043,5044,5045,5046,5047,5048,5049,5050,5051,5052,5053,5054,5056,5057,5058,5059,5060,5061,5062,5063,5064,5065,5066,5067,5068,5069,5070,5071,5072,5073,5074,5075,5076,5077,5078,5079,5080,5081,5082));
   private static final Set<String> EXCLUDED_NAMES=new HashSet<>(Arrays.asList("TEST","GARDIENNE DES EGOUTS","GARDIENNE DES ÉGOUTS","MOMIE NOVA","SPHINCTER CELL"));
-  private static final Set<Short> EXCLUDED_GLADIATROOL_MAPS=new HashSet<>(Arrays.asList((short)15000,(short)15008,(short)15016,(short)15024,(short)15032,(short)15040,(short)15048,(short)15056,(short)15064,(short)15072));
+  private static final Set<Short> EXCLUDED_GLADIATROOL_MAPS=new HashSet<>(Arrays.asList((short)15000,(short)15008,(short)15016,(short)15024,(short)15032,(short)15040,(short)15048,(short)15056,(short)15064));
   private static final Set<Integer> RESOURCE_PROTECTOR_IDS=new HashSet<>();
   private static final Random RANDOM=new Random();
 
@@ -80,6 +80,8 @@ public class Gladiatrool
   private static void spawnGroupGladiatrool(short mapid, String groupData)
   {
     if(!Constant.isInGladiatorDonjon(mapid))
+      return;
+    if(mapid==15080)
       return;
 
     GameMap map=Main.world.getMap(mapid);
