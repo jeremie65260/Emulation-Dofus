@@ -100,14 +100,12 @@ public class GameClient implements Runnable
 	private Socket _s;	
   private Account account;
   private Player player;
-  private int id;
   private boolean walk=false;
   private AdminUser adminUser;
   private final Map<Integer, GameAction> actions=new HashMap<>();
   public long timeLastTradeMsg=0, timeLastRecrutmentMsg=0, timeLastAlignMsg=0,
 		  timeLastChatMsg=0, timeLastIncarnamMsg=0, timeLastTaverne, lastPacketTime=0,
-		  action=0, timeLastAct=0 , timeLastd=0 , timeLastinvite=0 , spawm_fm=0;
-private String preparedKeys;
+		  action=0, timeLastAct=0 , timeLastinvite=0 , spawm_fm=0;
   private int averagePing=0;
   private boolean creatingCharacter=false;
   private boolean characterSelect=true;
@@ -218,11 +216,6 @@ public int chek;
   public Account getAccount()
   {
     return account;
-  }
-
-  public String getPreparedKeys()
-  {
-    return preparedKeys;
   }
 
   public void parsePacket(String packet) throws InterruptedException
@@ -8781,7 +8774,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
               this.player.refreshItemClasse(null);
             }
             SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,exObj);
-            this.player.actualizarSetsRapido(exObj.getGuid(), exObj.getGuid(), exObjOldPos, Constant.ITEM_POS_NO_EQUIPED);
+            this.player.actualizarSetsRapido(exObj.getGuid(), exObj.getGuid(), exObjOldPos, (byte) Constant.ITEM_POS_NO_EQUIPED);
           }
           if(this.player.getObjetByPos(Constant.ITEM_POS_ARME)==null)
             SocketManager.GAME_SEND_OT_PACKET(this,-1);
@@ -8823,7 +8816,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
             if(object.getPosition()>16)
             {
 
-              int oldPos=object.getPosition();
+              int previousPos=object.getPosition();
               object.setPosition(position);
               SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this.player,object);
 
@@ -8835,7 +8828,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
                 if(object.getQuantity()-quantity>0)
                 {//Si il en reste
                   GameObject newItem=GameObject.getCloneObjet(object,object.getQuantity()-quantity);
-                  newItem.setPosition(oldPos);
+                  newItem.setPosition(previousPos);
 
                   object.setQuantity(quantity, this.player);
                   SocketManager.GAME_SEND_OBJECT_QUANTITY_PACKET(this.player,object);
@@ -10114,7 +10107,6 @@ public void setTimeLastTaverne(long timeLastTaverne) {
    */
 
   //v2.6 - only used in logging in system
-@SuppressWarnings("deprecation")
 public void kick()
   {
 	 // bug double deconnection 3liha dert had V2
@@ -10131,13 +10123,7 @@ public void kick()
       } catch (IOException e1) {
           e1.printStackTrace();
       }
-      ;
-      try {
-          this.finalize();
-      } catch (Throwable ex) {
-      }
   }
-@SuppressWarnings("deprecation")
 public void kickv2()
 {
 	  try {
@@ -10150,16 +10136,10 @@ public void kickv2()
     } catch (IOException e1) {
         e1.printStackTrace();
     }
-    ;
-    try {
-        this.finalize();
-    } catch (Throwable ex) {
-    }
 }
 
 
   //v2.8 - kick system fix v2
-@SuppressWarnings("deprecation")
 public void disconnect()
   {
 	 // bug double deconnection 3liha dert had V2
@@ -10175,11 +10155,6 @@ public void disconnect()
           _t.interrupt();
       } catch (IOException e1) {
           e1.printStackTrace();
-      }
-      ;
-      try {
-          this.finalize();
-      } catch (Throwable ex) {
       }
   }
 
@@ -10707,7 +10682,7 @@ private void Core(String packet)
     	      this.send(cell);
       break;
     case '4':
-    	openOrnementsPanel();
+    	// L'icône d'ornements ne doit pas ouvrir la liste des commandes.
     break;
     case '5':
        CommandPlayerpvm.analyse(this.player,".noall");
