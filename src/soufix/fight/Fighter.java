@@ -69,7 +69,6 @@ public class Fighter implements Comparable<Fighter>
   private int classTurnCounter=0;
   private int iopDamageStack=0;
   private int osaDamageBonus=0;
-  private int enutrofProspectionBonus=0;
   public long chamkar = 0;
   public int tour = 0;
   public long start_turn = 0L;
@@ -1483,23 +1482,6 @@ public void setTourplus() {
     iopDamageStack=0;
   }
 
-  public void applyOnPmUsedPassives(int usedPm)
-  {
-    if(usedPm<=0||!isPlayerFighter())
-      return;
-    if(this.perso.getClasse()==Constant.CLASS_ENUTROF)
-      addBuff(Constant.STATS_ADD_PERDOM,20*usedPm,1,0,false,0,buildBuffArgs(20*usedPm,1),this,true);
-  }
-
-  public void grantEnutrofProspectionBonus()
-  {
-    if(this.enutrofProspectionBonus>=150)
-      return;
-    int toAdd=Math.min(30,150-enutrofProspectionBonus);
-    enutrofProspectionBonus+=toAdd;
-    addBuff(Constant.STATS_ADD_PROS,toAdd,-1,0,false,0,buildBuffArgs(toAdd,-1),this,true);
-  }
-
   private String buildBuffArgs(int value, int duration)
   {
     return value+";"+value+";0;"+duration+";100;0d0+0";
@@ -1510,12 +1492,28 @@ public void setTourplus() {
     return this.type==1&&this.perso!=null;
   }
 
+  public void applyOnPmUsedPassives(int pmUsed)
+  {
+    if(pmUsed<=0||isDead())
+      return;
+    if(!isPlayerFighter())
+      return;
+
+    switch(this.perso.getClasse())
+    {
+      case Constant.CLASS_ENUTROF:
+        int bonus=5*pmUsed;
+        addBuff(Constant.STATS_ADD_PROS,bonus,1,0,false,0,buildBuffArgs(bonus,1),this,true);
+        break;
+      default:
+        break;
+    }
+  }
+
   public void applyStartFightPassives()
   {
     if(!isPlayerFighter())
       return;
-    if(this.perso.getClasse()==Constant.CLASS_ENUTROF)
-      enutrofProspectionBonus=0;
     switch(this.perso.getClasse())
     {
       case Constant.CLASS_SRAM:
@@ -1572,17 +1570,24 @@ public void setTourplus() {
     }
   }
 
+  public void grantEnutrofProspectionBonus()
+  {
+    if(isDead())
+      return;
+    if(!isPlayerFighter())
+      return;
+    if(this.perso.getClasse()!=Constant.CLASS_ENUTROF)
+      return;
+
+    int duration=2;
+    int bonus=30;
+    addBuff(Constant.STATS_ADD_PROS,bonus,duration,0,false,0,buildBuffArgs(bonus,duration),this,true);
+  }
+
   private void applyPandawaResistances()
   {
     if(haveState(Constant.STATE_DRUNK))
-    {
-      removeBuffsByEffect(Constant.STATS_ADD_RP_TER);
-      removeBuffsByEffect(Constant.STATS_ADD_RP_FEU);
-      removeBuffsByEffect(Constant.STATS_ADD_RP_EAU);
-      removeBuffsByEffect(Constant.STATS_ADD_RP_AIR);
-      removeBuffsByEffect(Constant.STATS_ADD_RP_NEU);
       return;
-    }
     int duration=1;
     addBuff(Constant.STATS_ADD_RP_TER,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
     addBuff(Constant.STATS_ADD_RP_FEU,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
@@ -1599,13 +1604,13 @@ public void setTourplus() {
     {
       case 0:
         addBuff(Constant.STATS_ADD_PA,2,duration,0,false,0,buildBuffArgs(2,duration),this,true);
-        if(fight!=null)
-          fight.setCurFighterPa(getPa());
+        if(canPlay())
+          setCurPa(fight,2);
         break;
       case 1:
         addBuff(Constant.STATS_ADD_PM,2,duration,0,false,0,buildBuffArgs(2,duration),this,true);
-        if(fight!=null)
-          fight.setCurFighterPm(getPm());
+        if(canPlay())
+          setCurPm(fight,getCurPm(fight)+2);
         break;
       case 2:
         addBuff(Constant.STATS_ADD_PO,5,duration,0,false,0,buildBuffArgs(5,duration),this,true);
@@ -1632,9 +1637,9 @@ public void setTourplus() {
     for(int stat : stats)
     {
       int current=getBuffValue(stat);
-      if(current>=200)
+      if(current>=160)
         continue;
-      int value=Math.min(20,200-current);
+      int value=Math.min(20,160-current);
       addBuff(stat,value,-1,0,false,0,buildBuffArgs(value,-1),this,true);
     }
   }
@@ -1686,24 +1691,19 @@ public void setTourplus() {
           if(Formulas.getRandomValue(0,99)<10)
             damage=(int)(damage*1.5);
           break;
-      case Constant.CLASS_OSAMODAS:
-        int toAdd=Math.min(20,200-osaDamageBonus);
-        if(toAdd>0)
-        {
-          osaDamageBonus+=toAdd;
-          addBuff(Constant.STATS_ADD_PERDOM,toAdd,1,0,false,0,buildBuffArgs(toAdd,1),this,true);
+        case Constant.CLASS_OSAMODAS:
+          osaDamageBonus=Math.min(200,osaDamageBonus+20);
+          damage=damage+(damage*osaDamageBonus/100);
           if(fight!=null)
           {
             for(Fighter ally : fight.getFighters(this.team))
             {
               if(ally==this||ally.getInvocator()!=this)
                 continue;
-              ally.addBuff(Constant.STATS_ADD_PERDOM,toAdd,1,0,false,0,buildBuffArgs(toAdd,1),this,true);
+              ally.addBuff(Constant.STATS_ADD_PERDOM,osaDamageBonus,1,0,false,0,buildBuffArgs(osaDamageBonus,1),this,true);
             }
           }
-        }
-        damage=damage+(damage*osaDamageBonus/100);
-        break;
+          break;
         case Constant.CLASS_XELOR:
           if(target!=null&&Formulas.getRandomValue(0,99)<20)
             target.addBuff(Constant.STATS_REM_PA,1,1,0,false,0,buildBuffArgs(1,1),this,true);
@@ -1735,24 +1735,15 @@ public void setTourplus() {
           addSacrieurChastisement();
           break;
         case Constant.CLASS_FECA:
-          applyFecaFixedResistances();
+          addBuff(Constant.STATS_ADD_R_NEU,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_TER,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_FEU,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_EAU,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_AIR,10,2,0,false,0,buildBuffArgs(10,2),this,true);
           break;
         default:
           break;
       }
-    }
-  }
-
-  private void applyFecaFixedResistances()
-  {
-    int[] resistEffects={Constant.STATS_ADD_R_NEU,Constant.STATS_ADD_R_TER,Constant.STATS_ADD_R_FEU,Constant.STATS_ADD_R_EAU,Constant.STATS_ADD_R_AIR};
-    for(int effect : resistEffects)
-    {
-      int current=getBuffValue(effect);
-      if(current>=50)
-        continue;
-      int value=Math.min(10,50-current);
-      addBuff(effect,value,-1,0,false,0,buildBuffArgs(value,-1),this,true);
     }
   }
 

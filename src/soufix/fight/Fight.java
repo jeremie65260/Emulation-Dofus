@@ -2096,8 +2096,6 @@ public void Anti_bug () {
 
     current.applyBeginningTurnBuff(this);
     current.applyBeginTurnClassPassives();
-    setCurFighterPa(current.getPa());
-    setCurFighterPm(current.getPm());
 
     if(current.isDead()&&current.isInvocation())
     {
