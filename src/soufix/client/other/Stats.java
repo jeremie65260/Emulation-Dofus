@@ -486,10 +486,20 @@ public class Stats
 	          val=effects.get(Constant.STATS_ADD_MAITRISE);
 	        break;
 	    }
-	    return val;
-	  }
-	
-	public static Stats cumulStat(IStats s1, IStats s2, Player perso) {
+            return val;
+          }
+
+  public int getCurrentProspection()
+  {
+    return getEffect(Constant.STATS_ADD_PROS)+(int)Math.ceil(getEffect(Constant.STATS_ADD_CHAN)/10.0);
+  }
+
+  public int getMaxProspection()
+  {
+    return getCurrentProspection();
+  }
+
+        public static Stats cumulStat(IStats s1, IStats s2, Player perso) {
 	    HashMap<Integer, Integer> effets=new HashMap<Integer, Integer>();
 	    for(int a=0;a<=Constant.MAX_EFFECTS_ID;a++)
 	    {
