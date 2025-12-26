@@ -1146,69 +1146,70 @@ public class CommandPlayerpvm {
 				return true;
 			}
 
-			if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("jetmax")) {
-				if (perso.getFight() != null) {
-					return true;
-				}
-				String choix = "";
-				if (msg.length() > 8) {
-					choix = msg.substring(8).trim();
-				}
-				if (choix.isEmpty()) {
-					perso.sendMessage(
-							"Utilisation : .jetmax <coiffe|cape|ceinture|bottes|amulette|anneauG|anneauD|cac|familier|bouclier|dofus|all>");
-					return true;
-				}
+                        if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("ornement")) {
+                                StringBuilder ornements = new StringBuilder();
+                                Map<Integer, Ornements> sortedMap = World.getOrnements().entrySet()
+                                                .stream()
+                                                .sorted(Map.Entry.<Integer, Ornements>comparingByKey(Comparator.reverseOrder()))
+                                                .collect(Collectors.toMap(
+                                                                Map.Entry::getKey,
+                                                                Map.Entry::getValue,
+                                                                (e1, e2) -> e1,
+                                                                LinkedHashMap::new
+                                                ));
+                                for (Ornements o : sortedMap.values()) {
+                                        if (perso.getOrnementsList().contains(o.getId())) {
+                                                if (ornements.length() > 0) {
+                                                        ornements.append(";");
+                                                }
+                                                ornements.append(o.getId() + ","+ o.getName() +",T");
 
-				boolean updated = false;
-				if (choix.equalsIgnoreCase("all")) {
-					for (int i = 0; i < emplacements.length; i++) {
-						String emplacement = emplacements[i];
-						if ("all".equalsIgnoreCase(emplacement) || "dofus".equalsIgnoreCase(emplacement)) {
-							continue;
-						}
-						updated |= jetMaxAItem(perso, emplacement, emplacementsID[i], false);
-					}
-					for (byte dofusSlot : dofusEmplacements) {
-						updated |= jetMaxAItem(perso, "dofus", dofusSlot, false);
-					}
-					if (updated) {
-						perso.sendMessage("Vos items équipés ont été passés en jet max.");
-					} else {
-						perso.sendMessage("Action impossible : aucun item équipé.");
-					}
-					return true;
-				}
+                                        } else if (!o.isCanbuy()) {
+                                                if (ornements.length() > 0) {
+                                                        ornements.append(";");
+                                                }
+                                                ornements.append(o.getId() + ","+o.getName()+"," + o.getPrice());
+                                        }
+                                }
+                                perso.send("wl"+ornements.toString());
+                                return true;
+                        }
 
-				if (msg.length() > 8 && msg.substring(1, 9).equalsIgnoreCase("ornement")) {
-					StringBuilder ornements = new StringBuilder();
-					Map<Integer, Ornements> sortedMap = World.getOrnements().entrySet()
-							.stream()
-							.sorted(Map.Entry.<Integer, Ornements>comparingByKey(Comparator.reverseOrder()))
-							.collect(Collectors.toMap(
-									Map.Entry::getKey,
-									Map.Entry::getValue,
-									(e1, e2) -> e1,
-									LinkedHashMap::new
-							));
-					for (Ornements o : sortedMap.values()) {
-						if(perso.getOrnementsList().contains(o.getId())) {
-							if (ornements.length() > 0) {
-								ornements.append(";");
-							}
-							ornements.append(o.getId() + ","+ o.getName() +",T");
+                        if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("jetmax")) {
+                                if (perso.getFight() != null) {
+                                        return true;
+                                }
+                                String choix = "";
+                                if (msg.length() > 8) {
+                                        choix = msg.substring(8).trim();
+                                }
+                                if (choix.isEmpty()) {
+                                        perso.sendMessage(
+                                                        "Utilisation : .jetmax <coiffe|cape|ceinture|bottes|amulette|anneauG|anneauD|cac|familier|bouclier|dofus|all>");
+                                        return true;
+                                }
 
-						} else if (!o.isCanbuy()) {
-							if (ornements.length() > 0) {
-								ornements.append(";");
-							}
-							ornements.append(o.getId() + ","+o.getName()+"," + o.getPrice());
-						}
-					}
-					perso.send("wl"+ornements.toString());
-					return true;
-				}
-				if (choix.equalsIgnoreCase("dofus")) {
+                                boolean updated = false;
+                                if (choix.equalsIgnoreCase("all")) {
+                                        for (int i = 0; i < emplacements.length; i++) {
+                                                String emplacement = emplacements[i];
+                                                if ("all".equalsIgnoreCase(emplacement) || "dofus".equalsIgnoreCase(emplacement)) {
+                                                        continue;
+                                                }
+                                                updated |= jetMaxAItem(perso, emplacement, emplacementsID[i], false);
+                                        }
+                                        for (byte dofusSlot : dofusEmplacements) {
+                                                updated |= jetMaxAItem(perso, "dofus", dofusSlot, false);
+                                        }
+                                        if (updated) {
+                                                perso.sendMessage("Vos items équipés ont été passés en jet max.");
+                                        } else {
+                                                perso.sendMessage("Action impossible : aucun item équipé.");
+                                        }
+                                        return true;
+                                }
+
+                                if (choix.equalsIgnoreCase("dofus")) {
 					for (byte dofusSlot : dofusEmplacements) {
 						updated |= jetMaxAItem(perso, "dofus", dofusSlot, false);
 					}
