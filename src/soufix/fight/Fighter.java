@@ -1492,6 +1492,24 @@ public void setTourplus() {
     return this.type==1&&this.perso!=null;
   }
 
+  public void applyOnPmUsedPassives(int pmUsed)
+  {
+    if(pmUsed<=0||isDead())
+      return;
+    if(!isPlayerFighter())
+      return;
+
+    switch(this.perso.getClasse())
+    {
+      case Constant.CLASS_ENUTROF:
+        int bonus=5*pmUsed;
+        addBuff(Constant.STATS_ADD_PROS,bonus,1,0,false,0,buildBuffArgs(bonus,1),this,true);
+        break;
+      default:
+        break;
+    }
+  }
+
   public void applyStartFightPassives()
   {
     if(!isPlayerFighter())
@@ -1550,6 +1568,20 @@ public void setTourplus() {
       default:
         break;
     }
+  }
+
+  public void grantEnutrofProspectionBonus()
+  {
+    if(isDead())
+      return;
+    if(!isPlayerFighter())
+      return;
+    if(this.perso.getClasse()!=Constant.CLASS_ENUTROF)
+      return;
+
+    int duration=2;
+    int bonus=30;
+    addBuff(Constant.STATS_ADD_PROS,bonus,duration,0,false,0,buildBuffArgs(bonus,duration),this,true);
   }
 
   private void applyPandawaResistances()
