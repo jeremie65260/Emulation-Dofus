@@ -355,11 +355,6 @@ public class SpellEffect
         }
       }
     }
-    if(caster!=null)
-      finalDommage=caster.applyOnDealDamagePassives(finalDommage,target,elementId);
-    if(target!=null)
-      target.applyOnReceivedHitPassives(caster);
-
     return finalDommage;
   }
 

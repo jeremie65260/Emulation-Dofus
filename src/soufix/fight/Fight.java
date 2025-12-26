@@ -1231,7 +1231,6 @@ public class Fight
     setCheckTimer(false);
     SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(this,7);
     SocketManager.GAME_SEND_GS_PACKET_TO_FIGHT(this,7);
-    applyInitialClassPassives();
     initOrderPlaying();
     setCurPlayer(-1);
     SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this,7);
@@ -2095,7 +2094,6 @@ public void Anti_bug () {
     }
 
     current.applyBeginningTurnBuff(this);
-    current.applyBeginTurnClassPassives();
 
     if(current.isDead()&&current.isInvocation())
     {
@@ -3877,7 +3875,6 @@ public void Anti_bug () {
     }
     current.setJustTrapped(false);
     setCurFighterPm(getCurFighterPm()-nStep);
-    current.applyOnPmUsedPassives(nStep);
     this.setCurFighterUsedPm(this.getCurFighterUsedPm()+nStep);
 
     int nextCellID=Main.world.getCryptManager().cellCode_To_ID(newPath.substring(newPath.length()-2));
@@ -4034,18 +4031,6 @@ public void Anti_bug () {
 
       if(target.haveState(Constant.ETAT_PORTE))
           TimerWaiterPlus.addNext(() -> removeCarry(target),3000); //timer so mob only gets dropped after already despawning
-
-      if(target.isMob()&&caster!=null)
-      {
-        for(Fighter ally : getFighters(caster.getTeam()))
-        {
-          if(ally==null||ally.isDead()||ally.getPersonnage()==null)
-            continue;
-          if(ally.getPersonnage().getClasse()!=Constant.CLASS_ENUTROF)
-            continue;
-          ally.grantEnutrofProspectionBonus();
-        }
-      }
 
       if((this.getType()==Constant.FIGHT_TYPE_PVM)&&(this.getAllChallenges().size()>0)||this.getType()==Constant.FIGHT_TYPE_DOPEUL&&this.getAllChallenges().size()>0)
         this.getAllChallenges().values().stream().filter(challenge -> challenge!=null).forEach(challenge -> challenge.onFighterDie(target));
@@ -4441,16 +4426,6 @@ public void Anti_bug () {
       getTeam0().put(f.getId(),f);
     else if(team==1)
       getTeam1().put(f.getId(),f);
-  }
-
-  private void applyInitialClassPassives()
-  {
-    for(Fighter fighter : getTeam0().values())
-      if(fighter!=null)
-        fighter.applyStartFightPassives();
-    for(Fighter fighter : getTeam1().values())
-      if(fighter!=null)
-        fighter.applyStartFightPassives();
   }
 
   void addChevalier()
