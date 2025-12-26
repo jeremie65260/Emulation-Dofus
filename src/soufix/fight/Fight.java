@@ -2094,6 +2094,8 @@ public void Anti_bug () {
     }
 
     current.applyBeginningTurnBuff(this);
+    setCurFighterPa(current.getPa());
+    setCurFighterPm(current.getPm());
 
     if(current.isDead()&&current.isInvocation())
     {
@@ -4030,7 +4032,18 @@ public void Anti_bug () {
       }
 
       if(target.haveState(Constant.ETAT_PORTE))
-    	  TimerWaiterPlus.addNext(() -> removeCarry(target),3000); //timer so mob only gets dropped after already despawning
+          TimerWaiterPlus.addNext(() -> removeCarry(target),3000); //timer so mob only gets dropped after already despawning
+
+      if(target.isMob()&&caster!=null)
+      {
+        for(Fighter ally : getFighters(caster.getTeam()))
+        {
+          if(ally==null||ally.isDead()||ally.getPersonnage()==null)
+            continue;
+          if(ally.getPersonnage().getClasse()!=Constant.CLASS_ENUTROF)
+            continue;
+        }
+      }
 
       if((this.getType()==Constant.FIGHT_TYPE_PVM)&&(this.getAllChallenges().size()>0)||this.getType()==Constant.FIGHT_TYPE_DOPEUL&&this.getAllChallenges().size()>0)
         this.getAllChallenges().values().stream().filter(challenge -> challenge!=null).forEach(challenge -> challenge.onFighterDie(target));

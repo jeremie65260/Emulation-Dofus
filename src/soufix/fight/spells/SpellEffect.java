@@ -355,7 +355,6 @@ public class SpellEffect
         }
       }
     }
-
     return finalDommage;
   }
 

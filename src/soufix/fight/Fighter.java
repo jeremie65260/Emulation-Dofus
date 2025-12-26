@@ -573,6 +573,11 @@ public void setTourplus() {
     return null;
   }
 
+  public void removeBuffsByEffect(int effectId)
+  {
+    this.fightBuffs.removeIf(buff -> buff!=null&&buff.getEffectID()==effectId);
+  }
+
   public ArrayList<SpellEffect> getBuffsByEffectID(int effectID)
   {
     ArrayList<SpellEffect> buffs=new ArrayList<SpellEffect>();
@@ -1447,6 +1452,11 @@ public void setTourplus() {
   public void setJustTrapped(boolean justTrapped)
   {
     this.justTrapped=justTrapped;
+  }
+
+  private boolean isPlayerFighter()
+  {
+    return this.type==1&&this.perso!=null;
   }
 
   public StringBuilder getStringBuilderGTM() {
