@@ -1231,6 +1231,7 @@ public class Fight
     setCheckTimer(false);
     SocketManager.GAME_SEND_GIC_PACKETS_TO_FIGHT(this,7);
     SocketManager.GAME_SEND_GS_PACKET_TO_FIGHT(this,7);
+    applyInitialClassPassives();
     initOrderPlaying();
     setCurPlayer(-1);
     SocketManager.GAME_SEND_GTL_PACKET_TO_FIGHT(this,7);
@@ -2094,6 +2095,7 @@ public void Anti_bug () {
     }
 
     current.applyBeginningTurnBuff(this);
+    current.applyBeginTurnClassPassives();
 
     if(current.isDead()&&current.isInvocation())
     {
@@ -4426,6 +4428,16 @@ public void Anti_bug () {
       getTeam0().put(f.getId(),f);
     else if(team==1)
       getTeam1().put(f.getId(),f);
+  }
+
+  private void applyInitialClassPassives()
+  {
+    for(Fighter fighter : getTeam0().values())
+      if(fighter!=null)
+        fighter.applyStartFightPassives();
+    for(Fighter fighter : getTeam1().values())
+      if(fighter!=null)
+        fighter.applyStartFightPassives();
   }
 
   void addChevalier()
