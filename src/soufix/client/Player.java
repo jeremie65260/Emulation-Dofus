@@ -4865,17 +4865,17 @@ public void setTotal_reculte() {
     this.setExchangeAction(new ExchangeAction<>(ExchangeAction.IN_MOUNTPARK,mountPark));
     this.away=true;
 
-    StringBuilder packet=new StringBuilder();
+    StringBuilder stablePacket=new StringBuilder();
+    StringBuilder paddockPacket=new StringBuilder();
 
     if(mountPark.getEtable().size()>0) //in shed
       for(Mount mount : mountPark.getEtable())
         if(mount.getOwner()==this.getId())
         {
-          packet.append(";");
-          packet.append(mount.parse());
+          if(stablePacket.length()>0)
+            stablePacket.append(";");
+          stablePacket.append(mount.parse());
         }
-    packet.append("~");
-
     if(mountPark.getListOfRaising().size()>0) //in field
       for(Integer id : mountPark.getListOfRaising())
       {
@@ -4885,19 +4885,21 @@ public void setTotal_reculte() {
 
         if(mount.getOwner()==this.getId())
         {
-          packet.append(";");
-          packet.append(mount.parse());
+          if(paddockPacket.length()>0)
+            paddockPacket.append(";");
+          paddockPacket.append(mount.parse());
         }
         else if(getGuildMember()!=null)
           if(getGuildMember().canDo(Constant.G_OTHDINDE)&&mountPark.getOwner()!=-1&&mountPark.getGuild()!=null)
             if(mountPark.getGuild().getId()==this.get_guild().getId())
             {
-              packet.append(";");
-              packet.append(mount.parse());
+              if(paddockPacket.length()>0)
+                paddockPacket.append(";");
+              paddockPacket.append(mount.parse());
             }
       }
 
-    SocketManager.GAME_SEND_ECK_PACKET(this,16,packet.toString());
+    SocketManager.GAME_SEND_ECK_PACKET(this,16,stablePacket+"|"+paddockPacket);
 
     //TimerWaiterPlus.addNext(() -> mountPark.getEtable().stream().filter(mount -> mount!=null&&mount.getSize()==50&&mount.getOwner()==this.getId()).forEach(mount -> SocketManager.GAME_SEND_Ee_PACKET_WAIT(this,'~',mount.parse())),500);
   }
