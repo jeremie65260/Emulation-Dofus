@@ -694,6 +694,10 @@ public void setTourplus() {
         else
           SocketManager.GAME_SEND_FIGHT_GIE_TO_FIGHT(this.fight,7,id,getId(),val,args.split(";")[1],"","",duration,spellID);
         break;
+      case 150:
+        if(isPlayerFighter()&&this.perso.getClasse()==Constant.CLASS_SRAM)
+          this.fightBuffs.add(new SpellEffect(Constant.STATS_ADD_PERDOM,50,3,0,false,this,buildBuffArgs(50,3),0));
+        break;
       case 107://Mot d'épine (2à3), Contre(3)
       case 108://Mot de Régénération, Tout ou rien
       case 165://Maîtris
