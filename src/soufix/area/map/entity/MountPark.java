@@ -253,8 +253,11 @@ public class MountPark
     {
       int i=0;
       for(int mountId : this.getListOfRaising())
-        if(mountId==id)
+      {
+        Mount mount=Main.world.getMountById(mountId);
+        if(mount!=null&&mount.getOwner()==id)
           i++;
+      }
       return i>=this.getSize();
     } else
     {
