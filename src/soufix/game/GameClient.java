@@ -4502,20 +4502,24 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           if(mount==null)
             return;
           if(mount.getNumber() == 1)return;
-          mount.setOwner(this.player.getId());
+          int mountOwner = mount.getOwner();
           boolean can = false;
-			if(park.getGuild() != null && this.player.get_guild() != null){
-			if(park.getGuild().getId() == this.player.get_guild().getId()){
-			if(this.player.get_guild().getMember(this.player.getId()).canDo(Constant.G_OTHDINDE))	
-			can = true;	
-			}
-			}
-			if(this.player.getId() != mount.getOwner() && !can){
-				SocketManager.GAME_SEND_MESSAGE(this.player,"vous tentez d'utiliser une monture qui n'appartient pas é ce personnage !");
-			return;	
-			}
+          if(park.getGuild() != null && this.player.get_guild() != null)
+          {
+            if(park.getGuild().getId() == this.player.get_guild().getId())
+            {
+              if(this.player.get_guild().getMember(this.player.getId()).canDo(Constant.G_OTHDINDE))
+                can = true;
+            }
+          }
+          if(this.player.getId() != mountOwner && !can)
+          {
+            SocketManager.GAME_SEND_MESSAGE(this.player,"vous tentez d'utiliser une monture qui n'appartient pas é ce personnage !");
+            return;
+          }
+          mount.setOwner(this.player.getId());
           mount.setEtape(1);
-		  mount.setNumber(1);
+                  mount.setNumber(1);
          
           this.player.removeItem(id);
           Main.world.removeGameObject(id);
