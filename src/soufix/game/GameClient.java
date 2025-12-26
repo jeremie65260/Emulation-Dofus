@@ -4512,7 +4512,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
                 can = true;
             }
           }
-          if(mountOwner != this.player.getId() && mountOwner != -1 && !can)
+          if(this.player.getId() != mountOwner && !can)
           {
             SocketManager.GAME_SEND_MESSAGE(this.player,"vous tentez d'utiliser une monture qui n'appartient pas é ce personnage !");
             return;
