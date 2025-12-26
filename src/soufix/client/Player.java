@@ -4899,7 +4899,7 @@ public void setTotal_reculte() {
             }
       }
 
-    SocketManager.GAME_SEND_ECK_PACKET(this,16,stablePacket+"~"+paddockPacket);
+    SocketManager.GAME_SEND_ECK_PACKET(this,16,stablePacket+"|"+paddockPacket);
 
     //TimerWaiterPlus.addNext(() -> mountPark.getEtable().stream().filter(mount -> mount!=null&&mount.getSize()==50&&mount.getOwner()==this.getId()).forEach(mount -> SocketManager.GAME_SEND_Ee_PACKET_WAIT(this,'~',mount.parse())),500);
   }
