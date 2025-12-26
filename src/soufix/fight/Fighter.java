@@ -577,6 +577,11 @@ public void setTourplus() {
     return null;
   }
 
+  public void removeBuffsByEffect(int effectId)
+  {
+    this.fightBuffs.removeIf(buff -> buff!=null&&buff.getEffectID()==effectId);
+  }
+
   public ArrayList<SpellEffect> getBuffsByEffectID(int effectID)
   {
     ArrayList<SpellEffect> buffs=new ArrayList<SpellEffect>();
