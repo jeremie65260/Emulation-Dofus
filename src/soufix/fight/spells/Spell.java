@@ -222,6 +222,8 @@ public class Spell
 
   public String getNombre()
   {
+    if(spellID==0)
+      return "passif";
     return nombre;
   }
 
