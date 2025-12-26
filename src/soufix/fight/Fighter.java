@@ -65,6 +65,10 @@ public class Fighter implements Comparable<Fighter>
   public int lastInvisMP=-1;
   private boolean hadSober=false;
   private boolean justTrapped=false;
+  // Passifs de classe
+  private int classTurnCounter=0;
+  private int iopDamageStack=0;
+  private int osaDamageBonus=0;
   public long chamkar = 0;
   public int tour = 0;
   public long start_turn = 0L;
@@ -1447,6 +1451,259 @@ public void setTourplus() {
   public void setJustTrapped(boolean justTrapped)
   {
     this.justTrapped=justTrapped;
+  }
+
+  public int getClassTurnCounter()
+  {
+    return classTurnCounter;
+  }
+
+  public void resetClassTurnCounter()
+  {
+    classTurnCounter=0;
+  }
+
+  public int getIopDamageStack()
+  {
+    return iopDamageStack;
+  }
+
+  public void resetIopDamageStack()
+  {
+    iopDamageStack=0;
+  }
+
+  private String buildBuffArgs(int value, int duration)
+  {
+    return value+";"+value+";0;"+duration+";100;0d0+0";
+  }
+
+  private boolean isPlayerFighter()
+  {
+    return this.type==1&&this.perso!=null;
+  }
+
+  public void applyStartFightPassives()
+  {
+    if(!isPlayerFighter())
+      return;
+    switch(this.perso.getClasse())
+    {
+      case Constant.CLASS_SRAM:
+        addBuff(Constant.STATS_ADD_PM,1,-1,0,false,0,buildBuffArgs(1,-1),this,true);
+        addBuff(Constant.STATS_ADD_CC,10,-1,0,false,0,buildBuffArgs(10,-1),this,true);
+        break;
+      case Constant.CLASS_CRA:
+        addBuff(Constant.STATS_ADD_PO,2,-1,0,false,0,buildBuffArgs(2,-1),this,true);
+        break;
+      case Constant.CLASS_IOP:
+        addBuff(Constant.STATS_ADD_PDOM,20,-1,0,false,0,buildBuffArgs(20,-1),this,true);
+        break;
+      case Constant.CLASS_XELOR:
+        addBuff(Constant.STATS_RETDOM,10,-1,0,false,0,buildBuffArgs(10,-1),this,true);
+        break;
+      case Constant.CLASS_ENIRIPSA:
+        addBuff(Constant.STATS_ADD_SOIN,20,-1,0,false,0,buildBuffArgs(20,-1),this,true);
+        break;
+      case Constant.CLASS_SACRIEUR:
+        int bonusPdv=(int)(this.pdvMax*0.25);
+        this.pdvMax+=bonusPdv;
+        this.pdv+=bonusPdv;
+        break;
+      default:
+        break;
+    }
+  }
+
+  public void applyBeginTurnClassPassives()
+  {
+    if(isDead())
+      return;
+    if(this.perso!=null&&this.perso.getClasse()==Constant.CLASS_OSAMODAS)
+      this.osaDamageBonus=0;
+
+    if(!isPlayerFighter())
+      return;
+
+    switch(this.perso.getClasse())
+    {
+      case Constant.CLASS_ECAFLIP:
+        applyEcaflipFortune();
+        break;
+      case Constant.CLASS_PANDAWA:
+        applyPandawaResistances();
+        break;
+      case Constant.CLASS_XELOR:
+        classTurnCounter++;
+        if(classTurnCounter%3==0)
+          addBuff(Constant.STATS_ADD_PA,2,1,0,false,0,buildBuffArgs(2,1),this,true);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void applyPandawaResistances()
+  {
+    if(haveState(Constant.STATE_DRUNK))
+      return;
+    int duration=1;
+    addBuff(Constant.STATS_ADD_RP_TER,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
+    addBuff(Constant.STATS_ADD_RP_FEU,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
+    addBuff(Constant.STATS_ADD_RP_EAU,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
+    addBuff(Constant.STATS_ADD_RP_AIR,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
+    addBuff(Constant.STATS_ADD_RP_NEU,10,duration,0,false,0,buildBuffArgs(10,duration),this,true);
+  }
+
+  private void applyEcaflipFortune()
+  {
+    int roll=Formulas.getRandomValue(0,5);
+    int duration=1;
+    switch(roll)
+    {
+      case 0:
+        addBuff(Constant.STATS_ADD_PA,2,duration,0,false,0,buildBuffArgs(2,duration),this,true);
+        if(canPlay())
+          setCurPa(fight,2);
+        break;
+      case 1:
+        addBuff(Constant.STATS_ADD_PM,2,duration,0,false,0,buildBuffArgs(2,duration),this,true);
+        if(canPlay())
+          setCurPm(fight,getCurPm(fight)+2);
+        break;
+      case 2:
+        addBuff(Constant.STATS_ADD_PO,5,duration,0,false,0,buildBuffArgs(5,duration),this,true);
+        break;
+      case 3:
+        addBuff(Constant.STATS_ADD_DOMA,20,duration,0,false,0,buildBuffArgs(20,duration),this,true);
+        break;
+      case 4:
+        int heal=(int)(getPdvMax()*0.10);
+        setPdv(Math.min(getPdvMax(),getPdv()+heal));
+        SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,Constant.STATS_ADD_VIE,getId()+"",getId()+","+heal);
+        break;
+      case 5:
+        addBuff(Constant.STATS_ADD_PERDOM,25,duration,0,false,0,buildBuffArgs(25,duration),this,true);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void addSacrieurChastisement()
+  {
+    int[] stats={Constant.STATS_ADD_FORC,Constant.STATS_ADD_INTE,Constant.STATS_ADD_CHAN,Constant.STATS_ADD_AGIL};
+    for(int stat : stats)
+    {
+      int current=getBuffValue(stat);
+      if(current>=160)
+        continue;
+      int value=Math.min(20,160-current);
+      addBuff(stat,value,-1,0,false,0,buildBuffArgs(value,-1),this,true);
+    }
+  }
+
+  private void applyPandawaBreach(Fighter target, int elementId)
+  {
+    if(target==null)
+      return;
+    int effect=-1;
+    switch(elementId)
+    {
+      case Constant.ELEMENT_TERRE:
+      case Constant.ELEMENT_NEUTRE:
+        effect=Constant.STATS_REM_RP_TER;
+        break;
+      case Constant.ELEMENT_FEU:
+        effect=Constant.STATS_REM_RP_FEU;
+        break;
+      case Constant.ELEMENT_EAU:
+        effect=Constant.STATS_REM_RP_EAU;
+        break;
+      case Constant.ELEMENT_AIR:
+        effect=Constant.STATS_REM_RP_AIR;
+        break;
+      default:
+        break;
+    }
+    if(effect==-1)
+      return;
+    int current=target.getBuffValue(effect);
+    if(current<=-30)
+      return;
+    int value=Math.min(5,30+current);
+    target.addBuff(effect,-value,-1,0,false,0,buildBuffArgs(-value,-1),this,true);
+  }
+
+  public int applyOnDealDamagePassives(int damage, Fighter target, int elementId)
+  {
+    if(damage<=0)
+      return damage;
+    if(isDead())
+      return damage;
+
+    if(this.perso!=null)
+    {
+      switch(this.perso.getClasse())
+      {
+        case Constant.CLASS_ECAFLIP:
+          if(Formulas.getRandomValue(0,99)<10)
+            damage=(int)(damage*1.5);
+          break;
+        case Constant.CLASS_OSAMODAS:
+          osaDamageBonus=Math.min(200,osaDamageBonus+20);
+          damage=damage+(damage*osaDamageBonus/100);
+          if(fight!=null)
+          {
+            for(Fighter ally : fight.getFighters(this.team))
+            {
+              if(ally==this||ally.getInvocator()!=this)
+                continue;
+              ally.addBuff(Constant.STATS_ADD_PERDOM,osaDamageBonus,1,0,false,0,buildBuffArgs(osaDamageBonus,1),this,true);
+            }
+          }
+          break;
+        case Constant.CLASS_XELOR:
+          if(target!=null&&Formulas.getRandomValue(0,99)<20)
+            target.addBuff(Constant.STATS_REM_PA,1,1,0,false,0,buildBuffArgs(1,1),this,true);
+          break;
+        case Constant.CLASS_IOP:
+          iopDamageStack=Math.min(100,iopDamageStack+10);
+          damage=damage+(damage*iopDamageStack/100);
+          break;
+        case Constant.CLASS_PANDAWA:
+          applyPandawaBreach(target,elementId);
+          break;
+        default:
+          break;
+      }
+    }
+
+    return damage;
+  }
+
+  public void applyOnReceivedHitPassives(Fighter caster)
+  {
+    if(isDead())
+      return;
+    if(this.perso!=null)
+    {
+      switch(this.perso.getClasse())
+      {
+        case Constant.CLASS_SACRIEUR:
+          addSacrieurChastisement();
+          break;
+        case Constant.CLASS_FECA:
+          addBuff(Constant.STATS_ADD_R_NEU,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_TER,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_FEU,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_EAU,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          addBuff(Constant.STATS_ADD_R_AIR,10,2,0,false,0,buildBuffArgs(10,2),this,true);
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   public StringBuilder getStringBuilderGTM() {
