@@ -1547,8 +1547,12 @@ public class SocketManager
 
   public static void GAME_SEND_ITEM_VENDOR_LIST_PACKET(GameClient out, Npc npc)
   {
-    String packet="EL"+npc.getTemplate().getItemVendorList(out.getPlayer());
+    String vendorList=npc.getTemplate().getItemVendorList(out.getPlayer());
+    String packet="EL"+vendorList;
     send(out,packet);
+    if (npc.getTemplate().getId() == 15024 && vendorList.contains("7807;|7808;")) {
+      GAME_SEND_MESSAGE(out.getPlayer(),"les montures coutent 1250 gladiatons.");
+    }
 
   }
 
