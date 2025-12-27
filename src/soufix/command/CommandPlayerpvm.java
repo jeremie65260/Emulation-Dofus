@@ -165,14 +165,11 @@ public class CommandPlayerpvm {
                                 }
                         }
 
-                        if (perso.isOnMount()) {
-                                SocketManager.GAME_SEND_MESSAGE(perso, "Vous êtes déjà monté sur votre Dragodinde.",
-                                                "008000");
-                                return true;
-                        }
-
                         perso.toogleOnMount();
-                        SocketManager.GAME_SEND_MESSAGE(perso, "Vous êtes monté sur votre Dragodinde.", "008000");
+
+                        String feedback = perso.isOnMount() ? "Vous êtes monté sur votre Dragodinde."
+                                        : "Vous descendez de votre Dragodinde.";
+                        SocketManager.GAME_SEND_MESSAGE(perso, feedback, "008000");
                         return true;
                 }
 
