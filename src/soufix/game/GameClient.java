@@ -2813,37 +2813,67 @@ public void setTimeLastTaverne(long timeLastTaverne) {
 
         boolean attachObject=(npcTemplate.getInformations()&0x2)==2;
         if (npcTemplate.getId() ==  1121 ||npcTemplate.getId() ==  1127) {
-			final int value = template.getPrice() * qua;
-			if (!player.hasItemTemplate(10275, value)) {
-				SocketManager.GAME_SEND_MESSAGE(this.player,
-						"Vous n'avez pas assez de Pévétons pour acheter cet article.");
-				SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
-				return;
-			}
-			player.removeByTemplateID(10275, value);
-			GameObject object=template.createNewItem(qua,(npcTemplate.getInformations()&0x1)==1);
-	          if(template.getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
-	          {
-	            Mount mount=new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()),this.getPlayer().getId(),false);
-	            object.clearStats();
-	            object.getStats().addOneStat(995,-(mount.getId()));
-	            object.getTxtStat().put(996,this.getPlayer().getName());
-	            object.getTxtStat().put(997,mount.getName());
-	          }
-	          if(this.player.addObjet(object,true))
-	            World.addGameObject(object,true);
-	          if(attachObject)
-	            object.attachToPlayer(this.player);
-	          SocketManager.GAME_SEND_BUY_OK_PACKET(this);
-	          SocketManager.GAME_SEND_STATS_PACKET(this.player);
-	          SocketManager.GAME_SEND_Ow_PACKET(this.player);
-			return;
-		}
+                        final int value = template.getPrice() * qua;
+                        if (!player.hasItemTemplate(10275, value)) {
+                                SocketManager.GAME_SEND_MESSAGE(this.player,
+                                                "Vous n'avez pas assez de Pévétons pour acheter cet article.");
+                                SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                                return;
+                        }
+                        player.removeByTemplateID(10275, value);
+                        GameObject object=template.createNewItem(qua,(npcTemplate.getInformations()&0x1)==1);
+                  if(template.getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
+                  {
+                    Mount mount=new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()),this.getPlayer().getId(),false);
+                    object.clearStats();
+                    object.getStats().addOneStat(995,-(mount.getId()));
+                    object.getTxtStat().put(996,this.getPlayer().getName());
+                    object.getTxtStat().put(997,mount.getName());
+                  }
+                  if(this.player.addObjet(object,true))
+                    World.addGameObject(object,true);
+                  if(attachObject)
+                    object.attachToPlayer(this.player);
+                  SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+                  SocketManager.GAME_SEND_STATS_PACKET(this.player);
+                  SocketManager.GAME_SEND_Ow_PACKET(this.player);
+                        return;
+                }
+        if (npcTemplate.getId() == 15024) {
+                        final boolean isMountCertificate = template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE;
+                        final int currencyTemplateId = isMountCertificate ? 16000 : 16001;
+                        final int value = template.getPrice() * qua;
+                        if (!player.hasItemTemplate(currencyTemplateId, value)) {
+                                SocketManager.GAME_SEND_MESSAGE(this.player,
+                                                isMountCertificate ? "Vous n'avez pas assez de Gladiatons pour acheter cet article."
+                                                                : "Vous n'avez pas assez de Médailles de Gladiatrool pour acheter cet article.");
+                                SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
+                                return;
+                        }
+                        player.removeByTemplateID(currencyTemplateId, value);
+                        GameObject object=template.createNewItem(qua,(npcTemplate.getInformations()&0x1)==1);
+                  if(isMountCertificate)
+                  {
+                    Mount mount=new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()),this.getPlayer().getId(),false);
+                    object.clearStats();
+                    object.getStats().addOneStat(995,-(mount.getId()));
+                    object.getTxtStat().put(996,this.getPlayer().getName());
+                    object.getTxtStat().put(997,mount.getName());
+                  }
+                  if(this.player.addObjet(object,true))
+                    World.addGameObject(object,true);
+                  if(attachObject)
+                    object.attachToPlayer(this.player);
+                  SocketManager.GAME_SEND_BUY_OK_PACKET(this);
+                  SocketManager.GAME_SEND_STATS_PACKET(this.player);
+                  SocketManager.GAME_SEND_Ow_PACKET(this.player);
+                        return;
+                }
         if (npcTemplate.getId() ==  30032) {
-			final int value = template.getPrice() * qua;
-			if (!player.hasItemTemplate(11502, value)) {
-				SocketManager.GAME_SEND_MESSAGE(this.player,
-						"Vous n'avez pas assez de Jetons Songes pour acheter cet article.");
+                        final int value = template.getPrice() * qua;
+                        if (!player.hasItemTemplate(11502, value)) {
+                                SocketManager.GAME_SEND_MESSAGE(this.player,
+                                                "Vous n'avez pas assez de Jetons Songes pour acheter cet article.");
 				SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
 				return;
 			}
@@ -5215,11 +5245,16 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         id=Integer.parseInt(packet.substring(4));
         if(this.player.getCurMap().getNpc(id)!=null)
         {
-          NpcExchange ech=new NpcExchange(this.player,this.player.getCurMap().getNpc(id).getTemplate());
+          Npc npcTarget = this.player.getCurMap().getNpc(id);
+          NpcTemplate npcTemplate = npcTarget.getTemplate();
+          NpcExchange ech=new NpcExchange(this.player,npcTemplate);
 
           ExchangeAction<NpcExchange> exchangeAction=new ExchangeAction<>(ExchangeAction.TRADING_WITH_NPC_EXCHANGE,ech);
           this.player.setExchangeAction(exchangeAction);
           SocketManager.GAME_SEND_ECK_PACKET(this.player,2,String.valueOf(id));
+          if (npcTemplate.getId() == 15024) {
+            SocketManager.GAME_SEND_MESSAGE(this.player,"les Dradodindes s'achètent en gladiatons, le reste avec les médailles");
+          }
         }
         break;
       case '4'://StorePlayer
