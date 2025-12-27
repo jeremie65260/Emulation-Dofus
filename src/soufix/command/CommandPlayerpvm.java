@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 import soufix.Hdv.Hdv;
 import soufix.client.Player;
+import soufix.client.other.Mount;
 import soufix.client.other.Ornements;
 import soufix.client.other.Party;
 import soufix.client.other.Stats;
@@ -1258,10 +1259,11 @@ public class CommandPlayerpvm {
 								+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
 								+ "\n<b>.points</b> - Affiche ses points boutique."
 								+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
-								+ "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
-								+ "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
-								+ "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
-								+ "\n<b>.banque</b> - Ouvrir la banque"
+                                                                + "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
+                                                                + "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
+                                                                + "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
+                                                                + "\n<b>.dd</b> - Permet d'équiper et de monter rapidement votre Dragodinde."
+                                                                + "\n<b>.banque</b> - Ouvrir la banque"
 								+ "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
 								+ "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
 								+ "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
@@ -1288,10 +1290,11 @@ public class CommandPlayerpvm {
 								+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
 								+ "\n<b>.points</b> - Affiche ses points boutique."
 								+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
-								+ "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
-								+ "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
-								+ "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
-								+ "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
+                                                                + "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
+                                                                + "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
+                                                                + "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
+                                                                + "\n<b>.dd</b> - Permet d'équiper et de monter rapidement votre Dragodinde."
+                                                                + "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
 								+ "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
 								+ "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
 								+ "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
