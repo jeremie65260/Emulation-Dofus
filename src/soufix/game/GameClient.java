@@ -2840,8 +2840,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
                         return;
                 }
         if (npcTemplate.getId() == 15024) {
-                        final int pricePerItem = template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE ? 1250 : template.getPrice();
-                        final int value = pricePerItem * qua;
+                        final int value = template.getPrice() * qua;
                         if (!player.hasItemTemplate(16000, value)) {
                                 SocketManager.PACKET_POPUP(this.player,
                                                 "Vous n'avez pas assez de Médailles de Gladiatrool pour acheter cet article.");
