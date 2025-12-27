@@ -5242,11 +5242,16 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         id=Integer.parseInt(packet.substring(4));
         if(this.player.getCurMap().getNpc(id)!=null)
         {
-          NpcExchange ech=new NpcExchange(this.player,this.player.getCurMap().getNpc(id).getTemplate());
+          Npc npcTarget = this.player.getCurMap().getNpc(id);
+          NpcTemplate npcTemplate = npcTarget.getTemplate();
+          NpcExchange ech=new NpcExchange(this.player,npcTemplate);
 
           ExchangeAction<NpcExchange> exchangeAction=new ExchangeAction<>(ExchangeAction.TRADING_WITH_NPC_EXCHANGE,ech);
           this.player.setExchangeAction(exchangeAction);
           SocketManager.GAME_SEND_ECK_PACKET(this.player,2,String.valueOf(id));
+          if (npcTemplate.getId() == 15024) {
+            SocketManager.GAME_SEND_MESSAGE(this.player,"les Dradodindes s'achètent en gladiatons, le reste avec les médailles");
+          }
         }
         break;
       case '4'://StorePlayer
