@@ -131,27 +131,16 @@ public class CommandPlayerpvm {
                         perso.toogleOnMount();
 
                         if (wasOnMount && !perso.isOnMount() && currentMount != null) {
-                                ObjectTemplate certificateTemplate = Constant
-                                                .getParchoTemplateByMountColor(currentMount.getColor());
-
-                                if (certificateTemplate == null) {
-                                        SocketManager.GAME_SEND_MESSAGE(perso,
-                                                        "Impossible de récupérer le certificat de cette Dragodinde.",
-                                                        "C35617");
-                                        // Revenir sur la monture pour conserver l'état précédent
-                                        perso.toogleOnMount();
-                                        return true;
-                                }
-
-                                GameObject certificate = certificateTemplate.createNewItem(1, false);
+                                GameObject certificate = Constant.getParchoTemplateByMountColor(currentMount.getColor())
+                                                .createNewItem(1, false);
                                 certificate.setMountStats(perso, currentMount);
 
                                 Main.world.addGameObject(certificate, true);
                                 perso.addObjet(certificate);
+                                SocketManager.GAME_SEND_OAKO_PACKET(perso, certificate);
                                 SocketManager.GAME_SEND_Re_PACKET(perso, "-", null);
                                 SocketManager.GAME_SEND_Rx_PACKET(perso);
                                 perso.setMount(null);
-                                SocketManager.GAME_SEND_ALTER_GM_PACKET(perso.getCurMap(), perso);
                         }
 
                         String feedback = perso.isOnMount() ? "Vous êtes monté sur votre Dragodinde."
