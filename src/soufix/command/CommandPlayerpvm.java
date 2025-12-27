@@ -78,10 +78,25 @@ public class CommandPlayerpvm {
 		if (perso.getGameClient() == null)
 			return true;
 
-		if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {
-			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
-			return true;
-		}
+                if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {
+                        perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
+                        return true;
+                }
+
+                if (msg.length() > 2 && msg.substring(1, 3).equalsIgnoreCase("dd")) {
+                        if (perso.getMount() == null) {
+                                SocketManager.GAME_SEND_MESSAGE(perso, "Vous ne possédez pas de Dragodinde à équiper.",
+                                                "C35617");
+                                return true;
+                        }
+
+                        perso.toogleOnMount();
+
+                        String feedback = perso.isOnMount() ? "Vous êtes monté sur votre Dragodinde."
+                                        : "Vous descendez de votre Dragodinde.";
+                        SocketManager.GAME_SEND_MESSAGE(perso, feedback, "008000");
+                        return true;
+                }
 
 		// IMPORTANT: parenthèses ajoutées (sinon priorité opérateur ambigüe)
 		if ((msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("all"))
