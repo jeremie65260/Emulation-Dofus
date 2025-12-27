@@ -5250,7 +5250,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           this.player.setExchangeAction(exchangeAction);
           SocketManager.GAME_SEND_ECK_PACKET(this.player,2,String.valueOf(id));
           if (npcTemplate.getId() == 15024) {
-            SocketManager.GAME_SEND_MESSAGE(this.player,"les Dradodindes s'achètent en gladiatons, le reste avec les médailles");
+            SocketManager.GAME_SEND_MESSAGE(this.player,"Les montures s'achètent en gladiatons.","0000FF");
           }
         }
         break;
