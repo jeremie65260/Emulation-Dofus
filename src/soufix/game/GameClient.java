@@ -2841,13 +2841,13 @@ public void setTimeLastTaverne(long timeLastTaverne) {
                 }
         if (npcTemplate.getId() == 15024) {
                         final int value = template.getPrice() * qua;
-                        if (!player.hasItemTemplate(16001, value)) {
-                                SocketManager.GAME_SEND_MESSAGE(this.player,
+                        if (!player.hasItemTemplate(16000, value)) {
+                                SocketManager.PACKET_POPUP(this.player,
                                                 "Vous n'avez pas assez de Médailles de Gladiatrool pour acheter cet article.");
                                 SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
                                 return;
                         }
-                        player.removeByTemplateID(16001, value);
+                        player.removeByTemplateID(16000, value);
                         GameObject object=template.createNewItem(qua,(npcTemplate.getInformations()&0x1)==1);
                   if(template.getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
                   {
