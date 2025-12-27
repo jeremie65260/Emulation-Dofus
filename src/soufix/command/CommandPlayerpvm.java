@@ -124,10 +124,26 @@ public class CommandPlayerpvm {
                                 }
                         }
 
+                        boolean wasOnMount = perso.isOnMount();
+                        Mount currentMount = perso.getMount();
+
                         perso.toogleOnMount();
 
+                        if (wasOnMount && !perso.isOnMount() && currentMount != null) {
+                                GameObject certificate = Constant.getParchoTemplateByMountColor(currentMount.getColor())
+                                                .createNewItem(1, false);
+                                certificate.setMountStats(perso, currentMount);
+
+                                Main.world.addGameObject(certificate, true);
+                                perso.addObjet(certificate);
+                                SocketManager.GAME_SEND_ADD_ITEM_PACKET(perso, certificate);
+                                SocketManager.GAME_SEND_Re_PACKET(perso, "-", null);
+                                SocketManager.GAME_SEND_Rx_PACKET(perso);
+                                perso.setMount(null);
+                        }
+
                         String feedback = perso.isOnMount() ? "Vous êtes monté sur votre Dragodinde."
-                                        : "Vous descendez de votre Dragodinde.";
+                                        : "Vous descendez de votre Dragodinde et récupérez son certificat.";
                         SocketManager.GAME_SEND_MESSAGE(perso, feedback, "008000");
                         return true;
                 }
