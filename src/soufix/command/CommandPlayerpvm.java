@@ -20,6 +20,7 @@ import soufix.main.Config;
 import soufix.main.Constant;
 import soufix.main.Main;
 import soufix.object.GameObject;
+import soufix.object.ObjectTemplate;
 import soufix.entity.mount.Mount;
 
 public class CommandPlayerpvm {
