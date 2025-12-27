@@ -126,6 +126,13 @@ public class CommandPlayerpvm {
                 }
 
                 if (msg.length() > 2 && msg.substring(1, 3).equalsIgnoreCase("dd")) {
+                        if (perso.isOnMount()) {
+                                SocketManager.GAME_SEND_MESSAGE(perso,
+                                                "Vous êtes déjà monté sur votre Dragodinde. Utilisez <b>.ddoff</b> pour la déséquiper.",
+                                                "008000");
+                                return true;
+                        }
+
                         if (perso.getMount() == null) {
                                 if (perso.getLevel() < 60) {
                                         SocketManager.GAME_SEND_MESSAGE(perso,
