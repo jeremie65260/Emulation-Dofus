@@ -85,6 +85,46 @@ public class CommandPlayerpvm {
                         return true;
                 }
 
+                if (msg.length() > 5 && msg.substring(1, 6).equalsIgnoreCase("ddoff")) {
+                        if (perso.getMount() == null) {
+                                SocketManager.GAME_SEND_MESSAGE(perso, "Aucune Dragodinde n'est équipée.", "C35617");
+                                return true;
+                        }
+
+                        Mount currentMount = perso.getMount();
+                        boolean wasOnMount = perso.isOnMount();
+
+                        if (wasOnMount) {
+                                perso.toogleOnMount();
+                        }
+
+                        ObjectTemplate certificateTemplate = Constant
+                                        .getParchoTemplateByMountColor(currentMount.getColor());
+
+                        if (certificateTemplate != null) {
+                                boolean alreadyOwned = perso.getItems().values().stream()
+                                                .anyMatch(obj -> obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE
+                                                                && -obj.getStats().getEffect(995) == currentMount.getId());
+
+                                if (!alreadyOwned) {
+                                        GameObject certificate = certificateTemplate.createNewItem(1, false);
+                                        certificate.setMountStats(perso, currentMount);
+
+                                        Main.world.addGameObject(certificate, true);
+                                        perso.addObjet(certificate);
+                                        SocketManager.GAME_SEND_OAKO_PACKET(perso, certificate);
+                                }
+                        }
+
+                        SocketManager.GAME_SEND_Re_PACKET(perso, "-", null);
+                        SocketManager.GAME_SEND_Rx_PACKET(perso);
+                        perso.setMount(null);
+
+                        SocketManager.GAME_SEND_MESSAGE(perso,
+                                        "Vous descendez de votre Dragodinde et récupérez son certificat.", "008000");
+                        return true;
+                }
+
                 if (msg.length() > 2 && msg.substring(1, 3).equalsIgnoreCase("dd")) {
                         if (perso.getMount() == null) {
                                 if (perso.getLevel() < 60) {
