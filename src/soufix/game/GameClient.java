@@ -2840,19 +2840,16 @@ public void setTimeLastTaverne(long timeLastTaverne) {
                         return;
                 }
         if (npcTemplate.getId() == 15024) {
-                        final boolean isMountCertificate = template.getType() == Constant.ITEM_TYPE_CERTIF_MONTURE;
-                        final int currencyTemplateId = isMountCertificate ? 16000 : 16001;
-                        final int value = isMountCertificate ? 1250 * qua : template.getPrice() * qua;
-                        if (!player.hasItemTemplate(currencyTemplateId, value)) {
+                        final int value = template.getPrice() * qua;
+                        if (!player.hasItemTemplate(16001, value)) {
                                 SocketManager.GAME_SEND_MESSAGE(this.player,
-                                                isMountCertificate ? "Vous n'avez pas assez de Gladiatons pour acheter cet article."
-                                                                : "Vous n'avez pas assez de Médailles de Gladiatrool pour acheter cet article.");
+                                                "Vous n'avez pas assez de Médailles de Gladiatrool pour acheter cet article.");
                                 SocketManager.GAME_SEND_BUY_ERROR_PACKET(this);
                                 return;
                         }
-                        player.removeByTemplateID(currencyTemplateId, value);
+                        player.removeByTemplateID(16001, value);
                         GameObject object=template.createNewItem(qua,(npcTemplate.getInformations()&0x1)==1);
-                  if(isMountCertificate)
+                  if(template.getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
                   {
                     Mount mount=new Mount(Constant.getMountColorByParchoTemplate(object.getTemplate().getId()),this.getPlayer().getId(),false);
                     object.clearStats();
@@ -5253,7 +5250,7 @@ public void setTimeLastTaverne(long timeLastTaverne) {
           this.player.setExchangeAction(exchangeAction);
           SocketManager.GAME_SEND_ECK_PACKET(this.player,2,String.valueOf(id));
           if (npcTemplate.getId() == 15024) {
-            SocketManager.GAME_SEND_MESSAGE(this.player,"les montures coutent 1250 gladiatons.");
+            SocketManager.GAME_SEND_MESSAGE(this.player,"les Dradodindes s'achètent en gladiatons, le reste avec les médailles");
           }
         }
         break;
