@@ -62,9 +62,12 @@ private int reproduction;
     this.fatigue=0;
     this.energy=0;
     this.reproduction=((color==75||color==88) ? -1 : 0);
-    this.maturity=(savage ? 1000 : 0);
     this.state=0;
     this.stats=Constant.getMountStats(this.color,this.level);
+    this.amour=10000;
+    this.endurance=10000;
+    this.setMaxMaturity();
+    this.setMaxEnergy();
     this.ancestors="?,?,?,?,?,?,?,?,?,?,?,?,?,?";
     this.size=100;
     this.owner=owner;
@@ -88,9 +91,12 @@ private int reproduction;
     this.fatigue=0;
     this.energy=0;
     this.reproduction=0;
-    this.maturity=0;
     this.state=Formulas.getRandomValue(-10000,10000);
     this.stats=Constant.getMountStats(this.color,this.level);
+    this.amour=10000;
+    this.endurance=10000;
+    this.setMaxMaturity();
+    this.setMaxEnergy();
 
     String[] fatherStr=father.ancestors.split(","),motherStr=mother.ancestors.split(",");
     String firstFather=fatherStr[0]+","+fatherStr[1],firstMother=motherStr[0]+","+motherStr[1],secondFather=fatherStr[2]+","+fatherStr[3]+","+fatherStr[4]+","+fatherStr[5],
@@ -733,6 +739,7 @@ private int reproduction;
     this.amour=10000;
     this.endurance=10000;
     this.setMaxMaturity();
+    this.setMaxEnergy();
   }
 
   private double getBonusFatigue()
