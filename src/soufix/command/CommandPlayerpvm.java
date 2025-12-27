@@ -20,6 +20,7 @@ import soufix.main.Config;
 import soufix.main.Constant;
 import soufix.main.Main;
 import soufix.object.GameObject;
+import soufix.entity.mount.Mount;
 
 public class CommandPlayerpvm {
 	private static String canal;
@@ -78,10 +79,55 @@ public class CommandPlayerpvm {
 		if (perso.getGameClient() == null)
 			return true;
 
-		if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {
-			perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
-			return true;
-		}
+                if (msg.length() > 6 && msg.substring(1, 7).equalsIgnoreCase("points")) {
+                        perso.sendMessage("Vous avez <b>" + perso.getAccount().getPoints() + "</b> points boutique");
+                        return true;
+                }
+
+                if (msg.length() > 2 && msg.substring(1, 3).equalsIgnoreCase("dd")) {
+                        if (perso.getMount() == null) {
+                                GameObject certificat = perso.getItems().values().stream()
+                                                .filter(item -> item.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE
+                                                                || item.getStats().getEffect(995) != 0)
+                                                .findFirst()
+                                                .orElse(null);
+
+                                if (certificat == null) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso,
+                                                        "Vous ne possédez pas de Dragodinde à équiper.", "C35617");
+                                        return true;
+                                }
+
+                                int mountId = -certificat.getStats().getEffect(995);
+                                Mount mount = Main.world.getMountById(mountId);
+
+                                if (mount == null) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso,
+                                                        "Certificat invalide : impossible de retrouver la Dragodinde.",
+                                                        "C35617");
+                                        return true;
+                                }
+
+                                mount.setOwner(perso.getId());
+                                mount.setEtape(2);
+                                mount.setNumber(0);
+                                perso.setMount(mount);
+                                perso.removeItem(certificat.getGuid(), 1, true, true);
+                                SocketManager.GAME_SEND_Re_PACKET(perso, "+", mount);
+                                SocketManager.GAME_SEND_Rx_PACKET(perso);
+                                SocketManager.GAME_SEND_STATS_PACKET(perso);
+                                SocketManager.GAME_SEND_MESSAGE(perso,
+                                                "Votre Dragodinde est équipée depuis le certificat.", "008000");
+                                return true;
+                        }
+
+                        perso.toogleOnMount();
+
+                        String feedback = perso.isOnMount() ? "Vous êtes monté sur votre Dragodinde."
+                                        : "Vous descendez de votre Dragodinde.";
+                        SocketManager.GAME_SEND_MESSAGE(perso, feedback, "008000");
+                        return true;
+                }
 
 		// IMPORTANT: parenthèses ajoutées (sinon priorité opérateur ambigüe)
 		if ((msg.length() > 3 && msg.substring(1, 4).equalsIgnoreCase("all"))
@@ -1243,10 +1289,11 @@ public class CommandPlayerpvm {
 								+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
 								+ "\n<b>.points</b> - Affiche ses points boutique."
 								+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
-								+ "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
-								+ "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
-								+ "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
-								+ "\n<b>.banque</b> - Ouvrir la banque"
+                                                                + "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
+                                                                + "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
+                                                                + "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
+                                                                + "\n<b>.dd</b> - Permet d'équiper et de monter rapidement votre Dragodinde."
+                                                                + "\n<b>.banque</b> - Ouvrir la banque"
 								+ "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
 								+ "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
 								+ "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
@@ -1273,10 +1320,11 @@ public class CommandPlayerpvm {
 								+ "\n<b>.boutique</b> - Permet d'accéder é la boutique."
 								+ "\n<b>.points</b> - Affiche ses points boutique."
 								+ "\n<b>.all</b> - <b>.noall</b> - Permet d'envoyer un message \u00e0 tous les joueurs."
-								+ "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
-								+ "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
-								+ "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
-								+ "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
+                                                                + "\n<b>.celldeblo</b> - Permet de téléporter é une cellule libre si vous étes bloqués."
+                                                                + "\n<b>.movemobs</b> - Permet de deplace un groupe de monstres."
+                                                                + "\n<b>.rmobs</b> - Rafraîchit les groupes de monstres de votre carte."
+                                                                + "\n<b>.dd</b> - Permet d'équiper et de monter rapidement votre Dragodinde."
+                                                                + "\n<b>.banque</b> - Ouvrir la banque néimporte oé."
 								+ "\n<b>.maitre</b> - Permet de créer une escouade et d'inviter toutes tes mules dans ton groupe."
 								+ "\n<b>.window</b> - Permet de gérer toutes vos mules en combat via la fenétre du maitre."
 								+ "\n<b>.cinvoc</b> - Active ou désactive le contrôle de vos invocations."
