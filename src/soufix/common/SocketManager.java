@@ -1551,7 +1551,7 @@ public class SocketManager
     String packet="EL"+vendorList;
     send(out,packet);
     if (npc.getTemplate().getId() == 15024 && vendorList.contains("7807;|7808;")) {
-      PACKET_POPUP_DEPART(out.getPlayer(),"les montures coutent 1250 gladiatons.");
+      GAME_SEND_MESSAGE(out.getPlayer(),"les montures coutent 1250 gladiatons.");
     }
 
   }
