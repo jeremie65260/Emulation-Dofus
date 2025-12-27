@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 import soufix.Hdv.Hdv;
 import soufix.client.Player;
-import soufix.client.other.Mount;
 import soufix.client.other.Ornements;
 import soufix.client.other.Party;
 import soufix.client.other.Stats;
@@ -87,15 +86,64 @@ public class CommandPlayerpvm {
 
                 if (msg.length() > 2 && msg.substring(1, 3).equalsIgnoreCase("dd")) {
                         if (perso.getMount() == null) {
-                                SocketManager.GAME_SEND_MESSAGE(perso, "Vous ne possédez pas de Dragodinde à équiper.",
-                                                "C35617");
-                                return true;
+                                if (perso.getLevel() < 60) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso,
+                                                        "Vous devez être niveau 60 pour équiper une Dragodinde.",
+                                                        "C35617");
+                                        return true;
+                                }
+
+                                GameObject certificate = perso.getItems().values().stream()
+                                                .filter(obj -> obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE)
+                                                .filter(obj -> Main.world.getMountById(-obj.getStats().getEffect(995)) != null)
+                                                .filter(obj -> Main.world.getMountById(-obj.getStats().getEffect(995)).getOwner() == perso
+                                                                .getId())
+                                                .findFirst().orElse(null);
+
+                                if (certificate != null) {
+                                        Mount mount = Main.world.getMountById(-certificate.getStats().getEffect(995));
+                                        if (mount.getFecundatedDate() == -1) {
+                                                mount.setEtape(2);
+                                                mount.setNumber(0);
+                                                mount.setOwner(perso.getId());
+
+                                                perso.setMount(mount);
+                                                perso.removeItem(certificate.getGuid(), 1, true, true);
+                                                Main.world.removeGameObject(certificate.getGuid());
+                                                SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(perso, certificate.getGuid());
+                                                SocketManager.GAME_SEND_Re_PACKET(perso, "+", mount);
+                                                SocketManager.GAME_SEND_Rx_PACKET(perso);
+                                        }
+                                }
+
+                                if (perso.getMount() == null) {
+                                        SocketManager.GAME_SEND_MESSAGE(perso,
+                                                        "Vous ne possédez pas de Dragodinde à équiper.",
+                                                        "C35617");
+                                        return true;
+                                }
                         }
+
+                        boolean wasOnMount = perso.isOnMount();
+                        Mount currentMount = perso.getMount();
 
                         perso.toogleOnMount();
 
+                        if (wasOnMount && !perso.isOnMount() && currentMount != null) {
+                                GameObject certificate = Constant.getParchoTemplateByMountColor(currentMount.getColor())
+                                                .createNewItem(1, false);
+                                certificate.setMountStats(perso, currentMount);
+
+                                Main.world.addGameObject(certificate, true);
+                                perso.addObjet(certificate);
+                                SocketManager.GAME_SEND_ADD_ITEM_PACKET(perso, certificate);
+                                SocketManager.GAME_SEND_Re_PACKET(perso, "-", null);
+                                SocketManager.GAME_SEND_Rx_PACKET(perso);
+                                perso.setMount(null);
+                        }
+
                         String feedback = perso.isOnMount() ? "Vous êtes monté sur votre Dragodinde."
-                                        : "Vous descendez de votre Dragodinde.";
+                                        : "Vous descendez de votre Dragodinde et récupérez son certificat.";
                         SocketManager.GAME_SEND_MESSAGE(perso, feedback, "008000");
                         return true;
                 }

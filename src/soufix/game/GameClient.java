@@ -4572,9 +4572,14 @@ public void setTimeLastTaverne(long timeLastTaverne) {
         case 'g':// Equiper une dinde
           mount=Main.world.getMountById(id);
 
-          if(!park.getEtable().contains(mount)||mount==null)
+          if(mount==null)
           {
             SocketManager.GAME_SEND_Im_PACKET(this.player,"1104");
+            return;
+          }
+          if(this.player.getLevel()<60)
+          {
+            SocketManager.GAME_SEND_MESSAGE(this.player,"Vous devez être niveau 60 pour équiper une monture.");
             return;
           }
           if(this.player.getMount()!=null)
@@ -4587,28 +4592,59 @@ public void setTimeLastTaverne(long timeLastTaverne) {
             SocketManager.GAME_SEND_BN(this);
             return;
           }
-          if(mount.getEtape() != -1){
-				if(mount.getEtape() != 1)return;	
-			}
-          boolean can3 = false;
-			if(park.getGuild() != null && this.player.get_guild() != null){
-			if(park.getGuild().getId() == this.player.get_guild().getId()){
-			if(this.player.get_guild().getMember(this.player.getId()).canDo(Constant.G_OTHDINDE))	
-			can3 = true;	
-			}
-			}
-			if(this.player.getId() != mount.getOwner() && !can3){
-				SocketManager.GAME_SEND_MESSAGE(this.player,"vous tentez d'utiliser une monture qui n'appartient pas é ce personnage !");
-			return;	
-			}
+          if(mount.getEtape()!=-1&&mount.getEtape()!=1)
+            return;
+
+          GameObject certificate=null;
+          for(GameObject invObj : this.player.getItems().values())
+          {
+            if(invObj.getTemplate().getType()!=Constant.ITEM_TYPE_CERTIF_MONTURE)
+              continue;
+            if(-invObj.getStats().getEffect(995)==mount.getId())
+            {
+              certificate=invObj;
+              break;
+            }
+          }
+
+          boolean fromStable=park.getEtable().contains(mount);
+          if(!fromStable&&certificate==null)
+          {
+            SocketManager.GAME_SEND_Im_PACKET(this.player,"1104");
+            return;
+          }
+
+          boolean can3=false;
+          if(park.getGuild()!=null&&this.player.get_guild()!=null)
+            if(park.getGuild().getId()==this.player.get_guild().getId())
+              if(this.player.get_guild().getMember(this.player.getId()).canDo(Constant.G_OTHDINDE))
+                can3=true;
+
+          if(this.player.getId()!=mount.getOwner()&&!can3)
+          {
+            SocketManager.GAME_SEND_MESSAGE(this.player,"vous tentez d'utiliser une monture qui n'appartient pas é ce personnage !");
+            return;
+          }
+
           mount.setEtape(2);
-		  mount.setNumber(0);
+          mount.setNumber(0);
           mount.setOwner(this.player.getId());
-          park.getEtable().remove(mount);
+
+          if(fromStable)
+          {
+            park.getEtable().remove(mount);
+            SocketManager.GAME_SEND_Ee_PACKET(this.player,'-',mount.getId()+"");
+          }
+          else if(certificate!=null)
+          {
+            this.player.removeItem(certificate.getGuid(),1,true,true);
+            Main.world.removeGameObject(certificate.getGuid());
+            SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player,certificate.getGuid());
+          }
+
           this.player.setMount(mount);
 
           SocketManager.GAME_SEND_Re_PACKET(this.player,"+",mount);
-          SocketManager.GAME_SEND_Ee_PACKET(this.player,'-',mount.getId()+"");
           SocketManager.GAME_SEND_Rx_PACKET(this.player);
          // Database.getDynamics().getMountData().update(mount);
         // Database.getStatics().getPlayerData().update(this.player);
