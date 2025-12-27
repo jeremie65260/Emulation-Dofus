@@ -9161,6 +9161,11 @@ public void setTimeLastTaverne(long timeLastTaverne) {
     if(obj==null)
       return;
     ObjectTemplate T=obj.getTemplate();
+    if(T.getType()==Constant.ITEM_TYPE_CERTIF_MONTURE)
+    {
+      if(handleMountCertificateUse(obj))
+        return;
+    }
     if(T.getLevel()>this.player.getLevel()||(!obj.getTemplate().getConditions().equalsIgnoreCase("")&&!ConditionParser.validConditions(this.player,obj.getTemplate().getConditions())))
     {
       SocketManager.GAME_SEND_Im_PACKET(this.player,"119|43");
@@ -9189,6 +9194,88 @@ public void setTimeLastTaverne(long timeLastTaverne) {
       else
         SocketManager.GAME_SEND_eUK_PACKET_TO_MAP(this.player.getCurMap(),this.player.getId(),18);
     }
+  }
+
+  private boolean handleMountCertificateUse(GameObject certificate)
+  {
+    if(certificate==null||certificate.getTemplate().getType()!=Constant.ITEM_TYPE_CERTIF_MONTURE)
+      return false;
+
+    if(this.player.getMount()==null)
+    {
+      if(this.player.getLevel()<60)
+      {
+        SocketManager.GAME_SEND_MESSAGE(this.player,"Vous devez être niveau 60 pour équiper une Dragodinde.","C35617");
+        return true;
+      }
+
+      Mount mount=Main.world.getMountById(-certificate.getStats().getEffect(995));
+      if(mount==null||mount.getOwner()!=this.player.getId())
+      {
+        SocketManager.GAME_SEND_MESSAGE(this.player,"Vous ne possédez pas de Dragodinde à équiper.","C35617");
+        return true;
+      }
+      if(mount.getFecundatedDate()!=-1)
+      {
+        SocketManager.GAME_SEND_BN(this);
+        return true;
+      }
+
+      mount.setEtape(2);
+      mount.setNumber(0);
+      mount.setOwner(this.player.getId());
+
+      this.player.setMount(mount);
+      this.player.removeItem(certificate.getGuid(),1,true,true);
+      Main.world.removeGameObject(certificate.getGuid());
+      SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player,certificate.getGuid());
+      this.player.toogleOnMount();
+      SocketManager.GAME_SEND_Re_PACKET(this.player,"+",mount);
+      SocketManager.GAME_SEND_Rx_PACKET(this.player);
+      SocketManager.GAME_SEND_MESSAGE(this.player,"Vous êtes monté sur votre Dragodinde.","008000");
+      return true;
+    }
+
+    boolean wasOnMount=this.player.isOnMount();
+    Mount currentMount=this.player.getMount();
+
+    this.player.toogleOnMount();
+
+    if(wasOnMount&&!this.player.isOnMount()&&currentMount!=null)
+    {
+      ObjectTemplate certificateTemplate=Constant.getParchoTemplateByMountColor(currentMount.getColor());
+
+      if(certificateTemplate==null)
+      {
+        SocketManager.GAME_SEND_MESSAGE(this.player,"Impossible de récupérer le certificat de cette Dragodinde.","C35617");
+        this.player.toogleOnMount();
+        return true;
+      }
+
+      GameObject returnedCertificate=certificate;
+      if(certificate.getTemplate().getId()!=certificateTemplate.getId())
+      {
+        this.player.removeItem(certificate.getGuid(),1,true,true);
+        Main.world.removeGameObject(certificate.getGuid());
+        SocketManager.GAME_SEND_REMOVE_ITEM_PACKET(this.player,certificate.getGuid());
+
+        returnedCertificate=certificateTemplate.createNewItem(1,false);
+        Main.world.addGameObject(returnedCertificate,true);
+        this.player.addObjet(returnedCertificate);
+      }
+
+      returnedCertificate.setMountStats(this.player,currentMount);
+      SocketManager.GAME_SEND_UPDATE_ITEM(this.player,returnedCertificate);
+      SocketManager.GAME_SEND_Re_PACKET(this.player,"-",null);
+      SocketManager.GAME_SEND_Rx_PACKET(this.player);
+      this.player.setMount(null);
+      SocketManager.GAME_SEND_ALTER_GM_PACKET(this.player.getCurMap(),this.player);
+      SocketManager.GAME_SEND_MESSAGE(this.player,"Vous descendez de votre Dragodinde et récupérez son certificat.","008000");
+      return true;
+    }
+
+    SocketManager.GAME_SEND_MESSAGE(this.player,this.player.isOnMount()?"Vous êtes monté sur votre Dragodinde." : "Vous descendez de votre Dragodinde et récupérez son certificat.","008000");
+    return true;
   }
 
   private void dissociateObvi(String packet)
