@@ -1281,9 +1281,7 @@ public class CommandPlayerpvm {
                                         choix = msg.substring(8).trim();
                                 }
                                 if (choix.isEmpty()) {
-                                        perso.sendMessage(
-                                                        "Utilisation : .jetmax <coiffe|cape|ceinture|bottes|amulette|anneauG|anneauD|cac|familier|bouclier|dofus|all>");
-                                        return true;
+                                        choix = "all";
                                 }
 
                                 boolean updated = false;
