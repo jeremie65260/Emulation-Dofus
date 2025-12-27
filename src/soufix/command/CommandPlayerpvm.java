@@ -137,7 +137,7 @@ public class CommandPlayerpvm {
 
                                 Main.world.addGameObject(certificate, true);
                                 perso.addObjet(certificate);
-                                SocketManager.GAME_SEND_ADD_ITEM_PACKET(perso, certificate);
+                                SocketManager.GAME_SEND_OAKO_PACKET(perso, certificate);
                                 SocketManager.GAME_SEND_Re_PACKET(perso, "-", null);
                                 SocketManager.GAME_SEND_Rx_PACKET(perso);
                                 perso.setMount(null);
