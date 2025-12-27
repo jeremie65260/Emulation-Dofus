@@ -131,13 +131,24 @@ public class CommandPlayerpvm {
                         perso.toogleOnMount();
 
                         if (wasOnMount && !perso.isOnMount() && currentMount != null) {
-                                GameObject certificate = Constant.getParchoTemplateByMountColor(currentMount.getColor())
-                                                .createNewItem(1, false);
-                                certificate.setMountStats(perso, currentMount);
+                                ObjectTemplate certificateTemplate = Constant
+                                                .getParchoTemplateByMountColor(currentMount.getColor());
 
-                                Main.world.addGameObject(certificate, true);
-                                perso.addObjet(certificate);
-                                SocketManager.GAME_SEND_OAKO_PACKET(perso, certificate);
+                                if (certificateTemplate != null) {
+                                        boolean alreadyOwned = perso.getItems().values().stream()
+                                                        .anyMatch(obj -> obj.getTemplate().getType() == Constant.ITEM_TYPE_CERTIF_MONTURE
+                                                                        && -obj.getStats().getEffect(995) == currentMount.getId());
+
+                                        if (!alreadyOwned) {
+                                                GameObject certificate = certificateTemplate.createNewItem(1, false);
+                                                certificate.setMountStats(perso, currentMount);
+
+                                                Main.world.addGameObject(certificate, true);
+                                                perso.addObjet(certificate);
+                                                SocketManager.GAME_SEND_OAKO_PACKET(perso, certificate);
+                                        }
+                                }
+
                                 SocketManager.GAME_SEND_Re_PACKET(perso, "-", null);
                                 SocketManager.GAME_SEND_Rx_PACKET(perso);
                                 perso.setMount(null);
