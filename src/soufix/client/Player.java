@@ -5278,13 +5278,6 @@ public void setTotal_reculte() {
     }
 
     _onMount=!_onMount;
-    GameObject obj=getObjetByPos(Constant.ITEM_POS_FAMILIER);
-
-    if(_onMount&&obj!=null)
-    {
-      obj.setPosition(Constant.ITEM_POS_NO_EQUIPED);
-      SocketManager.GAME_SEND_OBJET_MOVE_PACKET(this,obj);
-    }
 
     if(Config.singleton.serverId != 6) {
     if(_mount.getEnergy()<=0)
