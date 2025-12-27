@@ -21,6 +21,7 @@ import soufix.main.Config;
 import soufix.main.Constant;
 import soufix.main.Main;
 import soufix.object.GameObject;
+import soufix.entity.mount.Mount;
 
 public class CommandPlayerpvm {
 	private static String canal;
