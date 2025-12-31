@@ -305,12 +305,9 @@ public class Spell
       String[] splt=e.split("\\|");
       for(String a : splt)
       {
-        a=a.trim();
         try
         {
           if(e.equals("-1"))
-            continue;
-          if(a.isEmpty())
             continue;
           int id=Integer.parseInt(a.split(";",2)[0]);
           String args=a.split(";",2)[1];
