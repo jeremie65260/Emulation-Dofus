@@ -476,7 +476,7 @@ public class Formulas
   {
     float a=1; //Calcul
     float num=0;
-    float statC=0,domC=0,perdomC=0,resfT=0,respT=0,mulT=1;
+    float statC=0,domC=0,perdomC=0,resfT=0,respT=0,mulT=1,finalDamage=0;
     // Début brumaire
     if (spellid == 7095
             && caster != null
@@ -502,6 +502,7 @@ public class Formulas
       perdomC=caster.getTotalStats().getEffect(Constant.STATS_ADD_PERDOM);
       if(perdomC<0)
         perdomC=0;
+      finalDamage=caster.getTotalStats().getEffect(Constant.STATS_ADD_DMGFINAL);
       if(caster.hasBuff(114)&&spellid!=0)
         mulT=caster.getBuffValue(114);
     }
@@ -821,6 +822,8 @@ public class Formulas
         SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,105,caster.getId()+"",target.getId()+","+armor);
     if(!isHeal)
       num-=resfT; //resis fixe
+    if(!isHeal&&finalDamage!=0)
+      num+=num*(finalDamage/100);
     //dÃ¯Â¿Â½gats finaux
     if(num<1)
       num=0;
@@ -1954,8 +1957,8 @@ public class Formulas
 
 			Constant.STATS_ADD_PA, Constant.STATS_ADD_PM, Constant.STATS_ADD_PO, Constant.STATS_ADD_VITA,
 			Constant.STATS_ADD_AGIL, Constant.STATS_ADD_CHAN, Constant.STATS_ADD_FORC, Constant.STATS_ADD_INTE,
-			Constant.STATS_ADD_SAGE, Constant.STATS_ADD_CC, Constant.STATS_ADD_DOMA, Constant.STATS_ADD_PERDOM,
-			Constant.STATS_MULTIPLY_DOMMAGE, Constant.STATS_ADD_INIT,
+                        Constant.STATS_ADD_SAGE, Constant.STATS_ADD_CC, Constant.STATS_ADD_DOMA, Constant.STATS_ADD_PERDOM,
+                        Constant.STATS_ADD_DMGFINAL, Constant.STATS_MULTIPLY_DOMMAGE, Constant.STATS_ADD_INIT,
 
 	};
   
