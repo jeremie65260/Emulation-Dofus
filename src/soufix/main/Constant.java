@@ -286,7 +286,7 @@ public class Constant
   public static final int SEX_MALE=0;
   public static final int SEX_FEMALE=1;
   //GamePlay
-  public static final int MAX_EFFECTS_ID=1500;
+  public static final int MAX_EFFECTS_ID=3000;
   //Buff a vérifier en début de tour
   public static final int[] BEGIN_TURN_BUFF= { 85, 86, 87, 88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 108, 787 };
   //Buff des Armes
@@ -321,6 +321,7 @@ public class Constant
   public static final int STATS_REM_PM=127;
   public static final int STATS_ADD_PM=128;
   public static final int STATS_ADD_PERDOM=138;
+  public static final int STATS_ADD_DMGFINAL=2008;
   public static final int STATS_ADD_PDOM=142;
   public static final int STATS_REM_DOMA=145;
   public static final int STATS_REM_CHAN=152;

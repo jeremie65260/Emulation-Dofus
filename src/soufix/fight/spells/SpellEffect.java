@@ -1360,6 +1360,9 @@ public class SpellEffect
         case 145://Malus Dommage
           applyEffect_145(fight,cibles);
           break;
+        case 2008://Dommages finaux
+          applyEffect_2008(cibles,fight);
+          break;
         case 149://Change l'apparence
           applyEffect_149(fight,cibles);
           break;
@@ -5132,6 +5135,21 @@ public class SpellEffect
   }
 
   private void applyEffect_145(Fight fight, ArrayList<Fighter> cibles)
+  {
+    int val=Formulas.getRandomJet(jet);
+    if(val==-1)
+    {
+
+      return;
+    }
+    for(Fighter target : cibles)
+    {
+      target.addBuff(effectID,val,turns,1,true,spell,args,caster,false);
+      SocketManager.GAME_SEND_GA_PACKET_TO_FIGHT(fight,7,effectID,caster.getId()+"",target.getId()+","+val+","+turns);
+    }
+  }
+
+  private void applyEffect_2008(ArrayList<Fighter> cibles, Fight fight)
   {
     int val=Formulas.getRandomJet(jet);
     if(val==-1)
