@@ -3,6 +3,7 @@ Emulateur Game de Rpg-rampage, basé sur casper.
     - Ajout de la colonne GladiatroolWinStreak dans la base login table players pour conserver la progression de stats en gladiatrool
     - Les invocations statiques comme Cawotte ou arbre ne feront plus passé le tour des ennemis
     - Ajouts des gladiatons en monnaie contre les DD.
+    - Ajouts des dégâts finaux pour les sorts et items.
 # Game-Rpg-rampage 1.0.0:
     - Implantation de la logique de génération gladiatrool basé sur starloco
     - Bridage gladia à 2 joueurs + Désactivation des monstres alignés au gladia
