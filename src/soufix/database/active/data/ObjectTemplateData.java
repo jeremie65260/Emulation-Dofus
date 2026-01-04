@@ -12,9 +12,22 @@ import soufix.object.ObjectTemplate;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ObjectTemplateData extends AbstractDAO<ObjectTemplate>
 {
+  private static final Map<Integer, String> DEFAULT_SOUL_STONE_STATS=new HashMap<>();
+
+  static
+  {
+    DEFAULT_SOUL_STONE_STATS.put(9686,"2c1#64#0#32"); // Petite pierre d'âme parfaite (niveau max 50)
+    DEFAULT_SOUL_STONE_STATS.put(9687,"2c1#64#0#64"); // Pierre d'âme parfaite (niveau max 100)
+    DEFAULT_SOUL_STONE_STATS.put(9688,"2c1#64#0#96"); // Grande pierre d'âme parfaite (niveau max 150)
+    DEFAULT_SOUL_STONE_STATS.put(9689,"2c1#64#0#c8"); // Énorme pierre d'âme parfaite (niveau max 200)
+    DEFAULT_SOUL_STONE_STATS.put(9690,"2c1#64#0#fa"); // Gigantesque pierre d'âme parfaite (niveau max 250)
+  }
+
   public ObjectTemplateData(HikariDataSource dataSource)
   {
     super(dataSource);
@@ -40,10 +53,17 @@ public class ObjectTemplateData extends AbstractDAO<ObjectTemplate>
       ResultSet RS=result.resultSet;
       while(RS.next())
       {
-        ObjectTemplate template=new ObjectTemplate(RS.getInt("id"),RS.getString("statsTemplate"),RS.getString("name"),RS.getInt("type"),RS.getInt("level"),RS.getInt("pod"),RS.getInt("prix"),RS.getInt("panoplie"),RS.getString("conditions"),RS.getString("armesInfos"),RS.getInt("sold"),RS.getInt("avgPrice"),RS.getInt("points"),RS.getInt("newPrice"),RS.getInt("boutique"),RS.getInt("tokenShop"),RS.getInt("tokens"));
-        if(Main.world.getObjTemplate(RS.getInt("id"))!=null)
+        String statsTemplate=RS.getString("statsTemplate");
+        int templateId=RS.getInt("id");
+        if((statsTemplate==null||statsTemplate.isEmpty())&&DEFAULT_SOUL_STONE_STATS.containsKey(templateId))
         {
-          Main.world.getObjTemplate(RS.getInt("id")).setInfos(RS.getString("statsTemplate"),RS.getString("name"),RS.getInt("type"),RS.getInt("level"),RS.getInt("pod"),RS.getInt("prix"),RS.getInt("panoplie"),RS.getString("conditions"),RS.getString("armesInfos"),RS.getInt("sold"),RS.getInt("avgPrice"),RS.getInt("points"),RS.getInt("newPrice"));
+          statsTemplate=DEFAULT_SOUL_STONE_STATS.get(templateId);
+        }
+
+        ObjectTemplate template=new ObjectTemplate(templateId,statsTemplate,RS.getString("name"),RS.getInt("type"),RS.getInt("level"),RS.getInt("pod"),RS.getInt("prix"),RS.getInt("panoplie"),RS.getString("conditions"),RS.getString("armesInfos"),RS.getInt("sold"),RS.getInt("avgPrice"),RS.getInt("points"),RS.getInt("newPrice"),RS.getInt("boutique"),RS.getInt("tokenShop"),RS.getInt("tokens"));
+        if(Main.world.getObjTemplate(templateId)!=null)
+        {
+          Main.world.getObjTemplate(templateId).setInfos(statsTemplate,RS.getString("name"),RS.getInt("type"),RS.getInt("level"),RS.getInt("pod"),RS.getInt("prix"),RS.getInt("panoplie"),RS.getString("conditions"),RS.getString("armesInfos"),RS.getInt("sold"),RS.getInt("avgPrice"),RS.getInt("points"),RS.getInt("newPrice"));
         }
         else
         {
