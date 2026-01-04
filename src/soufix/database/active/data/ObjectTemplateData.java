@@ -21,12 +21,11 @@ public class ObjectTemplateData extends AbstractDAO<ObjectTemplate>
 
   static
   {
-    DEFAULT_SOUL_STONE_STATS.put(9686,"2c1#64#0#32"); // Petite pierre d'âme parfaite (niveau max 50)
-    DEFAULT_SOUL_STONE_STATS.put(9687,"2c1#64#0#64"); // Pierre d'âme parfaite (niveau max 100)
-    DEFAULT_SOUL_STONE_STATS.put(9688,"2c1#64#0#96"); // Grande pierre d'âme parfaite (niveau max 150)
-    DEFAULT_SOUL_STONE_STATS.put(9689,"2c1#64#0#c8"); // Énorme pierre d'âme parfaite (niveau max 200)
-    DEFAULT_SOUL_STONE_STATS.put(9690,"2c1#64#0#fa"); // Gigantesque pierre d'âme parfaite (niveau max 250)
-    DEFAULT_SOUL_STONE_STATS.put(9718,"2c1#64#0#7d0"); // Gargantuesque pierre d'âme parfaite (niveau max 2000)
+    DEFAULT_SOUL_STONE_STATS.put(9686,"26f#64#0#32"); // Petite pierre d'âme parfaite (niveau max 50)
+    DEFAULT_SOUL_STONE_STATS.put(9687,"26f#64#0#64"); // Pierre d'âme parfaite (niveau max 100)
+    DEFAULT_SOUL_STONE_STATS.put(9688,"26f#64#0#96"); // Grande pierre d'âme parfaite (niveau max 150)
+    DEFAULT_SOUL_STONE_STATS.put(9689,"26f#64#0#c8"); // Énorme pierre d'âme parfaite (niveau max 200)
+    DEFAULT_SOUL_STONE_STATS.put(9690,"26f#64#0#fa"); // Gigantesque pierre d'âme parfaite (niveau max 250)
   }
 
   public ObjectTemplateData(HikariDataSource dataSource)

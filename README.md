@@ -4,6 +4,7 @@ Emulateur Game de Rpg-rampage, basé sur casper.
     - Les invocations statiques comme Cawotte ou arbre ne feront plus passé le tour des ennemis
     - Ajouts des gladiatons en monnaie contre les DD.
     - Ajouts des dégâts finaux pour les sorts et items.
+    - Corrections des pierre d'âmes parfaites : ses stats sont générés en dur au chagement de l'emulateur.
 # Game-Rpg-rampage 1.0.0:
     - Implantation de la logique de génération gladiatrool basé sur starloco
     - Bridage gladia à 2 joueurs + Désactivation des monstres alignés au gladia
